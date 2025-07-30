@@ -17,8 +17,8 @@ Tech Stack
 1. Clone the repository
 
 ```
-git clone https://github.com/your-username/3d-model-store.git
-cd 3d-model-store
+git clone https://github.com/chupre/modelstore.git
+cd modelstore
 ```
 2. Configure the database
 Create a PostgreSQL database named "modelshop" and add your DB credentials in .env according to .env.example.
