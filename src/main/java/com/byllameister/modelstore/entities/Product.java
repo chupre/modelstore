@@ -3,6 +3,7 @@ package com.byllameister.modelstore.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -40,6 +41,7 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @Column(name = "createdat")
+    @Column(name = "createdat", updatable = false)
+    @CreationTimestamp
     private LocalDate createdAt;
 }

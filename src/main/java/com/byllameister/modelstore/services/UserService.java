@@ -1,24 +1,29 @@
 package com.byllameister.modelstore.services;
 
+import com.byllameister.modelstore.common.PageableValidator;
 import com.byllameister.modelstore.dtos.UserDto;
 import com.byllameister.modelstore.exceptions.UserNotFoundException;
 import com.byllameister.modelstore.mappers.UserMapper;
 import com.byllameister.modelstore.repositories.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PageableValidator pageableValidator;
 
-    public List<UserDto> getAllUsers() {
-        var users = userRepository.findAll();
+    private final Set<String> VALID_SORT_FIELDS = Set.of("id", "username", "email");
+
+    public List<UserDto> getAllUsers(Pageable pageable) {
+        pageableValidator.validate(pageable, VALID_SORT_FIELDS);
+        var users = userRepository.findAll(pageable).getContent();
         return userMapper.toDtos(users);
     }
 

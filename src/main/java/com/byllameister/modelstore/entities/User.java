@@ -3,11 +3,9 @@ package com.byllameister.modelstore.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -32,6 +30,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(name = "createdat")
+    @Column(name = "createdat", updatable = false)
+    @CreationTimestamp
     private LocalDate createdAt;
 }
