@@ -1,0 +1,46 @@
+🧱 3D Model Store – Spring Boot App
+
+A backend web application for managing and selling 3D-printable models. Users can browse categories, view product details, and (coming soon) register, log in, add models to a cart, and place orders.
+
+Tech Stack
+- Java 17
+- Spring Boot
+- Spring Data JPA
+- PostgreSQL
+- Hibernate
+- Maven
+
+---
+
+🛠 How to Run
+
+1. Clone the repository
+
+```
+git clone https://github.com/your-username/3d-model-store.git
+cd 3d-model-store
+```
+2. Configure the database
+Create a PostgreSQL database named "modelshop" and add your DB credentials in .env according to .env.example.
+
+3. Run the app
+```
+./mvnw spring-boot:run
+```
+---
+
+📝 TODO
+
+Near Term
+
+1. Refactor package structure towards a feature-based architecture
+2. Add authentication and authorization (Spring Security)
+3. Add shopping cart functionality
+4. Implement orders and checkout process
+
+Later
+
+5. Integrate payment gateway (e.g. Stripe)
+6. Add likes for models
+7. Add reviews and ratings
+8. Build a frontend (React or Vue)
