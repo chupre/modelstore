@@ -1,7 +1,5 @@
-package com.byllameister.modelstore.mappers;
+package com.byllameister.modelstore.products;
 
-import com.byllameister.modelstore.dtos.ProductDto;
-import com.byllameister.modelstore.entities.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

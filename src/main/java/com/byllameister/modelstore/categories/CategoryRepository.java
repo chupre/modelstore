@@ -1,6 +1,5 @@
-package com.byllameister.modelstore.repositories;
+package com.byllameister.modelstore.categories;
 
-import com.byllameister.modelstore.entities.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {

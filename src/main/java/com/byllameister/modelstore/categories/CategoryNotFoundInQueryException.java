@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.exceptions;
+package com.byllameister.modelstore.categories;
 
 public class CategoryNotFoundInQueryException extends RuntimeException {
     public CategoryNotFoundInQueryException() {

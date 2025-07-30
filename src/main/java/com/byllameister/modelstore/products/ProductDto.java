@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.dtos;
+package com.byllameister.modelstore.products;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

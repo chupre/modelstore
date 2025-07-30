@@ -1,6 +1,5 @@
-package com.byllameister.modelstore.repositories;
+package com.byllameister.modelstore.users;
 
-import com.byllameister.modelstore.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {

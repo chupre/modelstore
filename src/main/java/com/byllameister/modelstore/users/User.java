@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.entities;
+package com.byllameister.modelstore.users;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.exceptions;
+package com.byllameister.modelstore.users;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException() {

@@ -1,6 +1,5 @@
-package com.byllameister.modelstore.repositories;
+package com.byllameister.modelstore.products;
 
-import com.byllameister.modelstore.entities.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;

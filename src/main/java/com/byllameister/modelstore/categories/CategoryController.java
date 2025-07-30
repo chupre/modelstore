@@ -1,8 +1,5 @@
-package com.byllameister.modelstore.controllers;
+package com.byllameister.modelstore.categories;
 
-import com.byllameister.modelstore.dtos.CategoryDto;
-import com.byllameister.modelstore.exceptions.CategoryNotFoundInQueryException;
-import com.byllameister.modelstore.services.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;

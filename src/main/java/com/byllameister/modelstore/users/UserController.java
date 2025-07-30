@@ -1,8 +1,5 @@
-package com.byllameister.modelstore.controllers;
+package com.byllameister.modelstore.users;
 
-import com.byllameister.modelstore.dtos.UserDto;
-import com.byllameister.modelstore.exceptions.UserNotFoundException;
-import com.byllameister.modelstore.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;

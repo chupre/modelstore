@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.controllers;
+package com.byllameister.modelstore.common;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

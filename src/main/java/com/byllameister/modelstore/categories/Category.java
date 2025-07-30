@@ -1,5 +1,6 @@
-package com.byllameister.modelstore.entities;
+package com.byllameister.modelstore.categories;
 
+import com.byllameister.modelstore.products.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,10 +1,6 @@
-package com.byllameister.modelstore.services;
+package com.byllameister.modelstore.users;
 
 import com.byllameister.modelstore.common.PageableValidator;
-import com.byllameister.modelstore.dtos.UserDto;
-import com.byllameister.modelstore.exceptions.UserNotFoundException;
-import com.byllameister.modelstore.mappers.UserMapper;
-import com.byllameister.modelstore.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

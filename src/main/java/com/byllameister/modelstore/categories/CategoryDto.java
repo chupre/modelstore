@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.dtos;
+package com.byllameister.modelstore.categories;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

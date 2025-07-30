@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.exceptions;
+package com.byllameister.modelstore.categories;
 
 public class CategoryNotFoundInBodyException extends RuntimeException {
     public CategoryNotFoundInBodyException() {

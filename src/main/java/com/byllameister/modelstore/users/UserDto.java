@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.dtos;
+package com.byllameister.modelstore.users;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

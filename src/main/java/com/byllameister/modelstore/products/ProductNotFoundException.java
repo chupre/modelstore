@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.exceptions;
+package com.byllameister.modelstore.products;
 
 public class ProductNotFoundException extends RuntimeException {
     public ProductNotFoundException() {

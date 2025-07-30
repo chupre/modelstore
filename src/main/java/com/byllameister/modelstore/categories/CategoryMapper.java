@@ -1,7 +1,5 @@
-package com.byllameister.modelstore.mappers;
+package com.byllameister.modelstore.categories;
 
-import com.byllameister.modelstore.dtos.CategoryDto;
-import com.byllameister.modelstore.entities.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

@@ -1,11 +1,8 @@
-package com.byllameister.modelstore.controllers;
+package com.byllameister.modelstore.products;
 
-import com.byllameister.modelstore.dtos.ProductDto;
-import com.byllameister.modelstore.exceptions.CategoryNotFoundInBodyException;
-import com.byllameister.modelstore.exceptions.CategoryNotFoundInQueryException;
-import com.byllameister.modelstore.exceptions.ProductNotFoundException;
-import com.byllameister.modelstore.exceptions.UserNotFoundException;
-import com.byllameister.modelstore.services.ProductService;
+import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
+import com.byllameister.modelstore.categories.CategoryNotFoundInQueryException;
+import com.byllameister.modelstore.users.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
