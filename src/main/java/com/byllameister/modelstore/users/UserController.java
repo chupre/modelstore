@@ -53,6 +53,12 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> me() {
+        var user = userService.getCurrentUser();
+        return ResponseEntity.ok().body(user);
+    }
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Void> handleUserNotFound() {
         return ResponseEntity.notFound().build();

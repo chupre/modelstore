@@ -1,5 +1,6 @@
 package com.byllameister.modelstore.products;
 
+import com.byllameister.modelstore.users.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -15,4 +16,6 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
     @EntityGraph(attributePaths = {"owner", "category"})
     List<Product> findProductsByCategoryId(Long categoryId, Pageable pageable);
+
+    List<Product> findByOwner(User user);
 }
