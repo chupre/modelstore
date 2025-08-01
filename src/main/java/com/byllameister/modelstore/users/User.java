@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
 
@@ -33,4 +34,18 @@ public class User {
     @Column(name = "createdat", updatable = false)
     @CreationTimestamp
     private LocalDate createdAt;
+
+    public static Long getCurrentUserId() {
+        return (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public static boolean isCurrentUserAdmin() {
+        return SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .stream().
+                anyMatch(
+                        a -> a.getAuthority().equals("ROLE_" + Role.ADMIN.name()));
+    }
 }

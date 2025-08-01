@@ -20,8 +20,6 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     @EntityGraph(attributePaths = {"owner", "category"})
     List<Product> findProductsByCategoryId(Long categoryId, Pageable pageable);
 
-    List<Product> findByOwner(User user);
-
     @Modifying
     @EntityGraph(attributePaths = "category")
     @Query("DELETE FROM Product p WHERE p.owner = :owner")

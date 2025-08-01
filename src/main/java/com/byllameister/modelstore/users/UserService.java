@@ -6,7 +6,6 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -80,8 +79,7 @@ public class UserService {
     }
 
     public UserDto getCurrentUser() {
-        var userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        var user = userRepository.findById(User.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
         return userMapper.toDto(user);
     }
 }
