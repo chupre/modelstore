@@ -2,6 +2,7 @@ package com.byllameister.modelstore.users;
 
 import com.byllameister.modelstore.common.PageableValidator;
 import com.byllameister.modelstore.products.ProductRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -53,18 +54,28 @@ public class UserService {
 
     public UserDto updateUser(Long id, @Valid UpdateUserRequest request) {
         var user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+
+        if (!user.getUsername().equals(request.getUsername()) &&
+                userRepository.existsByUsername(request.getUsername())) {
+            throw new DuplicateUsernameException();
+        }
+
+        if (!user.getEmail().equals(request.getEmail()) &&
+            userRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateEmailException();
+        }
+
         userMapper.update(request, user);
         userRepository.save(user);
 
         return userMapper.toDto(user);
     }
 
+    @Transactional
     public void deleteUser(Long id) {
         var user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
 
-        var products = productRepository.findByOwner(user);
-        productRepository.deleteAll(products);
-
+        productRepository.deleteByOwner(user);
         userRepository.delete(user);
     }
 
