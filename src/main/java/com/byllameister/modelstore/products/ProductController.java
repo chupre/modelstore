@@ -2,6 +2,7 @@ package com.byllameister.modelstore.products;
 
 import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
 import com.byllameister.modelstore.categories.CategoryNotFoundInQueryException;
+import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -74,17 +75,17 @@ public class ProductController {
     }
 
     @ExceptionHandler(CategoryNotFoundInBodyException.class)
-    public ResponseEntity<String> handleCategoryNotFoundInBody(CategoryNotFoundInBodyException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ErrorDto> handleCategoryNotFoundInBody(CategoryNotFoundInBodyException e) {
+        return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFound(UserNotFoundException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ErrorDto> handleUserNotFound(UserNotFoundException e) {
+        return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ErrorDto> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
     }
 }

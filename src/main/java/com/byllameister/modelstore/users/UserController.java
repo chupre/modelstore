@@ -1,5 +1,6 @@
 package com.byllameister.modelstore.users;
 
+import com.byllameister.modelstore.common.ErrorDto;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -65,12 +66,12 @@ public class UserController {
     }
 
     @ExceptionHandler(DuplicateEmailException.class)
-    public ResponseEntity<String> handleDuplicateEmail(DuplicateEmailException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ErrorDto> handleDuplicateEmail(DuplicateEmailException e) {
+        return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
     }
 
     @ExceptionHandler(DuplicateUsernameException.class)
-    public ResponseEntity<String> handleDuplicateUsername(DuplicateUsernameException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ErrorDto> handleDuplicateUsername(DuplicateUsernameException e) {
+        return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
     }
 }
