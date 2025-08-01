@@ -28,7 +28,7 @@ public class CategoryService {
 
     public CategoryDto getCategoryById(Long id) {
         var category = categoryRepository.findById(id).
-                orElseThrow(CategoryNotFoundInBodyException::new);
+                orElseThrow(CategoryNotFoundInQueryException::new);
         return categoryMapper.toDto(category);
     }
 
@@ -50,7 +50,7 @@ public class CategoryService {
 
     public void deleteCategory(Long id) {
         var category = categoryRepository.findById(id).
-                orElseThrow(CategoryNotFoundInBodyException::new);
+                orElseThrow(CategoryNotFoundInQueryException::new);
 
         var products = category.getProducts();
         productRepository.deleteAll(products);
