@@ -108,12 +108,20 @@ public class CartController {
             @PathVariable UUID id,
             @PathVariable Long productId
     ) {
+        if (accessDenied(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         cartService.deleteCartItem(id, productId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}/items")
     public ResponseEntity<Void> deleteAllItems(@PathVariable UUID id) {
+        if (accessDenied(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         cartService.deleteAllCartItems(id);
         return ResponseEntity.noContent().build();
     }

@@ -14,6 +14,6 @@ public class CartSecurityRules implements SecurityRules {
         registry
                 .requestMatchers(HttpMethod.GET, "/carts").hasRole(Role.ADMIN.name())
                 .requestMatchers(HttpMethod.PUT, "/carts/**").hasRole(Role.ADMIN.name())
-                .requestMatchers(HttpMethod.DELETE, "/carts/**").hasRole(Role.ADMIN.name());
+                .requestMatchers(HttpMethod.DELETE, "/carts/*").hasRole(Role.ADMIN.name());
     }
 }
