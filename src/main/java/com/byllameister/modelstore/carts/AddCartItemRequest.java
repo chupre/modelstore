@@ -1,11 +1,12 @@
 package com.byllameister.modelstore.carts;
 
-import com.byllameister.modelstore.products.ProductDto;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class CartItemDto {
-    private ProductDto product;
+public class AddCartItemRequest {
+    @NotNull
+    private Long product;
 }

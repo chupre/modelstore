@@ -1,11 +1,12 @@
 package com.byllameister.modelstore.carts;
 
-import com.byllameister.modelstore.products.ProductDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
-public class CartItemDto {
-    private ProductDto product;
+public class UpdateCartRequest {
+    private Set<CartItemDto> cartItems;
 }

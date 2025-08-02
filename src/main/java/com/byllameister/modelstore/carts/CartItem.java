@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Entity
@@ -23,4 +25,7 @@ public class CartItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    public BigDecimal getPrice() {
+        return product.getPrice();
+    }
 }
