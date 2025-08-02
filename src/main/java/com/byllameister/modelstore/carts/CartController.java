@@ -103,6 +103,21 @@ public class CartController {
         return ResponseEntity.ok(cartItem);
     }
 
+    @DeleteMapping("/{id}/items/{productId}")
+    public ResponseEntity<Void> deleteItem(
+            @PathVariable UUID id,
+            @PathVariable Long productId
+    ) {
+        cartService.deleteCartItem(id, productId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/items")
+    public ResponseEntity<Void> deleteAllItems(@PathVariable UUID id) {
+        cartService.deleteAllCartItems(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorDto> handleProductNotFoundException(ProductNotFoundException e) {
         return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));

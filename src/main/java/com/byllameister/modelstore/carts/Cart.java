@@ -60,4 +60,16 @@ public class Cart {
                 .map(CartItem::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    public void deleteItem(Product product) {
+        var cartItem = getItem(product);
+        if (cartItem != null) {
+            cartItem.setCart(null);
+            cartItems.remove(cartItem);
+        }
+    }
+
+    public void clear() {
+        cartItems.clear();
+    }
 }

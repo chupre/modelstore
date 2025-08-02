@@ -100,4 +100,18 @@ public class CartService {
         var cart = cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
         return cart.getUser().getId();
     }
+
+    public void deleteCartItem(UUID id, Long productId) {
+        var cart = cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
+        var product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
+
+        cart.deleteItem(product);
+        cartRepository.save(cart);
+    }
+
+    public void deleteAllCartItems(UUID id) {
+        var cart = cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
+        cart.clear();
+        cartRepository.save(cart);
+    }
 }
