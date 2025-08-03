@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Slider } from "@/components/ui/slider"
+import { Button } from "@/components/ui/button.tsx"
+import { Label } from "@/components/ui/label.tsx"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover.tsx"
+import { Checkbox } from "@/components/ui/checkbox.tsx"
+import { Slider } from "@/components/ui/slider.tsx"
 import { Filter } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx"
 
 export default function Component() {
   const [priceRange, setPriceRange] = useState([0, 1000])

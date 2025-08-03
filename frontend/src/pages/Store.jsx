@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react"
-import FilterPopover from "@/components/ui/filter-popover";
+import FilterPopover from "@/components/filter-popover";
 import {
   Pagination,
   PaginationContent,
