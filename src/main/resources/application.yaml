@@ -14,5 +14,7 @@ spring:
     secret: ${JWT_SECRET}
     accessTokenExpiration: 300 # 5 min
     refreshTokenExpiration: 604800 # 7 days
+  cors:
+    frontendUrl: ${FRONTEND_URL}
 
 
