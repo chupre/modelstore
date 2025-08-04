@@ -84,7 +84,7 @@ public class UploadService {
         Path filePath = uploadPath.resolve(fileName);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        return new UploadResponse(upload.getDirectory() + "/" + fileName);
+        return new UploadResponse(upload.getDirectory() + fileName);
     }
 
     private String getExtension(MultipartFile file) {
