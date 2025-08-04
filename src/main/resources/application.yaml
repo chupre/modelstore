@@ -16,5 +16,8 @@ spring:
     refreshTokenExpiration: 604800 # 7 days
   cors:
     frontendUrl: ${FRONTEND_URL}
+  web:
+    resources:
+      static-locations: file:uploads/
 
 
