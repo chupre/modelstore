@@ -28,13 +28,13 @@ public class ProductService {
     public Page<ProductDto> getAllProducts(String search, Pageable pageable) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
 
-        Page<Product> products;
         if (search != null && !search.isBlank()) {
-            products = productRepository.fuzzySearch(search, 0.3, pageable);
+            var products = productRepository.fuzzySearch(search, 0.3, pageable);
+            return products.map(productMapper::toDtoFromFlatDto);
         } else {
-            products = productRepository.findAll(pageable);
+            var products = productRepository.findAll(pageable);
+            return products.map(productMapper::toDto);
         }
-        return products.map(productMapper::toDto);
     }
 
     public ProductDto getProductById(Long id) {

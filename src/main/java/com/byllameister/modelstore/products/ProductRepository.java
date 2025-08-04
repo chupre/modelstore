@@ -24,15 +24,15 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     void deleteByOwner(@Param("owner") User user);
 
     @Query(value = """
-            SELECT p.id,
-                   p.title,
-                   p.description,
-                   p.price,
-                   p.previewimage,
-                   p.file,
-                   p.owner_id,
-                   p.category_id,
-                   p.createdat
+            SELECT p.id as id,
+                   p.title as title,
+                   p.description as description,
+                   p.price as price,
+                   p.previewimage as previewImage,
+                   p.file as file,
+                   p.owner_id as ownerId,
+                   p.category_id as categoryId,
+                   p.createdat as createdAt
             FROM products p
             JOIN users u ON p.owner_id = u.id
             WHERE similarity(p.title, :term) > :threshold
@@ -48,7 +48,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
                    OR similarity(u.username, :term) > :threshold
             """
     )
-    Page<Product> fuzzySearch(
+    Page<ProductFlatDto> fuzzySearch(
             @Param("term") String search,
             @Param("threshold") double threshold,
             Pageable pageable);
