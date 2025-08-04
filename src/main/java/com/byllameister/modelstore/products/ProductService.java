@@ -8,6 +8,7 @@ import com.byllameister.modelstore.categories.CategoryRepository;
 import com.byllameister.modelstore.users.UserRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,15 @@ public class ProductService {
 
     private final Set<String> VALID_SORT_FIELDS = Set.of("id", "title", "price", "categoryId");
 
-    public Page<ProductDto> getAllProducts(Pageable pageable) {
+    public Page<ProductDto> getAllProducts(String search, Pageable pageable) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
-        var products = productRepository.findAll(pageable);
+
+        Page<Product> products;
+        if (search != null && !search.isBlank()) {
+            products = productRepository.fuzzySearch(search, 0.3, pageable);
+        } else {
+            products = productRepository.findAll(pageable);
+        }
         return products.map(productMapper::toDto);
     }
 

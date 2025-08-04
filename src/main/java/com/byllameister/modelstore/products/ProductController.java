@@ -22,9 +22,10 @@ public class ProductController {
     @GetMapping
     public Page<ProductDto> getAllProducts(
             @RequestParam(name = "categoryId", required = false ) Long categoryId,
+            @RequestParam(name = "search", required = false ) String search,
             Pageable pageable) {
         if (categoryId == null) {
-            return productService.getAllProducts(pageable);
+            return productService.getAllProducts(search, pageable);
         } else {
             return productService.getProductsByCategoryId(categoryId, pageable);
         }

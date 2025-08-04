@@ -22,4 +22,34 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     @EntityGraph(attributePaths = "category")
     @Query("DELETE FROM Product p WHERE p.owner = :owner")
     void deleteByOwner(@Param("owner") User user);
+
+    @Query(value = """
+            SELECT p.id,
+                   p.title,
+                   p.description,
+                   p.price,
+                   p.previewimage,
+                   p.file,
+                   p.owner_id,
+                   p.category_id,
+                   p.createdat
+            FROM products p
+            JOIN users u ON p.owner_id = u.id
+            WHERE similarity(p.title, :term) > :threshold
+               OR similarity(p.description, :term) > :threshold
+               OR similarity(u.username, :term) > :threshold
+            """,
+            nativeQuery = true,
+            countQuery = """
+                SELECT COUNT(*) FROM products p
+                JOIN users u ON p.owner_id = u.id
+                WHERE similarity(p.title, :term) > :threshold
+                   OR similarity(p.description, :term) > :threshold
+                   OR similarity(u.username, :term) > :threshold
+            """
+    )
+    Page<Product> fuzzySearch(
+            @Param("term") String search,
+            @Param("threshold") double threshold,
+            Pageable pageable);
 }
