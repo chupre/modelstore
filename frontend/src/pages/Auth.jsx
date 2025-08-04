@@ -32,6 +32,7 @@ function Auth() {
       user.setIsAuth(true);
       navigate(HOME_ROUTE);
     } catch (error) {
+      console.log(error);
       const responseData = error?.response?.data;
       if (responseData && typeof responseData === "object") {
         const messages = Object.values(responseData);
@@ -51,11 +52,14 @@ function Auth() {
                 </ul>
               </div>
           ),
-          className: "text-left max-w-sm", // force left alignment + reasonable width
-          duration: 5000,
+          className: "text-left max-w-sm flex flex-col justify-between",
+          classNames: {
+            actionButton: "-mt-4 self-end"
+          },
           action: {
             label: "OK",
-          }
+          },
+          duration: 5000,
         });
 
       } else {

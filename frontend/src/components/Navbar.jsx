@@ -5,10 +5,17 @@ import { useContext } from "react";
 import { Context } from '../main';
 import { useNavigate } from "react-router-dom";
 import { HOME_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE, STORE_ROUTE } from "../utils/consts";
+import {LogOut} from "lucide-react";
 
 const Navbar = observer(() => {
     const { user } = useContext(Context);
     const navigate = useNavigate();
+
+    const logOut = () => {
+        user.setUser({});
+        user.setIsAuth(false);
+        localStorage.removeItem('token');
+    }
 
     return (
         <header className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 py-4 border-b bg-background">
@@ -37,12 +44,19 @@ const Navbar = observer(() => {
                         <AvatarImage src="https://github.com/shadcn.png" alt="User" />
                         <AvatarFallback>JD</AvatarFallback>
                     </Avatar>
+                    <Button
+                        type="submit"
+                        variant="secondary"
+                        size="icon"
+                        onClick={() => {logOut()}}
+                    >
+                        <LogOut className="w-4 h-4" />
+                    </Button>
                 </div>
             ) : (
                 <div className="flex items-center space-x-3">
                     <Button
                         onClick={() => {
-                            user.setIsAuth(true);
                             navigate(LOGIN_ROUTE);
                         }}
                     >
@@ -51,7 +65,6 @@ const Navbar = observer(() => {
                     <Button
                         variant="outline"
                         onClick={() => {
-                            user.setIsAuth(true);
                             navigate(REGISTRATION_ROUTE);
                         }}
                     >

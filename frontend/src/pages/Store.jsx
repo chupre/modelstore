@@ -1,5 +1,5 @@
 import { ProductCard } from "@/components/ProductCard"
-import { useState } from "react";
+import {useState} from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react"
