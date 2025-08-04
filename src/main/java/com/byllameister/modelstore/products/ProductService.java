@@ -8,10 +8,10 @@ import com.byllameister.modelstore.categories.CategoryRepository;
 import com.byllameister.modelstore.users.UserRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -25,10 +25,10 @@ public class ProductService {
 
     private final Set<String> VALID_SORT_FIELDS = Set.of("id", "title", "price", "categoryId");
 
-    public List<ProductDto> getAllProducts(Pageable pageable) {
+    public Page<ProductDto> getAllProducts(Pageable pageable) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
         var products = productRepository.findAll(pageable);
-        return productMapper.toDtos(products.getContent());
+        return products.map(productMapper::toDto);
     }
 
     public ProductDto getProductById(Long id) {
@@ -36,7 +36,7 @@ public class ProductService {
         return productMapper.toDto(product);
     }
 
-    public List<ProductDto> getProductsByCategoryId(Long categoryId, Pageable pageable) {
+    public Page<ProductDto> getProductsByCategoryId(Long categoryId, Pageable pageable) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
 
         if (!categoryRepository.existsById(categoryId)) {
@@ -44,7 +44,7 @@ public class ProductService {
         }
 
         var products = productRepository.findProductsByCategoryId(categoryId, pageable);
-        return productMapper.toDtos(products);
+        return products.map(productMapper::toDto);
     }
 
     public ProductDto createProduct(ProductDto productDto) {

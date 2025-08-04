@@ -5,11 +5,11 @@ import com.byllameister.modelstore.products.ProductRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -23,10 +23,10 @@ public class UserService {
 
     private final Set<String> VALID_SORT_FIELDS = Set.of("id", "username", "email");
 
-    public List<UserDto> getAllUsers(Pageable pageable) {
+    public Page<UserDto> getAllUsers(Pageable pageable) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
-        var users = userRepository.findAll(pageable).getContent();
-        return userMapper.toDtos(users);
+        var users = userRepository.findAll(pageable);
+        return users.map(userMapper::toDto);
     }
 
     public UserDto getUserById(Long id) {

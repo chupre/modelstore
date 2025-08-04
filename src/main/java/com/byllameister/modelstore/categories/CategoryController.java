@@ -2,12 +2,11 @@ package com.byllameister.modelstore.categories;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -16,7 +15,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public List<CategoryDto> getAllCategories(Pageable pageable) {
+    public Page<CategoryDto> getAllCategories(Pageable pageable) {
         return categoryService.getAllCategories(pageable);
     }
 

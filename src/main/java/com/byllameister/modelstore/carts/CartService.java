@@ -7,10 +7,10 @@ import com.byllameister.modelstore.users.UserNotFoundException;
 import com.byllameister.modelstore.users.UserRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,10 +25,10 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    public List<CartDto> getCarts(Pageable pageable) {
+    public Page<CartDto> getCarts(Pageable pageable) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
-        var carts = cartRepository.findAll(pageable).getContent();
-        return cartMapper.toDtos(carts);
+        var carts = cartRepository.findAll(pageable);
+        return carts.map(cartMapper::toDto);
     }
 
     public CartDto getCart(UUID id) {

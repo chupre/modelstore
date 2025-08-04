@@ -6,12 +6,11 @@ import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.List;
 
 
 @AllArgsConstructor
@@ -21,7 +20,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public List<ProductDto> getAllProducts(
+    public Page<ProductDto> getAllProducts(
             @RequestParam(name = "categoryId", required = false ) Long categoryId,
             Pageable pageable) {
         if (categoryId == null) {

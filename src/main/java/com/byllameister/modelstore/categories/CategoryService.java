@@ -4,10 +4,10 @@ import com.byllameister.modelstore.common.PageableValidator;
 import com.byllameister.modelstore.products.ProductRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -20,10 +20,10 @@ public class CategoryService {
     private final CategoryMapper categoryMapper;
     private final ProductRepository productRepository;
 
-    public List<CategoryDto> getAllCategories(Pageable pageable) {
+    public Page<CategoryDto> getAllCategories(Pageable pageable) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
-        var categories = categoryRepository.findAll(pageable).getContent();
-        return categoryMapper.toDtos(categories);
+        var categories = categoryRepository.findAll(pageable);
+        return categories.map(categoryMapper::toDto);
     }
 
     public CategoryDto getCategoryById(Long id) {
