@@ -2,7 +2,6 @@ package com.byllameister.modelstore.products;
 
 import com.byllameister.modelstore.common.PageableValidator;
 import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
-import com.byllameister.modelstore.categories.CategoryNotFoundInQueryException;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import com.byllameister.modelstore.categories.CategoryRepository;
 import com.byllameister.modelstore.users.UserRepository;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -25,16 +25,17 @@ public class ProductService {
 
     private final Set<String> VALID_SORT_FIELDS = Set.of("id", "title", "price", "categoryId", "createdAt");
 
-    public Page<ProductDto> getAllProducts(String search, Pageable pageable) {
+    public Page<ProductDto> getProducts(
+            String search,
+            Long categoryId,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            Pageable pageable
+    ) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
 
-        if (search != null && !search.isBlank()) {
-            var products = productRepository.fuzzySearch(search, 0.3, pageable);
-            return products.map(productMapper::toDtoFromFlatDto);
-        } else {
-            var products = productRepository.findAll(pageable);
-            return products.map(productMapper::toDto);
-        }
+        var products = productRepository.fuzzySearch(search, categoryId, minPrice, maxPrice, 0.2, pageable);
+        return products.map(productMapper::toDtoFromFlatDto);
     }
 
     public ProductDto getProductById(Long id) {
@@ -42,29 +43,19 @@ public class ProductService {
         return productMapper.toDto(product);
     }
 
-    public Page<ProductDto> getProductsByCategoryId(Long categoryId, Pageable pageable) {
-        pageableValidator.validate(pageable, VALID_SORT_FIELDS);
-
-        if (!categoryRepository.existsById(categoryId)) {
-            throw new CategoryNotFoundInQueryException();
-        }
-
-        var products = productRepository.findProductsByCategoryId(categoryId, pageable);
-        return products.map(productMapper::toDto);
-    }
-
-    public ProductDto createProduct(ProductDto productDto) {
-        var category = categoryRepository.findById(productDto.getCategoryId()).
+    public ProductDto createProduct(CreateProductRequest request) {
+        var category = categoryRepository.findById(request.getCategoryId()).
                 orElseThrow(CategoryNotFoundInBodyException::new);
 
-        var owner = userRepository.findById(productDto.getOwnerId()).
+        var owner = userRepository.findById(request.getOwnerId()).
                 orElseThrow(UserNotFoundException::new);
 
-        var product = productMapper.toEntity(productDto);
+        var product = productMapper.toEntity(request);
         product.setCategory(category);
         product.setOwner(owner);
         productRepository.save(product);
         product.setId(product.getId());
+        product.setCreatedAt(product.getCreatedAt());
 
         return productMapper.toDto(product);
     }
@@ -74,19 +65,15 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public ProductDto updateProductById(Long id, @Valid ProductDto productDto) {
-        var category = categoryRepository.findById(productDto.getCategoryId()).
+    public ProductDto updateProductById(Long id, UpdateProductRequest request) {
+        var category = categoryRepository.findById(request.getCategoryId()).
                 orElseThrow(CategoryNotFoundInBodyException::new);
-
-        var owner = userRepository.findById(productDto.getOwnerId()).
-                orElseThrow(UserNotFoundException::new);
 
         var product = productRepository.findById(id).
                 orElseThrow(ProductNotFoundException::new);
 
-        productMapper.update(productDto, product);
+        productMapper.update(request, product);
         product.setCategory(category);
-        product.setOwner(owner);
         productRepository.save(product);
 
         return productMapper.toDto(product);

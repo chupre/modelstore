@@ -1,8 +1,5 @@
 package com.byllameister.modelstore.products;
 
-import com.byllameister.modelstore.categories.Category;
-import com.byllameister.modelstore.categories.CategoryDto;
-import com.byllameister.modelstore.users.UserDto;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,20 +8,25 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProductDto {
-    private Long id;
+public class UpdateProductRequest {
+    @NotBlank(message = "Title is required")
     private String title;
+
     private String description;
+
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Price must be positive")
     private BigDecimal price;
+
     private String previewImage;
+
+    @NotBlank(message = "File is required")
     private String file;
-    private UserDto owner;
-    private CategoryDto category;
-    private LocalDate createdAt;
+
+    @NotNull(message = "Category is required")
+    private Long categoryId;
 }

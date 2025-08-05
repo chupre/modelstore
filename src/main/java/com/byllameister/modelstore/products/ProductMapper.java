@@ -8,16 +8,14 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
-    @Mapping(target = "categoryId", source = "category.id")
-    @Mapping(target = "ownerId", source = "owner.id")
     ProductDto toDto(Product product);
 
     List<ProductDto> toDtos(Iterable<Product> products);
 
     Product toEntity(ProductDto productDto);
+    Product toEntity(CreateProductRequest createProductRequest);
 
-    @Mapping(target = "id", ignore = true)
-    void update(ProductDto productDto, @MappingTarget Product product);
+    void update(UpdateProductRequest request, @MappingTarget Product product);
 
     ProductDto toDtoFromFlatDto(ProductFlatDto productFlatDto);
 }

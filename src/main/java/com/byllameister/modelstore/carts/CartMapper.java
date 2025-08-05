@@ -16,7 +16,5 @@ public interface CartMapper {
 
     void update(UpdateCartRequest request, @MappingTarget Cart cart);
 
-    @Mapping(target = "product.categoryId", source = "product.category.id")
-    @Mapping(target = "product.ownerId", source = "product.owner.id")
     CartItemDto toDto(CartItem cartItem);
 }

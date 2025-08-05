@@ -1,6 +1,6 @@
 package com.byllameister.modelstore.products;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public interface ProductFlatDto {
     Long getId();
@@ -11,5 +11,5 @@ public interface ProductFlatDto {
     String getFile();
     Long getOwnerId();
     Long getCategoryId();
-    LocalDateTime getCreatedAt();
+    LocalDate getCreatedAt();
 }

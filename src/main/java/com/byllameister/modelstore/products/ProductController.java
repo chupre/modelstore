@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.math.BigDecimal;
+
 
 @AllArgsConstructor
 @RestController
@@ -21,14 +23,13 @@ public class ProductController {
 
     @GetMapping
     public Page<ProductDto> getAllProducts(
-            @RequestParam(name = "categoryId", required = false ) Long categoryId,
             @RequestParam(name = "search", required = false ) String search,
-            Pageable pageable) {
-        if (categoryId == null) {
-            return productService.getAllProducts(search, pageable);
-        } else {
-            return productService.getProductsByCategoryId(categoryId, pageable);
-        }
+            @RequestParam(name = "categoryId", required = false ) Long categoryId,
+            @RequestParam(name = "minPrice", required = false) BigDecimal minPrice,
+            @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice,
+            Pageable pageable
+    ) {
+        return productService.getProducts(search, categoryId, minPrice, maxPrice, pageable);
     }
 
     @GetMapping("/{id}")
@@ -38,10 +39,10 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(
-            @Valid @RequestBody ProductDto productDto,
+            @Valid @RequestBody CreateProductRequest request,
             UriComponentsBuilder uriComponentsBuilder
     ) {
-        var product = productService.createProduct(productDto);
+        var product = productService.createProduct(request);
         var uri = uriComponentsBuilder.path("/products/{id}")
                 .buildAndExpand(product.getId())
                 .toUri();
@@ -58,9 +59,9 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(
             @PathVariable Long id,
-            @Valid @RequestBody ProductDto productDto
+            @Valid @RequestBody UpdateProductRequest request
     ) {
-        var product = productService.updateProductById(id, productDto);
+        var product = productService.updateProductById(id, request);
         return ResponseEntity.ok().body(product);
     }
 
