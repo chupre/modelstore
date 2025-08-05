@@ -12,7 +12,12 @@ function Home() {
   const {product} = useContext(Context)
 
   useEffect(() => {
-    fetchProducts(0, 3).then((res) => {
+    const filters = {
+      page: 0,
+      size: 3,
+    };
+
+    fetchProducts(filters).then((res) => {
       product.setProducts(res.data.content);
     })
   }, [])

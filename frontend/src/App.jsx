@@ -9,6 +9,7 @@ import {useContext, useEffect, useState} from "react";
 import {refresh} from "@/http/userAPI.js";
 import {Context} from "@/main.jsx";
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
+import Loading from "@/components/Loading.jsx";
 
 function App() {
     const {user} = useContext(Context);
@@ -28,13 +29,7 @@ function App() {
     }, [])
 
     if (loading) {
-        return (
-            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-                <div className="w-screen h-screen flex items-center justify-center">
-                    <Spinner />
-                </div>
-            </ThemeProvider>
-        )
+        return <Loading/>
     }
 
     return (

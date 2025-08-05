@@ -1,15 +1,23 @@
 import { observer } from "mobx-react-lite";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useContext } from "react";
+import {useContext, useEffect} from "react";
 import { Context } from '../main';
 import { useNavigate } from "react-router-dom";
 import { HOME_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE, STORE_ROUTE } from "../utils/consts";
 import {LogOut} from "lucide-react";
+import NavbarCatalogButton from "@/components/NavbarCatalogButton.jsx";
+import {fetchCategories} from "@/http/productAPI.js";
 
 const Navbar = observer(() => {
-    const { user } = useContext(Context);
+    const { user, product } = useContext(Context);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        fetchCategories().then((res) => {
+            product.setCategories(res.data.content);
+        })
+    }, [])
 
     const logOut = () => {
         user.setUser({});
@@ -33,7 +41,7 @@ const Navbar = observer(() => {
                 </div>
                 <div className="flex items-center">
                     <Button variant="ghost" onClick={() => navigate(HOME_ROUTE)}>Home</Button>
-                    <Button variant="ghost" onClick={() => navigate(STORE_ROUTE)}>Catalog</Button>
+                    <NavbarCatalogButton categories={product.categories} />
                 </div>
             </div>
 

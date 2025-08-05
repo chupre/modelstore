@@ -20,6 +20,16 @@ export const fetchProducts = async ({
     }});
 }
 
+export const fetchProduct = async (id) => {
+    try {
+        return await $host.get(`/products/${id}`, {})
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
+            return null;
+        }
+    }
+}
+
 export const fetchCategories = async (page = 0, size = 20, sort = "name") => {
     return $host.get(`/categories`, {params: {page, size, sort}});
 }

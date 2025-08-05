@@ -12,6 +12,7 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
 function FilterPopover({
     categories,
     handleSearch,
+    defaultMaxPrice,
     priceRange,
     setPriceRange,
     selectedCategory,
@@ -38,9 +39,9 @@ function FilterPopover({
                                 <Slider
                                     value={priceRange}
                                     onValueChange={setPriceRange}
-                                    max={1000}
+                                    max={defaultMaxPrice}
                                     min={0}
-                                    step={10}
+                                    step={1}
                                     className="w-full"
                                 />
                             </div>
@@ -83,7 +84,7 @@ function FilterPopover({
                                     <SelectValue placeholder="Choose sorting option"/>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="createdAt,decs">Newest</SelectItem>
+                                    <SelectItem value="createdAt,desc">Newest</SelectItem>
                                     <SelectItem value="price,asc">Price: Low to High</SelectItem>
                                     <SelectItem value="price,desc">Price: High to Low</SelectItem>
                                 </SelectContent>

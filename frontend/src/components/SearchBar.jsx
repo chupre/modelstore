@@ -3,25 +3,34 @@ import {Button} from "@/components/ui/button.js";
 import {Search} from "lucide-react";
 import FilterPopover from "@/components/FilterPopover.jsx";
 import {observer} from "mobx-react-lite";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {fetchProducts} from "@/http/productAPI.js";
 import {Context} from "@/main.jsx";
+import {useLocation} from "react-router-dom";
 
 function SearchBar() {
     const [search, setSearch] = useState("");
     const defaultMinPrice = 0;
-    const defaultMaxPrice = 1000;
+    const defaultMaxPrice = 200;
     const [priceRange, setPriceRange] = useState([defaultMinPrice, defaultMaxPrice]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [sortBy, setSortBy] = useState("");
     const {product} = useContext(Context);
+    const location = useLocation();
+    const categoryFromNav = location.state?.categoryId;
+
+    useEffect(() => {
+        if (categoryFromNav) {
+            setSelectedCategory(categoryFromNav);
+        }
+    }, [categoryFromNav]);
 
     const handleSearch = () => {
         product.setCurrentPage(0);
 
         const filters = {
             page: product.currentPage,
-            limit: product.limit,
+            size: product.limit,
         };
 
         if (selectedCategory) {
@@ -69,6 +78,7 @@ function SearchBar() {
             <FilterPopover
                 categories={product.categories}
                 handleSearch={handleSearch}
+                defaultMaxPrice={defaultMaxPrice}
                 priceRange={priceRange}
                 setPriceRange={setPriceRange}
                 selectedCategory={selectedCategory}

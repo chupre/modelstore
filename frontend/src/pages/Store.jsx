@@ -5,19 +5,32 @@ import {Context} from "@/main.jsx";
 import {fetchCategories, fetchProducts} from "@/http/productAPI.js";
 import Pages from "@/components/Pages.jsx";
 import SearchBar from "@/components/SearchBar.jsx";
+import {useLocation} from "react-router-dom";
 
 function Store() {
     const {product} = useContext(Context);
+    const location = useLocation();
+    const categoryFromNav = location.state?.categoryId;
 
     useEffect(() => {
-        fetchProducts(product.currentPage, product.limit).then((res) => {
+        const filters = {
+            page: product.currentPage,
+            size: product.limit,
+        };
+
+        if (categoryFromNav) {
+            filters.category = categoryFromNav;
+        }
+
+        fetchProducts(filters).then((res) => {
             product.setProducts(res.data.content);
             product.setTotalPages(res.data.totalPages);
         })
-        fetchCategories().then((res) => {
-            product.setCategories(res.data.content);
-        })
-    }, [product.currentPage]);
+    }, [product.currentPage, categoryFromNav]);
+
+    useEffect(() => {
+        product.setCurrentPage(0);
+    }, []);
 
     return (
         <div className="container py-8 max-w-7xl mx-auto px-4 pt-24">
