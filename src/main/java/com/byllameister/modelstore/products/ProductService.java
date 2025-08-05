@@ -23,7 +23,7 @@ public class ProductService {
     private final UserRepository userRepository;
     private final PageableValidator pageableValidator;
 
-    private final Set<String> VALID_SORT_FIELDS = Set.of("id", "title", "price", "categoryId");
+    private final Set<String> VALID_SORT_FIELDS = Set.of("id", "title", "price", "categoryId", "createdAt");
 
     public Page<ProductDto> getAllProducts(String search, Pageable pageable) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
