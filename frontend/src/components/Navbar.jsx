@@ -5,12 +5,13 @@ import {useContext, useEffect} from "react";
 import { Context } from '../main';
 import { useNavigate } from "react-router-dom";
 import { HOME_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE, STORE_ROUTE } from "../utils/consts";
-import {LogOut} from "lucide-react";
+import {LogOut, ShoppingCart} from "lucide-react";
 import NavbarCatalogButton from "@/components/NavbarCatalogButton.jsx";
 import {fetchCategories} from "@/http/productAPI.js";
+import ShoppingCartButton from "@/components/ShoppingCartButton.jsx";
 
 const Navbar = observer(() => {
-    const { user, product } = useContext(Context);
+    const { user, product, cart } = useContext(Context);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -47,19 +48,19 @@ const Navbar = observer(() => {
 
             {user.isAuth ? (
                 <div className="flex items-center space-x-3">
-                    <span className="text-sm font-medium">John Doe</span>
-                    <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                        <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
+                    <ShoppingCartButton/>
                     <Button
                         type="submit"
-                        variant="secondary"
+                        variant="ghost"
                         size="icon"
                         onClick={() => {logOut()}}
                     >
                         <LogOut className="w-4 h-4" />
                     </Button>
+                    <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" alt="User" />
+                        <AvatarFallback>JD</AvatarFallback>
+                    </Avatar>
                 </div>
             ) : (
                 <div className="flex items-center space-x-3">

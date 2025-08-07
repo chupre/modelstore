@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { ProductCard } from "@/components/ProductCard"
+import ProductCard from "@/components/ProductCard"
 import { useNavigate } from "react-router-dom"
 import { STORE_ROUTE } from "../utils/consts"
 import {useContext, useEffect} from "react";

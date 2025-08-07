@@ -31,5 +31,5 @@ export const fetchProduct = async (id) => {
 }
 
 export const fetchCategories = async (page = 0, size = 20, sort = "name") => {
-    return $host.get(`/categories`, {params: {page, size, sort}});
+    return await $host.get(`/categories`, {params: {page, size, sort}});
 }

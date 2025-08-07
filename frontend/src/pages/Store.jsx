@@ -1,4 +1,4 @@
-import {ProductCard} from "@/components/ProductCard"
+import ProductCard from "@/components/ProductCard"
 import {useContext, useEffect, useState} from "react";
 import {observer} from "mobx-react-lite";
 import {Context} from "@/main.jsx";
