@@ -17,9 +17,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @EntityGraph(attributePaths = {"owner", "category"})
     Page<Product> findAll(@NonNull Pageable pageable);
 
-    @EntityGraph(attributePaths = {"owner", "category"})
-    Page<Product> findProductsByCategoryId(Long categoryId, Pageable pageable);
-
     @Modifying
     @EntityGraph(attributePaths = "category")
     @Query("DELETE FROM Product p WHERE p.owner = :owner")
@@ -32,11 +29,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                    p.price as price,
                    p.previewimage as previewImage,
                    p.file as file,
-                   p.owner_id as ownerId,
-                   p.category_id as categoryId,
+                   u.id as ownerId,
+                   u.id as ownerUsername,
+                   c.id as categoryId,
+                   c.name as categoryName,
                    p.createdat as createdAt
             FROM products p
             JOIN users u ON p.owner_id = u.id
+            JOIN categories c ON p.category_id = c.id
             WHERE (:categoryId IS NULL OR p.category_id = :categoryId)
               AND (:minPrice IS NULL OR p.price >= :minPrice)
               AND (:maxPrice IS NULL OR p.price <= :maxPrice)

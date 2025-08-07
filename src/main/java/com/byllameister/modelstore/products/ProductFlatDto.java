@@ -10,6 +10,8 @@ public interface ProductFlatDto {
     String getPreviewImage();
     String getFile();
     Long getOwnerId();
+    String getOwnerUsername();
     Long getCategoryId();
+    String getCategoryName();
     LocalDate getCreatedAt();
 }
