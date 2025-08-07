@@ -8,5 +8,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class AddCartItemRequest {
     @NotNull
-    private Long product;
+    private Long productId;
 }

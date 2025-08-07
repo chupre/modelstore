@@ -36,6 +36,12 @@ public class CartService {
         return cartMapper.toDto(cart);
     }
 
+    public CartDto getCartByUserId(Long userId) {
+        var user =  userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        var cart = cartRepository.findByUser(user).orElseThrow(CartNotFoundException::new);
+        return cartMapper.toDto(cart);
+    }
+
     public CartDto createCart(CreateCartRequest request) {
         var user = userRepository.findById(request.getUserId())
                 .orElseThrow(UserNotFoundException::new);
@@ -64,7 +70,7 @@ public class CartService {
 
     public CartItemDto addItem(UUID id, @Valid AddCartItemRequest request) {
         var cart = cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
-        var product = productRepository.findById(request.getProduct()).orElseThrow(ProductNotFoundException::new);
+        var product = productRepository.findById(request.getProductId()).orElseThrow(ProductNotFoundException::new);
 
         var cartItem = cart.addItem(product);
         cartRepository.save(cart);

@@ -39,6 +39,16 @@ public class CartController {
         return ResponseEntity.ok(cart);
     }
 
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<CartDto> getCartByUserId(@PathVariable Long userId) {
+        if (accessDenied(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        var cart = cartService.getCartByUserId(userId);
+        return ResponseEntity.ok(cart);
+    }
+
     @PostMapping
     public ResponseEntity<CartDto> createCart(
             @Valid @RequestBody CreateCartRequest request,

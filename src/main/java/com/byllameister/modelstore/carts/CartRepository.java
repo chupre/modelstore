@@ -22,4 +22,7 @@ public interface CartRepository extends JpaRepository<Cart, UUID> {
     @Override
     @EntityGraph(attributePaths = {"cartItems"})
     Optional<Cart> findById(@NonNull UUID id);
+
+    @EntityGraph(attributePaths = {"cartItems"})
+    Optional<Cart> findByUser(User user);
 }
