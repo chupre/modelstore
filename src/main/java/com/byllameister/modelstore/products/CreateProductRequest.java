@@ -24,6 +24,7 @@ public class CreateProductRequest {
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be positive")
     private BigDecimal price;
 
+    @NotBlank(message = "Image is required")
     private String previewImage;
 
     @NotBlank(message = "File is required")
