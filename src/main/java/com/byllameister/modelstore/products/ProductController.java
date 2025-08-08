@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 
@@ -39,9 +40,9 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(
-            @Valid @RequestBody CreateProductRequest request,
+            @Valid @ModelAttribute CreateProductRequest request,
             UriComponentsBuilder uriComponentsBuilder
-    ) {
+    ) throws IOException {
         var product = productService.createProduct(request);
         var uri = uriComponentsBuilder.path("/products/{id}")
                 .buildAndExpand(product.getId())
@@ -51,7 +52,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProductById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProductById(@PathVariable Long id) throws IOException {
         productService.deleteProductById(id);
         return ResponseEntity.noContent().build();
     }
@@ -59,10 +60,15 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateProductRequest request
-    ) {
+            @Valid @ModelAttribute UpdateProductRequest request
+    ) throws IOException {
         var product = productService.updateProductById(id, request);
         return ResponseEntity.ok().body(product);
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ErrorDto> handleIOException() {
+        return ResponseEntity.badRequest().body(new ErrorDto("Unable to upload file"));
     }
 
     @ExceptionHandler(ProductNotFoundException.class)

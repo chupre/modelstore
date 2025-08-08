@@ -11,8 +11,13 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
     ProductDto toDto(Product product);
+
+    @Mapping(target = "previewImage", ignore = true)
+    @Mapping(target = "file", ignore = true)
     Product toEntity(CreateProductRequest createProductRequest);
 
+    @Mapping(target = "previewImage", ignore = true)
+    @Mapping(target = "file", ignore = true)
     void update(UpdateProductRequest request, @MappingTarget Product product);
 
     @Mapping(target = "owner", expression = "java(mapUser(productFlatDto))")
