@@ -5,7 +5,6 @@ import com.byllameister.modelstore.upload.FileSize;
 import com.byllameister.modelstore.upload.FileType;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,6 +35,7 @@ public class CreateProductRequest {
             },
             message = "Image type is not supported"
     )
+    @FileSize(maxBytes = 5 * 1024 * 1024)
     private MultipartFile previewImage;
 
     @FileNotEmpty(message = "Model file is required and must be not empty")

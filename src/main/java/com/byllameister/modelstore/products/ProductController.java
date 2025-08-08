@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -64,6 +65,11 @@ public class ProductController {
     ) throws IOException {
         var product = productService.updateProductById(id, request);
         return ResponseEntity.ok().body(product);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorDto> handleMaxUploadSizeExceededException() {
+        return ResponseEntity.badRequest().body(new ErrorDto("Max upload size exceeded"));
     }
 
     @ExceptionHandler(IOException.class)
