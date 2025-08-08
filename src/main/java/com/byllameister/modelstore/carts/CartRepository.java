@@ -15,14 +15,14 @@ public interface CartRepository extends JpaRepository<Cart, UUID> {
 
     @NonNull
     @Override
-    @EntityGraph(attributePaths = {"user", "cartItems.product"})
+    @EntityGraph(value = "Cart.withAll")
     Page<Cart> findAll(@NonNull Pageable pageable);
 
     @NonNull
     @Override
-    @EntityGraph(attributePaths = {"cartItems"})
+    @EntityGraph(value = "Cart.withAll")
     Optional<Cart> findById(@NonNull UUID id);
 
-    @EntityGraph(attributePaths = {"cartItems"})
+    @EntityGraph(value = "Cart.withAll")
     Optional<Cart> findByUser(User user);
 }

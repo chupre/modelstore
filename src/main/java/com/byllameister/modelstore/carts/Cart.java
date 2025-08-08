@@ -17,6 +17,28 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "carts")
+@NamedEntityGraph(
+        name = "Cart.withAll",
+        attributeNodes = {
+                @NamedAttributeNode("user"),
+                @NamedAttributeNode(value = "cartItems", subgraph = "cartItems.product")
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "cartItems.product",
+                        attributeNodes = {
+                                @NamedAttributeNode(value = "product", subgraph = "product.details")
+                        }
+                ),
+                @NamedSubgraph(
+                        name = "product.details",
+                        attributeNodes = {
+                                @NamedAttributeNode("category"),
+                                @NamedAttributeNode("owner")
+                        }
+                )
+        }
+)
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
