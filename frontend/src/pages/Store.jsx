@@ -13,6 +13,8 @@ function Store() {
     const categoryFromNav = location.state?.categoryId;
 
     useEffect(() => {
+        product.setLimit(6)
+
         const filters = {
             page: product.currentPage,
             size: product.limit,
@@ -34,7 +36,7 @@ function Store() {
 
     return (
         <div className="container py-8 max-w-7xl mx-auto px-4 pt-24">
-            <SearchBar/>
+            <SearchBar className="mr-4"/>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {product.products

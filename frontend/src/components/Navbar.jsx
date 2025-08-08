@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {useContext, useEffect} from "react";
 import { Context } from '../main';
 import { useNavigate } from "react-router-dom";
-import { HOME_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE, STORE_ROUTE } from "../utils/consts";
+import {ADMIN_ROUTE, HOME_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE, STORE_ROUTE} from "../utils/consts";
 import {LogOut, ShoppingCart} from "lucide-react";
 import NavbarCatalogButton from "@/components/NavbarCatalogButton.jsx";
 import {fetchCategories} from "@/http/productAPI.js";
@@ -43,6 +43,11 @@ const Navbar = observer(() => {
                 <div className="flex items-center">
                     <Button variant="ghost" onClick={() => navigate(HOME_ROUTE)}>Home</Button>
                     <NavbarCatalogButton categories={product.categories} />
+                    {user.user.role === "ADMIN" &&
+                        <Button variant="ghost" onClick={() => navigate(ADMIN_ROUTE)}>
+                            Admin
+                        </Button>
+                    }
                 </div>
             </div>
 

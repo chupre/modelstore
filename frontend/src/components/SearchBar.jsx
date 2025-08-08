@@ -8,7 +8,7 @@ import {fetchProducts} from "@/http/productAPI.js";
 import {Context} from "@/main.jsx";
 import {useLocation} from "react-router-dom";
 
-function SearchBar() {
+function SearchBar({className}) {
     const [search, setSearch] = useState("");
     const defaultMinPrice = 0;
     const defaultMaxPrice = 200;
@@ -56,21 +56,21 @@ function SearchBar() {
     };
 
     return (
-        <div className="flex flex-col sm:flex-row sm:items-center mb-6 gap-4">
-            <div className="flex w-full">
+        <div className={`flex flex-col sm:flex-row sm:items-center mb-6 gap-4 ${className}`}>
+            <div className="flex w-full overflow-hidden rounded-md border border-input focus-within:border-ring focus-within:ring-1 focus-within:ring-ring">
                 <Input
                     type="text"
                     placeholder="Search products..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="rounded-r-none"
+                    className="border-0 rounded-none focus-visible:ring-0"
                 />
                 <Button
                     type="submit"
                     variant="default"
                     size="icon"
                     onClick={() => handleSearch()}
-                    className="rounded-l-none"
+                    className="rounded-none border-0"
                 >
                     <Search className="w-4 h-4"/>
                 </Button>
