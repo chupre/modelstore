@@ -1,11 +1,13 @@
 package com.byllameister.modelstore.products;
 
+import com.byllameister.modelstore.categories.Category;
 import com.byllameister.modelstore.common.PageableValidator;
 import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
 import com.byllameister.modelstore.upload.UploadService;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import com.byllameister.modelstore.categories.CategoryRepository;
 import com.byllameister.modelstore.users.UserRepository;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,6 +94,42 @@ public class ProductService {
         product.setFile(modelFileUrl);
         productRepository.save(product);
 
+        return productMapper.toDto(product);
+    }
+
+    public ProductDto patchProduct(Long id, @Valid PatchProductRequest request) throws IOException {
+        Category category = null;
+        if (request.getCategoryId() != null) {
+            category = categoryRepository.findById(request.getCategoryId()).
+                    orElseThrow(CategoryNotFoundInBodyException::new);
+        }
+
+        var product = productRepository.findById(id).
+                orElseThrow(ProductNotFoundException::new);
+
+        String imageFileUrl = null;
+        if (request.getPreviewImage() != null) {
+            uploadService.deleteFile(product.getPreviewImage());
+            imageFileUrl = uploadService.uploadImage(request.getPreviewImage());
+        }
+
+        String modelFileUrl = null;
+        if (request.getFile() != null) {
+            uploadService.deleteFile(product.getFile());
+            modelFileUrl =  uploadService.uploadModel(request.getFile());
+        }
+
+        productMapper.patch(request, product);
+        if (category != null) {
+            product.setCategory(category);
+        }
+        if (imageFileUrl != null) {
+            product.setPreviewImage(imageFileUrl);
+        }
+        if (modelFileUrl != null) {
+            product.setFile(modelFileUrl);
+        }
+        productRepository.save(product);
         return productMapper.toDto(product);
     }
 }

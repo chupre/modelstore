@@ -67,6 +67,15 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProductDto> patchProduct(
+            @PathVariable Long id,
+            @Valid @ModelAttribute PatchProductRequest request
+    ) throws IOException {
+        var product = productService.patchProduct(id, request);
+        return ResponseEntity.ok().body(product);
+    }
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorDto> handleMaxUploadSizeExceededException() {
         return ResponseEntity.badRequest().body(new ErrorDto("Max upload size exceeded"));

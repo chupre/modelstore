@@ -2,11 +2,7 @@ package com.byllameister.modelstore.products;
 
 import com.byllameister.modelstore.categories.CategoryDto;
 import com.byllameister.modelstore.users.UserDto;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-
-import java.util.List;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
@@ -19,6 +15,11 @@ public interface ProductMapper {
     @Mapping(target = "previewImage", ignore = true)
     @Mapping(target = "file", ignore = true)
     void update(UpdateProductRequest request, @MappingTarget Product product);
+
+    @Mapping(target = "previewImage", ignore = true)
+    @Mapping(target = "file", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void patch(PatchProductRequest request, @MappingTarget Product product);
 
     @Mapping(target = "owner", expression = "java(mapUser(productFlatDto))")
     @Mapping(target = "category", expression = "java(mapCategory(productFlatDto))")

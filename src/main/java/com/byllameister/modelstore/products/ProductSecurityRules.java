@@ -15,6 +15,7 @@ public class ProductSecurityRules implements SecurityRules {
                 .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/products/**").hasRole(Role.ADMIN.name())
                 .requestMatchers(HttpMethod.PUT, "/products/**").hasRole(Role.ADMIN.name())
-                .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole(Role.ADMIN.name());
+                .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.PATCH, "/products/**").hasRole(Role.ADMIN.name());
     }
 }
