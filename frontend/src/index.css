@@ -7,6 +7,16 @@
   cursor: pointer;
 }
 
+input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+textarea:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 /* Target the RadioGroup container with the scrollbar */
 .max-h-48.overflow-y-auto {
   /* Firefox */

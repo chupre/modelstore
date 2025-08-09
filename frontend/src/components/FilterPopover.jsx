@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {Label} from "@/components/ui/label";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
@@ -8,18 +8,13 @@ import {Filter} from "lucide-react";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {observer} from "mobx-react-lite";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
+import {Context} from "@/main.jsx";
 
 function FilterPopover({
-    categories,
     handleSearch,
     defaultMaxPrice,
-    priceRange,
-    setPriceRange,
-    selectedCategory,
-    setSelectedCategory,
-    sortBy,
-    setSortBy,
 }) {
+    const {product} = useContext(Context);
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -37,8 +32,8 @@ function FilterPopover({
                             <Label className="text-sm font-medium">Price Range</Label>
                             <div className="px-2">
                                 <Slider
-                                    value={priceRange}
-                                    onValueChange={setPriceRange}
+                                    value={product.priceRange}
+                                    onValueChange={(value) => product.setPriceRange(value)}
                                     max={defaultMaxPrice}
                                     min={0}
                                     step={1}
@@ -46,8 +41,8 @@ function FilterPopover({
                                 />
                             </div>
                             <div className="flex justify-between text-sm text-muted-foreground">
-                                <span>${priceRange[0]}</span>
-                                <span>${priceRange[1]}</span>
+                                <span>${product.priceRange[0]}</span>
+                                <span>${product.priceRange[1]}</span>
                             </div>
                         </div>
 
@@ -55,8 +50,8 @@ function FilterPopover({
                         <div className="space-y-3">
                             <Label className="text-sm font-medium">Categories</Label>
                             <RadioGroup
-                                value={selectedCategory}
-                                onValueChange={setSelectedCategory}
+                                value={product.categoryId}
+                                onValueChange={(value) => product.setCategoryId(value)}
                                 className="pr-2 max-h-48 overflow-y-auto"
                             >
                                 <div className="flex items-center space-x-2">
@@ -65,7 +60,7 @@ function FilterPopover({
                                         All
                                     </Label>
                                 </div>
-                                {categories.map((category) => (
+                                {product.categories.map((category) => (
                                     <div key={category.id} className="flex items-center space-x-2">
                                         <RadioGroupItem value={category.id} id={category.id}/>
                                         <Label htmlFor={category.id} className="text-sm font-normal cursor-pointer">
@@ -79,7 +74,7 @@ function FilterPopover({
                         {/* Sort Chooser */}
                         <div className="space-y-3">
                             <Label className="text-sm font-medium">Sort By</Label>
-                            <Select value={sortBy} onValueChange={setSortBy}>
+                            <Select value={product.sortBy} onValueChange={(value) => product.setSortBy(value)}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Choose sorting option"/>
                                 </SelectTrigger>
@@ -98,8 +93,8 @@ function FilterPopover({
                                 size="sm"
                                 className="flex-1 bg-transparent"
                                 onClick={() => {
-                                    setPriceRange([0, 1000]);
-                                    setSelectedCategory([]);
+                                    product.setPriceRange([0, defaultMaxPrice]);
+                                    product.setCategoryId();
                                     setSortBy("");
                                 }}
                             >

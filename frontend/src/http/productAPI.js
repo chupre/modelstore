@@ -1,4 +1,4 @@
-import {$host} from "@/http/index.js";
+import {$authHost, $host} from "@/http/index.js";
 
 export const fetchProducts = async ({
                                         page = 0,
@@ -14,7 +14,7 @@ export const fetchProducts = async ({
         size,
         categoryId: category || undefined,
         search: search || undefined,
-        sort: sortBy || undefined,
+        sort: sortBy || "id",
         minPrice: priceRange ? priceRange[0] : undefined,
         maxPrice: priceRange ? priceRange[1] : undefined,
     }});
@@ -32,4 +32,16 @@ export const fetchProduct = async (id) => {
 
 export const fetchCategories = async (page = 0, size = 20, sort = "name") => {
     return await $host.get(`/categories`, {params: {page, size, sort}});
+}
+
+export const createProduct = async (productFormData) => {
+    return await $authHost.post(`/products`, productFormData, {
+        headers: {
+            "content-type": "multipart/form-data"
+        }
+    })
+}
+
+export const deleteProduct = async (id) => {
+    return await $authHost.delete(`/products/${id}`, {})
 }

@@ -3,12 +3,13 @@ import { BrowserRouter } from "react-router-dom"
 import { ThemeProvider } from './components/ui/theme-provider';
 import Navbar from './components/Navbar'
 import './App.css'
-import {Toaster} from "sonner";
+// import {Toaster} from "sonner";
+//import {Toaster} from "./components/ui/Toaster";
+import { Toaster } from "@/components/ui/sonner"
 import { observer } from "mobx-react-lite";
 import {useContext, useEffect, useState} from "react";
 import {refresh} from "@/http/userAPI.js";
 import {Context} from "@/main.jsx";
-import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import Loading from "@/components/Loading.jsx";
 
 function App() {
@@ -37,7 +38,11 @@ function App() {
             <BrowserRouter>
                 <Navbar></Navbar>
                 <AppRouter/>
-                <Toaster position="top-center" theme={"dark"}/>
+                <Toaster position="top-center" theme={"dark"} toastOptions={{
+                    classNames: {
+                        toast: "items-start text-left"
+                }
+                }}/>
             </BrowserRouter>
         </ThemeProvider>
     )

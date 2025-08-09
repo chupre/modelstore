@@ -15,23 +15,16 @@ function Store() {
     useEffect(() => {
         product.setLimit(6)
 
-        const filters = {
-            page: product.currentPage,
-            size: product.limit,
-        };
-
         if (categoryFromNav) {
-            filters.category = categoryFromNav;
+            product.setCategoryId(categoryFromNav);
         }
 
-        fetchProducts(filters).then((res) => {
-            product.setProducts(res.data.content);
-            product.setTotalPages(res.data.totalPages);
-        })
+        product.fetchProducts()
     }, [product.currentPage, categoryFromNav]);
 
     useEffect(() => {
         product.setCurrentPage(0);
+        product.setFiltersToDefault();
     }, []);
 
     return (

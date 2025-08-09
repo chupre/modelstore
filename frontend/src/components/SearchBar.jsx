@@ -9,50 +9,13 @@ import {Context} from "@/main.jsx";
 import {useLocation} from "react-router-dom";
 
 function SearchBar({className}) {
-    const [search, setSearch] = useState("");
     const defaultMinPrice = 0;
     const defaultMaxPrice = 200;
-    const [priceRange, setPriceRange] = useState([defaultMinPrice, defaultMaxPrice]);
-    const [selectedCategory, setSelectedCategory] = useState("");
-    const [sortBy, setSortBy] = useState("");
     const {product} = useContext(Context);
-    const location = useLocation();
-    const categoryFromNav = location.state?.categoryId;
-
-    useEffect(() => {
-        if (categoryFromNav) {
-            setSelectedCategory(categoryFromNav);
-        }
-    }, [categoryFromNav]);
 
     const handleSearch = () => {
         product.setCurrentPage(0);
-
-        const filters = {
-            page: product.currentPage,
-            size: product.limit,
-        };
-
-        if (selectedCategory) {
-            filters.category = selectedCategory;
-        }
-
-        if (!(search.trim() === "")) {
-            filters.search = search;
-        }
-
-        if (!(sortBy.trim() === "")) {
-            filters.sortBy = sortBy;
-        }
-
-        if (!(priceRange[0] === defaultMinPrice && priceRange[1] === defaultMaxPrice)) {
-            filters.priceRange = priceRange;
-        }
-
-        fetchProducts(filters).then((res) => {
-            product.setProducts(res.data.content);
-            product.setTotalPages(res.data.totalPages);
-        });
+        product.fetchProducts();
     };
 
     return (
@@ -61,9 +24,9 @@ function SearchBar({className}) {
                 <Input
                     type="text"
                     placeholder="Search products..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="border-0 rounded-none focus-visible:ring-0"
+                    value={product.search}
+                    onChange={(e) => product.setSearch(e.target.value)}
+                    className="border-0 rounded-none"
                 />
                 <Button
                     type="submit"
@@ -76,15 +39,8 @@ function SearchBar({className}) {
                 </Button>
             </div>
             <FilterPopover
-                categories={product.categories}
                 handleSearch={handleSearch}
                 defaultMaxPrice={defaultMaxPrice}
-                priceRange={priceRange}
-                setPriceRange={setPriceRange}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
             />
         </div>
     )

@@ -15,52 +15,103 @@ import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Textarea} from "@/components/ui/textarea"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
-import {Badge} from "@/components/ui/badge"
-import {Plus, Edit, Trash2} from 'lucide-react'
+import {Plus, Edit, Trash2, AlertCircleIcon, AlertCircle} from 'lucide-react'
 import {observer} from "mobx-react-lite";
 import {Context} from "@/main.jsx";
-import {fetchCategories, fetchProduct, fetchProducts} from "@/http/productAPI.js";
+import {createProduct, deleteProduct, fetchCategories, fetchProduct, fetchProducts} from "@/http/productAPI.js";
 import SearchBar from "@/components/SearchBar.jsx";
 import Pages from "@/components/Pages.jsx";
 import {toast} from "sonner";
+import Loading from "@/components/Loading.jsx";
+import {
+    AlertDialog, AlertDialogAction, AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription, AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle, AlertDialogTrigger
+} from "@/components/ui/alert-dialog.js";
 
 function ProductsManager() {
     const {product} = useContext(Context);
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [editingProduct, setEditingProduct] = useState(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [imagePreview, setImagePreview] = useState(null)
 
     const [formData, setFormData] = useState({
-        name: '',
+        title: '',
         description: '',
         price: '',
+        previewImage: null,
+        file: null,
+        ownerId: '',
         categoryId: '',
-        imageUrl: '',
-        modelUrl: '',
     })
 
-    const [imagePreview, setImagePreview] = useState(null)
 
     useEffect(() => {
         product.setLimit(8)
 
-        const filters = {
-            page: product.currentPage,
-            size: product.limit,
-        };
-
-        fetchProducts(filters).then((res) => {
-            product.setProducts(res.data.content)
-            product.setTotalPages(res.data.totalPages);
+        product.fetchProducts().then((res) => {
+            setIsLoading(false)
         })
     }, [product.currentPage])
 
+    useEffect(() => {
+        product.setCurrentPage(0);
+        product.setFiltersToDefault();
+    }, []);
+
+    if (isLoading) {
+        return <Loading></Loading>
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
+
         if (formData.categoryId === '') {
             toast.error("Please select a category")
             return
         }
-        setIsDialogOpen(false)
+
+        const productFormData = new FormData()
+        productFormData.append("title", formData.title)
+        productFormData.append("description", formData.description)
+        productFormData.append("price", formData.price)
+        productFormData.append("previewImage", formData.previewImage)
+        productFormData.append("file", formData.file)
+        productFormData.append("ownerId", formData.ownerId)
+        productFormData.append("categoryId", formData.categoryId)
+
+        try {
+            const res = await createProduct(productFormData)
+            setIsDialogOpen(false)
+            resetForm()
+            setIsLoading(true)
+            product.fetchProducts().then(() => {
+                setIsLoading(false)
+            })
+            toast.success("Success", {
+                description: "Product successfully created",
+            })
+        } catch (e) {
+            const responseData = e?.response?.data;
+            if (responseData && typeof responseData === "object") {
+                const messages = Object.values(responseData);
+
+                toast.error('Error', {
+                    description: (
+                        messages.map((msg, i) => (
+                            <p key={i}>{msg}</p>
+                        ))
+                    ),
+                });
+            } else {
+                toast.error("Unexpected error", {
+                    description: "Something went wrong. Please try again.",
+                });
+            }
+        }
     }
 
     const handleEdit = (product) => {
@@ -69,12 +120,52 @@ function ProductsManager() {
     }
 
     const handleDelete = async (id) => {
+        try {
+            deleteProduct(id).then(() => {
+                setIsLoading(true)
+                product.fetchProducts().then(() => {
+                    setIsLoading(false)
+                })
+                toast.success("Success", {
+                    description: "Product successfully created",
+                })
+            })
+        } catch (e) {
+            const responseData = e?.response?.data;
+            if (responseData && typeof responseData === "object") {
+                const messages = Object.values(responseData);
 
+                toast.error('Error', {
+                    description: (
+                        messages.map((msg, i) => (
+                            <p key={i}>{msg}</p>
+                        ))
+                    ),
+                });
+            } else {
+                toast.error("Unexpected error", {
+                    description: "Something went wrong. Please try again.",
+                });
+            }
+        }
     }
 
     const resetForm = () => {
         setEditingProduct(null)
         setImagePreview(null)
+        setFormData({
+            title: '',
+            description: '',
+            price: '',
+            previewImage: null,
+            file: null,
+            ownerId: '',
+            categoryId: '',
+        })
+    }
+
+    function handleDownloadModel() {
+
     }
 
     return (
@@ -104,11 +195,11 @@ function ProductsManager() {
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <Label htmlFor="name">Product Name</Label>
+                                        <Label htmlFor="title">Product Title</Label>
                                         <Input
-                                            id="name"
+                                            id="title"
                                             value={formData.name}
-                                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                            onChange={(e) => setFormData({...formData, title: e.target.value})}
                                             placeholder="Enter product name"
                                             required
                                         />
@@ -147,7 +238,7 @@ function ProductsManager() {
                                         <Select value={formData.categoryId} onValueChange={(value) => setFormData({
                                             ...formData,
                                             categoryId: value
-                                        })} required={true}>
+                                        })}>
                                             <SelectTrigger className="w-48">
                                                 <SelectValue placeholder="Select a category"/>
                                             </SelectTrigger>
@@ -183,11 +274,9 @@ function ProductsManager() {
                                                 onChange={(e) => {
                                                     const file = e.target.files?.[0]
                                                     if (file) {
-                                                        // Create preview URL
                                                         const previewUrl = URL.createObjectURL(file)
                                                         setImagePreview(previewUrl)
-                                                        // You'll handle the file upload logic
-                                                        setFormData({...formData, imageUrl: file.name})
+                                                        setFormData({...formData, previewImage: file})
                                                     }
                                                 }}
                                                 className="mt-1 file:pt-0.5 file:mr-4"
@@ -206,7 +295,7 @@ function ProductsManager() {
                                                         size="sm"
                                                         onClick={() => {
                                                             setImagePreview(null)
-                                                            setFormData({...formData, imageUrl: ''})
+                                                            setFormData({...formData, previewImage: null})
                                                         }}
                                                     >
                                                         Remove
@@ -226,8 +315,7 @@ function ProductsManager() {
                                                 onChange={(e) => {
                                                     const file = e.target.files?.[0]
                                                     if (file) {
-                                                        // You'll handle the file upload logic
-                                                        setFormData({...formData, modelUrl: file.name})
+                                                        setFormData({...formData, file: file})
                                                     }
                                                 }}
                                                 className="mt-1 file:pt-0.5 file:mr-4"
@@ -298,13 +386,29 @@ function ProductsManager() {
                                         >
                                             <Edit className="h-4 w-4"/>
                                         </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleDelete(product.id)}
-                                        >
-                                            <Trash2 className="h-4 w-4"/>
-                                        </Button>
+
+                                        <AlertDialog>
+                                            <AlertDialogTrigger
+                                                className="h-8 rounded-md gap-1.5 px-3 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
+                                            >
+                                                <Trash2 className="h-4 w-4"/>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be undone. This will permanently delete this
+                                                        product
+                                                        and remove your data from our servers.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        onClick={() => handleDelete(product.id)}>Continue</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </div>
                                 </TableCell>
                             </TableRow>

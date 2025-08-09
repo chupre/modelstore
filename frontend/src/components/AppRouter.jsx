@@ -4,8 +4,9 @@ import {ADMIN_ROUTE, HOME_ROUTE} from '../utils/consts';
 import {useContext} from 'react';
 import {Context} from '../main';
 import AdminPage from "@/pages/Admin.jsx";
+import {observer} from "mobx-react-lite";
 
-export default function AppRouter() {
+function AppRouter() {
     const {user} = useContext(Context);
 
     return (
@@ -27,3 +28,5 @@ export default function AppRouter() {
         </Routes>
     );
 }
+
+export default observer(AppRouter);
