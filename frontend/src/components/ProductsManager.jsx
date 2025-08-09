@@ -18,7 +18,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Plus, Edit, Trash2 } from 'lucide-react'
 import {observer} from "mobx-react-lite";
 import {Context} from "@/main.jsx";
-import {createProduct, deleteProduct } from "@/http/productAPI.js";
+import {createProduct, deleteProduct, downloadProductModel, patchProduct} from "@/http/productAPI.js";
 import SearchBar from "@/components/SearchBar.jsx";
 import Pages from "@/components/Pages.jsx";
 import {toast} from "sonner";
@@ -78,13 +78,18 @@ function ProductsManager() {
         productFormData.append("title", formData.title)
         productFormData.append("description", formData.description)
         productFormData.append("price", formData.price)
-        productFormData.append("previewImage", formData.previewImage)
-        productFormData.append("file", formData.file)
-        productFormData.append("ownerId", formData.ownerId)
+        console.log(editingProduct)
+        console.log(formData.previewImage)
+        console.log(editingProduct && formData.previewImage != null)
+        if (editingProduct == null || (editingProduct && formData.previewImage != null))
+            productFormData.append("previewImage", formData.previewImage)
+        if (editingProduct == null || (editingProduct && formData.file != null))
+            productFormData.append("file", formData.file)
+        if (!editingProduct) productFormData.append("ownerId", formData.ownerId)
         productFormData.append("categoryId", formData.categoryId)
 
         try {
-            await createProduct(productFormData);
+            editingProduct ? await patchProduct(editingProduct.id, productFormData) : await createProduct(productFormData);
             setIsDialogOpen(false)
             resetForm()
             setIsLoading(true)
@@ -92,7 +97,7 @@ function ProductsManager() {
                 setIsLoading(false)
             })
             toast.success("Success", {
-                description: "Product successfully created",
+                description: `Product successfully ${editingProduct ? "updated" : "created"}`,
             })
         } catch (e) {
             const responseData = e?.response?.data;
@@ -116,6 +121,16 @@ function ProductsManager() {
 
     const handleEdit = (product) => {
         setEditingProduct(product)
+        setFormData({
+            title: product.title,
+            description: product.description,
+            price: product.price,
+            previewImage: null,
+            file: null,
+            ownerId: '',
+            categoryId: String(product.category.id),
+        })
+        setImagePreview(import.meta.env.VITE_API_URL + product.previewImage)
         setIsDialogOpen(true)
     }
 
@@ -165,7 +180,37 @@ function ProductsManager() {
     }
 
     function handleDownloadModel() {
+        if (editingProduct.file) {
+            try {
+                downloadProductModel(editingProduct.id).then((res) => {
+                    const url = window.URL.createObjectURL(new Blob([res.data]));
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = editingProduct.title + ".stl";
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                })
+            } catch (e) {
+                const responseData = e?.response?.data;
+                if (responseData && typeof responseData === "object") {
+                    const messages = Object.values(responseData);
 
+                    toast.error('Error', {
+                        description: (
+                            messages.map((msg, i) => (
+                                <p key={i}>{msg}</p>
+                            ))
+                        ),
+                    });
+                } else {
+                    toast.error("Unexpected error", {
+                        description: "Something went wrong. Please try again.",
+                    });
+                }
+            }
+        }
     }
 
     return (
@@ -198,7 +243,7 @@ function ProductsManager() {
                                         <Label htmlFor="title">Product Title</Label>
                                         <Input
                                             id="title"
-                                            value={formData.name}
+                                            value={formData.title}
                                             onChange={(e) => setFormData({...formData, title: e.target.value})}
                                             placeholder="Enter product name"
                                             required
@@ -228,7 +273,6 @@ function ProductsManager() {
                                         onChange={(e) => setFormData({...formData, description: e.target.value})}
                                         placeholder="Describe your 3D model..."
                                         rows={3}
-                                        required
                                     />
                                 </div>
 
@@ -251,7 +295,7 @@ function ProductsManager() {
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="space-y-2">
+                                    {!editingProduct && <div className="space-y-2">
                                         <Label htmlFor="ownerId">Owner ID</Label>
                                         <Input
                                             id="ownerId"
@@ -260,7 +304,7 @@ function ProductsManager() {
                                             placeholder="Enter owner ID"
                                             required
                                         />
-                                    </div>
+                                    </div>}
                                 </div>
 
                                 <div className="space-y-4">
@@ -280,26 +324,16 @@ function ProductsManager() {
                                                     }
                                                 }}
                                                 className="mt-1 file:pt-0.5 file:mr-4"
-                                                required
+                                                required={!editingProduct?.previewImage}
                                             />
                                             {imagePreview && (
-                                                <div className="flex items-start gap-3">
+                                                <div className="">
                                                     <img
-                                                        src={imagePreview || "/placeholder.svg"}
+                                                        src={imagePreview}
                                                         alt="Product preview"
                                                         className="w-32 h-32 object-cover rounded-md border flex-shrink-0"
                                                     />
-                                                    <Button
-                                                        type="button"
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={() => {
-                                                            setImagePreview(null)
-                                                            setFormData({...formData, previewImage: null})
-                                                        }}
-                                                    >
-                                                        Remove
-                                                    </Button>
+                                                    <p className="text-xs text-muted-foreground pt-3">{imagePreview.replace(import.meta.env.VITE_API_URL + '/images/', "")}</p>
                                                 </div>
                                             )}
                                         </div>
@@ -319,19 +353,19 @@ function ProductsManager() {
                                                     }
                                                 }}
                                                 className="mt-1 file:pt-0.5 file:mr-4"
-                                                required
+                                                required={!editingProduct?.file}
                                             />
-                                            {editingProduct?.modelUrl && (
-                                                <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
+                                            {editingProduct?.file && (
+                                                <div className="flex items-center gap-2 p-3 rounded-md">
                                                     <div className="flex-1">
                                                         <p className="text-sm font-medium">Current Model</p>
-                                                        <p className="text-xs text-muted-foreground">{editingProduct.name}_model</p>
+                                                        <p className="text-xs text-muted-foreground">{editingProduct.file}</p>
                                                     </div>
                                                     <Button
                                                         type="button"
                                                         variant="outline"
                                                         size="sm"
-                                                        onClick={handleDownloadModel}
+                                                        onClick={() => handleDownloadModel()}
                                                     >
                                                         Download
                                                     </Button>

@@ -10,6 +10,7 @@ function Store() {
     const {product} = useContext(Context);
     const location = useLocation();
     const categoryFromNav = location.state?.categoryId;
+    const backFromProductPage = location.state?.backFromProductPage;
 
     useEffect(() => {
         product.setLimit(6)
@@ -22,8 +23,9 @@ function Store() {
     }, [product.currentPage, categoryFromNav]);
 
     useEffect(() => {
-        product.setCurrentPage(0);
-        product.setFiltersToDefault();
+        if (!backFromProductPage) {
+            product.setCurrentPage(0);
+        }
     }, []);
 
     return (

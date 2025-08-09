@@ -16,7 +16,6 @@ export default class ProductStore {
 
         makeAutoObservable(this);
     }
-
     async fetchProducts() {
         const filters = {
             page: this.currentPage,
@@ -48,20 +47,20 @@ export default class ProductStore {
     setCategories(categories) {
         this._categories = categories;
     }
+
     setProducts(products) {
         this._products = products;
     }
     get categories() {
         return this._categories;
     }
-
     get products() {
         return this._products;
     }
+
     get currentPage() {
         return this._currentPage;
     }
-
     setCurrentPage(value) {
         this._currentPage = value;
     }

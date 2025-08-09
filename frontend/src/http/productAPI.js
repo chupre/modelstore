@@ -42,6 +42,18 @@ export const createProduct = async (productFormData) => {
     })
 }
 
+export const patchProduct = async (id, productFormData) => {
+    return await $authHost.patch(`/products/${id}`, productFormData, {
+        headers: {
+            "content-type": "multipart/form-data"
+        }
+    })
+}
+
 export const deleteProduct = async (id) => {
     return await $authHost.delete(`/products/${id}`, {})
+}
+
+export const downloadProductModel = async (id) => {
+    return await $authHost.get(`products/${id}`, {responseType: "blob"})
 }

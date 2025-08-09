@@ -48,7 +48,9 @@ function ProductPage() {
             {/* Back button */}
             <div
                 className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-200 mb-8 hover:cursor-pointer"
-                onClick={() => navigate(STORE_ROUTE)}
+                onClick={() => {
+                    navigate(STORE_ROUTE, {state: { backFromProductPage: true } })
+                }}
             >
                 <ArrowLeft className="w-4 h-4"/>
                 Back to Products
