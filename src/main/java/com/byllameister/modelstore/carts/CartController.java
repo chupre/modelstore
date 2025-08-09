@@ -81,15 +81,6 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 
-    public boolean accessDenied(UUID id) {
-        var userId = cartService.getUserId(id);
-        return accessDenied(userId);
-    }
-
-    public boolean accessDenied(Long userId) {
-        return !userId.equals(User.getCurrentUserId()) && !User.isCurrentUserAdmin();
-    }
-
     @PostMapping("/{id}/items")
     public ResponseEntity<CartItemDto> addItemToCart(
             @PathVariable UUID id,
@@ -160,4 +151,14 @@ public class CartController {
     public ResponseEntity<ErrorDto> handleUserNotFoundException(UserNotFoundException e) {
         return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
     }
+
+    public boolean accessDenied(UUID id) {
+        var userId = cartService.getUserId(id);
+        return accessDenied(userId);
+    }
+
+    public boolean accessDenied(Long userId) {
+        return !userId.equals(User.getCurrentUserId()) && !User.isCurrentUserAdmin();
+    }
+
 }

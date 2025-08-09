@@ -3,11 +3,16 @@ package com.byllameister.modelstore.products;
 import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
 import com.byllameister.modelstore.categories.CategoryNotFoundInQueryException;
 import com.byllameister.modelstore.common.ErrorDto;
+import com.byllameister.modelstore.users.User;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -15,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 
 
 @AllArgsConstructor
@@ -76,6 +82,30 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
+    @GetMapping("/{id}/downloadModel")
+    public ResponseEntity<Resource> downloadModel(@PathVariable Long id) throws MalformedURLException {
+        if (accessDenied(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        var resource = productService.getModelResource(id);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+    @ExceptionHandler(ModelResourceNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleModelResourceNotFoundException( ModelResourceNotFoundException ex ) {
+        return ResponseEntity.badRequest().body(new ErrorDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MalformedURLException.class)
+    public ResponseEntity<ErrorDto> handleMalformedURLException() {
+        return ResponseEntity.badRequest().body(new ErrorDto("Malformed URL"));
+    }
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorDto> handleMaxUploadSizeExceededException() {
         return ResponseEntity.badRequest().body(new ErrorDto("Max upload size exceeded"));
@@ -109,5 +139,10 @@ public class ProductController {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorDto> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
+    }
+
+    public boolean accessDenied(Long productId) {
+        var ownerId = productService.getOwnerId(productId);
+        return !ownerId.equals(User.getCurrentUserId()) && !User.isCurrentUserAdmin();
     }
 }

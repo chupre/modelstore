@@ -9,12 +9,17 @@ import com.byllameister.modelstore.categories.CategoryRepository;
 import com.byllameister.modelstore.users.UserRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -55,7 +60,7 @@ public class ProductService {
                 orElseThrow(UserNotFoundException::new);
 
         var imageFileUrl = uploadService.uploadImage(request.getPreviewImage());
-        var modelFileUrl = uploadService.uploadImage(request.getFile());
+        var modelFileUrl = uploadService.uploadModel(request.getFile());
 
         var product = productMapper.toEntity(request);
         product.setCategory(category);
@@ -116,7 +121,7 @@ public class ProductService {
         String modelFileUrl = null;
         if (request.getFile() != null) {
             uploadService.deleteFile(product.getFile());
-            modelFileUrl =  uploadService.uploadModel(request.getFile());
+            modelFileUrl = uploadService.uploadModel(request.getFile());
         }
 
         productMapper.patch(request, product);
@@ -131,5 +136,26 @@ public class ProductService {
         }
         productRepository.save(product);
         return productMapper.toDto(product);
+    }
+
+    public Resource getModelResource(Long productId) throws MalformedURLException {
+        var product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
+        String relativePath = product.getFile().startsWith("/")
+                ? product.getFile().substring(1)
+                : product.getFile();
+
+        Path filePath = Paths.get("uploads").resolve(relativePath).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists()) {
+            throw new ModelResourceNotFoundException();
+        }
+
+        return resource;
+    }
+
+    public Long getOwnerId(Long productId) {
+        var product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
+        return product.getOwner().getId();
     }
 }
