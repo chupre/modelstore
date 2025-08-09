@@ -2,7 +2,6 @@ import {useContext, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {Label} from "@/components/ui/label";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {Checkbox} from "@/components/ui/checkbox";
 import {Slider} from "@/components/ui/slider";
 import {Filter} from "lucide-react";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";

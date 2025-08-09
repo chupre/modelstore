@@ -3,13 +3,10 @@ import {Button} from "@/components/ui/button.js";
 import {Search} from "lucide-react";
 import FilterPopover from "@/components/FilterPopover.jsx";
 import {observer} from "mobx-react-lite";
-import {useContext, useEffect, useState} from "react";
-import {fetchProducts} from "@/http/productAPI.js";
+import {useContext} from "react";
 import {Context} from "@/main.jsx";
-import {useLocation} from "react-router-dom";
 
 function SearchBar({className}) {
-    const defaultMinPrice = 0;
     const defaultMaxPrice = 200;
     const {product} = useContext(Context);
 

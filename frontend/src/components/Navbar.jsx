@@ -4,14 +4,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {useContext, useEffect} from "react";
 import { Context } from '../main';
 import { useNavigate } from "react-router-dom";
-import {ADMIN_ROUTE, HOME_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE, STORE_ROUTE} from "../utils/consts";
-import {LogOut, ShoppingCart} from "lucide-react";
+import {ADMIN_ROUTE, HOME_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE} from "../utils/consts";
+import {LogOut} from "lucide-react";
 import NavbarCatalogButton from "@/components/NavbarCatalogButton.jsx";
 import {fetchCategories} from "@/http/productAPI.js";
 import ShoppingCartButton from "@/components/ShoppingCartButton.jsx";
 
 const Navbar = observer(() => {
-    const { user, product, cart } = useContext(Context);
+    const { user, product } = useContext(Context);
     const navigate = useNavigate();
 
     useEffect(() => {

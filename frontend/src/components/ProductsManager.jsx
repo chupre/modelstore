@@ -15,10 +15,10 @@ import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Textarea} from "@/components/ui/textarea"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
-import {Plus, Edit, Trash2, AlertCircleIcon, AlertCircle} from 'lucide-react'
+import {Plus, Edit, Trash2 } from 'lucide-react'
 import {observer} from "mobx-react-lite";
 import {Context} from "@/main.jsx";
-import {createProduct, deleteProduct, fetchCategories, fetchProduct, fetchProducts} from "@/http/productAPI.js";
+import {createProduct, deleteProduct } from "@/http/productAPI.js";
 import SearchBar from "@/components/SearchBar.jsx";
 import Pages from "@/components/Pages.jsx";
 import {toast} from "sonner";
@@ -52,7 +52,7 @@ function ProductsManager() {
     useEffect(() => {
         product.setLimit(8)
 
-        product.fetchProducts().then((res) => {
+        product.fetchProducts().then(() => {
             setIsLoading(false)
         })
     }, [product.currentPage])
@@ -84,7 +84,7 @@ function ProductsManager() {
         productFormData.append("categoryId", formData.categoryId)
 
         try {
-            const res = await createProduct(productFormData)
+            await createProduct(productFormData);
             setIsDialogOpen(false)
             resetForm()
             setIsLoading(true)

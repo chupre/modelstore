@@ -1,8 +1,7 @@
 import ProductCard from "@/components/ProductCard"
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect} from "react";
 import {observer} from "mobx-react-lite";
 import {Context} from "@/main.jsx";
-import {fetchCategories, fetchProducts} from "@/http/productAPI.js";
 import Pages from "@/components/Pages.jsx";
 import SearchBar from "@/components/SearchBar.jsx";
 import {useLocation} from "react-router-dom";
