@@ -4,11 +4,11 @@ export const createCart = async (userId) => {
     return await $authHost.post('/carts', {userId: userId})
 }
 
-export const fetchCart = async (userId) => {
+export const fetchCart = async (userId, createIfNotExist) => {
     try {
         return await $authHost.get(`/carts/users/${userId}`)
     } catch (e) {
-        if (e.response && e.response.status === 404) {
+        if (e.response && e.response.status === 404 && createIfNotExist) {
             return await createCart(userId)
         }
     }
@@ -26,7 +26,10 @@ export const deleteCartItem = async (cartId, productId) => {
     await $authHost.delete(`/carts/${cartId}/items/${productId}`)
 }
 
-export const fetchCarts = async () => {
-    return await $authHost.get(`carts`, {})
+export const fetchCarts = async (page, size) => {
+    return await $authHost.get(`/carts`, {params: {
+            page,
+            size
+        }})
 }
 

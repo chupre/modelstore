@@ -178,13 +178,13 @@ function CategoryManager() {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-10">ID</TableHead>
-                            <TableHead>Name</TableHead>
+                            <TableHead className="">Name</TableHead>
                             <TableHead className="text-right pr-10 w-28">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {product.categories.map((category) => (
-                            <TableRow key={category.id}>
+                            <TableRow key={category.id} className="text-gray-300">
                                 <TableCell>{category.id}</TableCell>
                                 <TableCell className="font-medium">{category.name}</TableCell>
                                 <TableCell>

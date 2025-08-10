@@ -1,5 +1,5 @@
 import {ShoppingCart, Trash2} from 'lucide-react'
-import {useState, useMemo, useEffect, useContext} from "react"
+import {useState, useEffect, useContext} from "react"
 
 import {Button} from "@/components/ui/button"
 import {
@@ -20,7 +20,7 @@ function ShoppingCartButton() {
     const totalPrice = cart.cart?.cartItems?.reduce((sum, item) => sum + item.product.price, 0).toFixed(2) || "0.00";
 
     useEffect(() => {
-        fetchCart(user.user.sub).then(data => {
+        fetchCart(user.user.sub, true).then(data => {
             cart.setCart(data.data)
             setLoading(false)
         })

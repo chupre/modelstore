@@ -391,12 +391,12 @@ function ProductsManager() {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-10">ID</TableHead>
-                            <TableHead className="w-1/5">Name</TableHead>
-                            <TableHead className="w-1/5">Category</TableHead>
-                            <TableHead className="w-20">Price</TableHead>
-                            <TableHead className="w-20">Owner ID</TableHead>
-                            <TableHead className="w-28">Created</TableHead>
-                            <TableHead className="text-right pr-10 w-28">Actions</TableHead>
+                            <TableHead className="w-1/8">Name</TableHead>
+                            <TableHead className="w-1/10">Category</TableHead>
+                            <TableHead className="w-30">Price</TableHead>
+                            <TableHead className="w-30">Owner ID</TableHead>
+                            <TableHead className="w-38">Created</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
