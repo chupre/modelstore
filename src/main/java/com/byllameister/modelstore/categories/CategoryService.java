@@ -32,17 +32,17 @@ public class CategoryService {
         return categoryMapper.toDto(category);
     }
 
-    public CategoryDto createCategory(@Valid CategoryDto categoryDto) {
-        var category = categoryMapper.toEntity(categoryDto);
+    public CategoryDto createCategory(@Valid CreateCategoryRequest request) {
+        var category = categoryMapper.toEntity(request);
         category = categoryRepository.save(category);
         return categoryMapper.toDto(category);
     }
 
-    public CategoryDto updateCategoryById(@Valid CategoryDto categoryDto, Long id) {
+    public CategoryDto updateCategoryById(@Valid UpdateCategoryRequest request, Long id) {
         var category = categoryRepository.findById(id).
                 orElseThrow(CategoryNotFoundInQueryException::new);
 
-        categoryMapper.update(categoryDto, category);
+        categoryMapper.update(request, category);
         category = categoryRepository.save(category);
 
         return categoryMapper.toDto(category);

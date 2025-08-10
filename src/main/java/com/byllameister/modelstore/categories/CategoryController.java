@@ -2,6 +2,7 @@ package com.byllameister.modelstore.categories;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.hibernate.sql.Update;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,10 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<CategoryDto> createCategory(
-            @Valid @RequestBody CategoryDto categoryDto,
+            @Valid @RequestBody CreateCategoryRequest request,
             UriComponentsBuilder uriComponentsBuilder
     ) {
-        var category = categoryService.createCategory(categoryDto);
+        var category = categoryService.createCategory(request);
         var uri =  uriComponentsBuilder.path("/categories/{id}").
                 buildAndExpand(category.getId()).
                 toUri();
@@ -39,10 +40,10 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDto> updateCategory(
-            @Valid @RequestBody CategoryDto categoryDto,
+            @Valid @RequestBody UpdateCategoryRequest request,
             @PathVariable Long id
     ) {
-        var category = categoryService.updateCategoryById(categoryDto, id);
+        var category = categoryService.updateCategoryById(request, id);
         return ResponseEntity.ok(category);
     }
 

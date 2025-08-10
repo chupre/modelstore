@@ -12,8 +12,8 @@ public interface CategoryMapper {
 
     List<CategoryDto> toDtos(List<Category> categories);
 
-    Category toEntity(CategoryDto categoryDto);
+    Category toEntity(CreateCategoryRequest categoryDto);
 
     @Mapping(target = "id", ignore = true)
-    void update(CategoryDto categoryDto, @MappingTarget Category category);
+    void update(UpdateCategoryRequest request, @MappingTarget Category category);
 }
