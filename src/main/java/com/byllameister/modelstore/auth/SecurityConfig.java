@@ -1,6 +1,7 @@
 package com.byllameister.modelstore.auth;
 
 import com.byllameister.modelstore.common.SecurityRules;
+import com.byllameister.modelstore.users.Role;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,6 +60,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(c -> {
                 featureSecurityRules.forEach(r -> r.configure(c));
                 c.requestMatchers(HttpMethod.GET, "/images/**").permitAll();
+                c.requestMatchers("/admin/**").hasRole(Role.ADMIN.name());
                 c.anyRequest().authenticated();
             })
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

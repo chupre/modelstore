@@ -1,5 +1,7 @@
 package com.byllameister.modelstore.carts;
 
+import com.byllameister.modelstore.admin.carts.CartExposedResponse;
+import com.byllameister.modelstore.admin.carts.UpdateCartRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

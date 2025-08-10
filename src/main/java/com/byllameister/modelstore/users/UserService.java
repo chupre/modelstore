@@ -1,5 +1,6 @@
 package com.byllameister.modelstore.users;
 
+import com.byllameister.modelstore.admin.users.UserExposedResponse;
 import com.byllameister.modelstore.common.PageableValidator;
 import com.byllameister.modelstore.products.ProductRepository;
 import jakarta.transaction.Transactional;
@@ -29,6 +30,17 @@ public class UserService {
         return users.map(userMapper::toDto);
     }
 
+    public Page<UserExposedResponse> getAllUsersExposed(Pageable pageable) {
+        pageableValidator.validate(pageable, VALID_SORT_FIELDS);
+        var users = userRepository.findAll(pageable);
+        return users.map(userMapper::toExposedResponse);
+    }
+
+    public UserExposedResponse getUserExposedById(Long id) {
+        var user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        return userMapper.toExposedResponse(user);
+    }
+
     public UserDto getUserById(Long id) {
         var user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         return userMapper.toDto(user);
@@ -51,7 +63,7 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-    public UserDto updateUser(Long id, @Valid UpdateUserRequest request) {
+    public UserExposedResponse updateUser(Long id, @Valid UpdateUserRequest request) {
         var user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
 
         if (!user.getUsername().equals(request.getUsername()) &&
@@ -67,7 +79,7 @@ public class UserService {
         userMapper.update(request, user);
         userRepository.save(user);
 
-        return userMapper.toDto(user);
+        return userMapper.toExposedResponse(user);
     }
 
     @Transactional

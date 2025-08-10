@@ -1,5 +1,7 @@
 package com.byllameister.modelstore.categories;
 
+import com.byllameister.modelstore.admin.categories.CreateCategoryRequest;
+import com.byllameister.modelstore.admin.categories.UpdateCategoryRequest;
 import com.byllameister.modelstore.common.PageableValidator;
 import com.byllameister.modelstore.products.ProductRepository;
 import jakarta.validation.Valid;

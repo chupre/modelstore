@@ -1,6 +1,7 @@
-package com.byllameister.modelstore.carts;
+package com.byllameister.modelstore.admin.carts;
 
-import com.byllameister.modelstore.users.UserExposedResponse;
+import com.byllameister.modelstore.admin.users.UserExposedResponse;
+import com.byllameister.modelstore.carts.CartItemDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

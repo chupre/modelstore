@@ -1,13 +1,12 @@
 package com.byllameister.modelstore.carts;
 
+import com.byllameister.modelstore.admin.carts.CartExposedResponse;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.users.User;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,12 +20,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CartController {
     private final CartService cartService;
-
-    @GetMapping
-    public ResponseEntity<Page<CartExposedResponse>> getCarts(Pageable pageable) {
-        var carts = cartService.getCarts(pageable);
-        return ResponseEntity.ok(carts);
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<CartDto> getCart(@PathVariable UUID id) {
@@ -67,20 +60,6 @@ public class CartController {
         return ResponseEntity.created(uri).body(cart);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CartDto> updateCart(
-            @PathVariable UUID id,
-            @Valid @RequestBody UpdateCartRequest request) {
-        var cart = cartService.updateCart(id, request);
-        return ResponseEntity.ok(cart);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCart(@PathVariable UUID id) {
-        cartService.deleteCart(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @PostMapping("/{id}/items")
     public ResponseEntity<CartItemDto> addItemToCart(
             @PathVariable UUID id,
@@ -92,16 +71,6 @@ public class CartController {
 
         var cartItem = cartService.addItem(id, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(cartItem);
-    }
-
-    @PutMapping("/{id}/items/{productId}")
-    public ResponseEntity<CartItemDto> updateItem(
-            @PathVariable UUID id,
-            @PathVariable Long productId,
-            @Valid @RequestBody UpdateCartItemRequest request
-    ) {
-        var cartItem = cartService.updateItem(id, productId, request);
-        return ResponseEntity.ok(cartItem);
     }
 
     @DeleteMapping("/{id}/items/{productId}")
@@ -127,6 +96,16 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 
+    public boolean accessDenied(UUID id) {
+        var userId = cartService.getUserId(id);
+        return accessDenied(userId);
+    }
+
+    public boolean accessDenied(Long userId) {
+        return !userId.equals(User.getCurrentUserId()) && !User.isCurrentUserAdmin();
+    }
+
+
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorDto> handleProductNotFoundException(ProductNotFoundException e) {
         return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
@@ -151,14 +130,4 @@ public class CartController {
     public ResponseEntity<ErrorDto> handleUserNotFoundException(UserNotFoundException e) {
         return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
     }
-
-    public boolean accessDenied(UUID id) {
-        var userId = cartService.getUserId(id);
-        return accessDenied(userId);
-    }
-
-    public boolean accessDenied(Long userId) {
-        return !userId.equals(User.getCurrentUserId()) && !User.isCurrentUserAdmin();
-    }
-
 }

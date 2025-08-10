@@ -1,5 +1,7 @@
 package com.byllameister.modelstore.categories;
 
+import com.byllameister.modelstore.admin.categories.CreateCategoryRequest;
+import com.byllameister.modelstore.admin.categories.UpdateCategoryRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

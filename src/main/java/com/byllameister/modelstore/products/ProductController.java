@@ -5,7 +5,6 @@ import com.byllameister.modelstore.categories.CategoryNotFoundInQueryException;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.User;
 import com.byllameister.modelstore.users.UserNotFoundException;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -15,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 
@@ -45,42 +41,6 @@ public class ProductController {
         return productService.getProductById(id);
     }
 
-    @PostMapping
-    public ResponseEntity<ProductDto> createProduct(
-            @Valid @ModelAttribute CreateProductRequest request,
-            UriComponentsBuilder uriComponentsBuilder
-    ) throws IOException {
-        var product = productService.createProduct(request);
-        var uri = uriComponentsBuilder.path("/products/{id}")
-                .buildAndExpand(product.getId())
-                .toUri();
-
-        return ResponseEntity.created(uri).body(product);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProductById(@PathVariable Long id) throws IOException {
-        productService.deleteProductById(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> updateProduct(
-            @PathVariable Long id,
-            @Valid @ModelAttribute UpdateProductRequest request
-    ) throws IOException {
-        var product = productService.updateProductById(id, request);
-        return ResponseEntity.ok().body(product);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<ProductDto> patchProduct(
-            @PathVariable Long id,
-            @Valid @ModelAttribute PatchProductRequest request
-    ) throws IOException {
-        var product = productService.patchProduct(id, request);
-        return ResponseEntity.ok().body(product);
-    }
 
     @GetMapping("/{id}/downloadModel")
     public ResponseEntity<Resource> downloadModel(@PathVariable Long id) throws MalformedURLException {
@@ -96,25 +56,11 @@ public class ProductController {
                 .body(resource);
     }
 
-    @ExceptionHandler(ModelResourceNotFoundException.class)
-    public ResponseEntity<ErrorDto> handleModelResourceNotFoundException( ModelResourceNotFoundException ex ) {
-        return ResponseEntity.badRequest().body(new ErrorDto(ex.getMessage()));
+    public boolean accessDenied(Long productId) {
+        var ownerId = productService.getOwnerId(productId);
+        return !ownerId.equals(User.getCurrentUserId()) && !User.isCurrentUserAdmin();
     }
 
-    @ExceptionHandler(MalformedURLException.class)
-    public ResponseEntity<ErrorDto> handleMalformedURLException() {
-        return ResponseEntity.badRequest().body(new ErrorDto("Malformed URL"));
-    }
-
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorDto> handleMaxUploadSizeExceededException() {
-        return ResponseEntity.badRequest().body(new ErrorDto("Max upload size exceeded"));
-    }
-
-    @ExceptionHandler(IOException.class)
-    public ResponseEntity<ErrorDto> handleIOException() {
-        return ResponseEntity.badRequest().body(new ErrorDto("Unable to upload file"));
-    }
 
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<Void> handleProductNotFound() {
@@ -139,10 +85,5 @@ public class ProductController {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorDto> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
-    }
-
-    public boolean accessDenied(Long productId) {
-        var ownerId = productService.getOwnerId(productId);
-        return !ownerId.equals(User.getCurrentUserId()) && !User.isCurrentUserAdmin();
     }
 }

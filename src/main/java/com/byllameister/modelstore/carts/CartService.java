@@ -1,5 +1,8 @@
 package com.byllameister.modelstore.carts;
 
+import com.byllameister.modelstore.admin.carts.CartExposedResponse;
+import com.byllameister.modelstore.admin.carts.UpdateCartItemRequest;
+import com.byllameister.modelstore.admin.carts.UpdateCartRequest;
 import com.byllameister.modelstore.common.PageableValidator;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.products.ProductRepository;
