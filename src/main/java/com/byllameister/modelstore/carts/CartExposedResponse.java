@@ -1,6 +1,6 @@
 package com.byllameister.modelstore.carts;
 
-import com.byllameister.modelstore.users.UserAdminResponse;
+import com.byllameister.modelstore.users.UserExposedResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,9 +10,9 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-public class CartAdminResponse {
+public class CartExposedResponse {
     private UUID id;
-    private UserAdminResponse user;
+    private UserExposedResponse user;
     private List<CartItemDto> cartItems;
     private BigDecimal totalPrice;
 }

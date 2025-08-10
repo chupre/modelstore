@@ -23,7 +23,7 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public ResponseEntity<Page<CartAdminResponse>> getCarts(Pageable pageable) {
+    public ResponseEntity<Page<CartExposedResponse>> getCarts(Pageable pageable) {
         var carts = cartService.getCarts(pageable);
         return ResponseEntity.ok(carts);
     }
@@ -40,7 +40,7 @@ public class CartController {
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<CartDto> getCartByUserId(@PathVariable Long userId) {
+    public ResponseEntity<CartExposedResponse> getCartByUserId(@PathVariable Long userId) {
         if (accessDenied(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

@@ -25,10 +25,10 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    public Page<CartAdminResponse> getCarts(Pageable pageable) {
+    public Page<CartExposedResponse> getCarts(Pageable pageable) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
         var carts = cartRepository.findAll(pageable);
-        return carts.map(cartMapper::toAdminResponse);
+        return carts.map(cartMapper::toCartExposedResponse);
     }
 
     public CartDto getCart(UUID id) {
@@ -36,10 +36,10 @@ public class CartService {
         return cartMapper.toDto(cart);
     }
 
-    public CartDto getCartByUserId(Long userId) {
+    public CartExposedResponse getCartByUserId(Long userId) {
         var user =  userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         var cart = cartRepository.findByUser(user).orElseThrow(CartNotFoundException::new);
-        return cartMapper.toDto(cart);
+        return cartMapper.toCartExposedResponse(cart);
     }
 
     public CartDto createCart(CreateCartRequest request) {
