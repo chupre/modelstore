@@ -23,7 +23,7 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public ResponseEntity<Page<CartDto>> getCarts(Pageable pageable) {
+    public ResponseEntity<Page<CartAdminResponse>> getCarts(Pageable pageable) {
         var carts = cartService.getCarts(pageable);
         return ResponseEntity.ok(carts);
     }

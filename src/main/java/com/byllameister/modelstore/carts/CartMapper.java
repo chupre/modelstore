@@ -12,7 +12,11 @@ public interface CartMapper {
     @Mapping(target = "totalPrice", expression = "java(cart.getTotalPrice())")
     CartDto toDto(Cart cart);
 
+    @Mapping(target = "totalPrice", expression = "java(cart.getTotalPrice())")
+    CartAdminResponse toAdminResponse(Cart cart);
+
     List<CartDto> toDtos(List<Cart> carts);
+    List<CartAdminResponse> toAdminResponses(List<Cart> carts);
 
     void update(UpdateCartRequest request, @MappingTarget Cart cart);
 

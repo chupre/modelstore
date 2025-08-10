@@ -25,10 +25,10 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    public Page<CartDto> getCarts(Pageable pageable) {
+    public Page<CartAdminResponse> getCarts(Pageable pageable) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
         var carts = cartRepository.findAll(pageable);
-        return carts.map(cartMapper::toDto);
+        return carts.map(cartMapper::toAdminResponse);
     }
 
     public CartDto getCart(UUID id) {
