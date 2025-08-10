@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Package, ShoppingCart, Users, FolderOpen, Upload } from 'lucide-react'
+import { Package, ShoppingCart, Users, FolderOpen } from 'lucide-react'
 import CategoriesManager from "@/components/CategoryManager.jsx"
 import CartsManager from "@/components/CartManager.jsx"
 // import UsersManager from "@/components/admin/users-manager"
