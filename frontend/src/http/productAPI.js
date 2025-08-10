@@ -30,8 +30,12 @@ export const fetchProduct = async (id) => {
     }
 }
 
-export const fetchCategories = async (page = 0, size = 20, sort = "name") => {
-    return await $host.get(`/categories`, {params: {page, size, sort}});
+export const fetchCategories = async (page, size, sort = "name") => {
+    return await $host.get(`/categories`, {params: {
+        page,
+        size,
+        sort
+    }});
 }
 
 export const createProduct = async (productFormData) => {
@@ -56,4 +60,16 @@ export const deleteProduct = async (id) => {
 
 export const downloadProductModel = async (id) => {
     return await $authHost.get(`products/${id}`, {responseType: "blob"})
+}
+
+export const createCategory = async (category) => {
+    return await $authHost.post(`categories`, category)
+}
+
+export const deleteCategory = async (id) => {
+    return await $authHost.delete(`categories/${id}`, {})
+}
+
+export const updateCategory = async (id, category) => {
+    return await $authHost.put(`categories/${id}`, category)
 }

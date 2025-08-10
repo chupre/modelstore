@@ -79,8 +79,11 @@ function FilterPopover({
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="createdAt,desc">Newest</SelectItem>
+                                    <SelectItem value="createdAt,asc">Oldest</SelectItem>
                                     <SelectItem value="price,asc">Price: Low to High</SelectItem>
                                     <SelectItem value="price,desc">Price: High to Low</SelectItem>
+                                    <SelectItem value="title,asc">Name: A-Z</SelectItem>
+                                    <SelectItem value="title,desc">Name: Z-A</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

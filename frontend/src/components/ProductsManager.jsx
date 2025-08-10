@@ -63,7 +63,7 @@ function ProductsManager() {
     }, []);
 
     if (isLoading) {
-        return <Loading></Loading>
+        return <Loading/>
     }
 
     const handleSubmit = async (e) => {
@@ -78,9 +78,6 @@ function ProductsManager() {
         productFormData.append("title", formData.title)
         productFormData.append("description", formData.description)
         productFormData.append("price", formData.price)
-        console.log(editingProduct)
-        console.log(formData.previewImage)
-        console.log(editingProduct && formData.previewImage != null)
         if (editingProduct == null || (editingProduct && formData.previewImage != null))
             productFormData.append("previewImage", formData.previewImage)
         if (editingProduct == null || (editingProduct && formData.file != null))

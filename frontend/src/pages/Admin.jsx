@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Package, ShoppingCart, Users, FolderOpen, Upload } from 'lucide-react'
-// import CategoriesManager from "@/components/admin/categories-manager"
-// import CartsManager from "@/components/admin/carts-manager"
+import CategoriesManager from "@/components/CategoryManager.jsx"
+import CartsManager from "@/components/CartManager.jsx"
 // import UsersManager from "@/components/admin/users-manager"
 // import FileUploadManager from "@/components/admin/file-upload-manager"
 import ProductsManager from "@/components/ProductsManager.jsx";
@@ -24,7 +24,7 @@ function AdminPage() {
                 </div>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-                    <TabsList className="grid w-full grid-cols-5">
+                    <TabsList className="grid w-full grid-cols-4">
                         <TabsTrigger value="products" className="flex items-center gap-2">
                             <Package className="h-4 w-4" />
                             Products
@@ -41,23 +41,19 @@ function AdminPage() {
                             <Users className="h-4 w-4" />
                             Users
                         </TabsTrigger>
-                        <TabsTrigger value="uploads" className="flex items-center gap-2">
-                            <Upload className="h-4 w-4" />
-                            Uploads
-                        </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="products" className="space-y-4">
                         <ProductsManager />
                     </TabsContent>
 
-                    {/*<TabsContent value="categories" className="space-y-4">*/}
-                    {/*    <CategoriesManager />*/}
-                    {/*</TabsContent>*/}
+                    <TabsContent value="categories" className="space-y-4">
+                        <CategoriesManager />
+                    </TabsContent>
 
-                    {/*<TabsContent value="carts" className="space-y-4">*/}
-                    {/*    <CartsManager />*/}
-                    {/*</TabsContent>*/}
+                    <TabsContent value="carts" className="space-y-4">
+                        <CartsManager />
+                    </TabsContent>
 
                     {/*<TabsContent value="users" className="space-y-4">*/}
                     {/*    <UsersManager />*/}
