@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Package, ShoppingCart, Users, FolderOpen } from 'lucide-react'
 import CategoriesManager from "@/components/CategoryManager.jsx"
 import CartsManager from "@/components/CartManager.jsx"
-// import UsersManager from "@/components/admin/users-manager"
+import UsersManager from "@/components/UserManager.jsx"
 // import FileUploadManager from "@/components/admin/file-upload-manager"
 import ProductsManager from "@/components/ProductsManager.jsx";
 
@@ -55,9 +55,9 @@ function AdminPage() {
                         <CartsManager />
                     </TabsContent>
 
-                    {/*<TabsContent value="users" className="space-y-4">*/}
-                    {/*    <UsersManager />*/}
-                    {/*</TabsContent>*/}
+                    <TabsContent value="users" className="space-y-4">
+                        <UsersManager />
+                    </TabsContent>
 
                     {/*<TabsContent value="uploads" className="space-y-4">*/}
                     {/*    <FileUploadManager />*/}

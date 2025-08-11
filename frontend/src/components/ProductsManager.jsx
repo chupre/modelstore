@@ -18,7 +18,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Plus, Edit, Trash2 } from 'lucide-react'
 import {observer} from "mobx-react-lite";
 import {Context} from "@/main.jsx";
-import {createProduct, deleteProduct, downloadProductModel, patchProduct} from "@/http/productAPI.js";
+import {downloadProductModel} from "@/http/productAPI.js";
 import SearchBar from "@/components/SearchBar.jsx";
 import Pages from "@/components/Pages.jsx";
 import {toast} from "sonner";
@@ -30,6 +30,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle, AlertDialogTrigger
 } from "@/components/ui/alert-dialog.js";
+import {createProduct, deleteProduct, patchProduct} from "@/http/adminAPI.js";
 
 function ProductsManager() {
     const {product} = useContext(Context);

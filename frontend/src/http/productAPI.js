@@ -38,38 +38,6 @@ export const fetchCategories = async (page, size, sort = "name") => {
     }});
 }
 
-export const createProduct = async (productFormData) => {
-    return await $authHost.post(`/products`, productFormData, {
-        headers: {
-            "content-type": "multipart/form-data"
-        }
-    })
-}
-
-export const patchProduct = async (id, productFormData) => {
-    return await $authHost.patch(`/products/${id}`, productFormData, {
-        headers: {
-            "content-type": "multipart/form-data"
-        }
-    })
-}
-
-export const deleteProduct = async (id) => {
-    return await $authHost.delete(`/products/${id}`, {})
-}
-
 export const downloadProductModel = async (id) => {
     return await $authHost.get(`products/${id}`, {responseType: "blob"})
-}
-
-export const createCategory = async (category) => {
-    return await $authHost.post(`categories`, category)
-}
-
-export const deleteCategory = async (id) => {
-    return await $authHost.delete(`categories/${id}`, {})
-}
-
-export const updateCategory = async (id, category) => {
-    return await $authHost.put(`categories/${id}`, category)
 }

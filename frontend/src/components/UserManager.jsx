@@ -1,42 +1,47 @@
+"use client"
+
 import {useState, useEffect, useContext} from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Plus, Edit, Trash2 } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { Edit, Trash2 } from 'lucide-react'
+import Loading from "@/components/Loading.jsx";
 import {observer} from "mobx-react-lite";
 import {Context} from "@/main.jsx";
-import {toast} from "sonner";
-import {fetchCategories} from "@/http/productAPI.js";
-import Loading from "@/components/Loading.jsx";
+import {deleteUser, fetchUsers, updateUser} from "@/http/adminAPI.js";
 import Pages from "@/components/Pages.jsx";
+import {toast} from "sonner";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
+    AlertDialog, AlertDialogAction, AlertDialogCancel,
     AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog.js";
-import {createCategory, deleteCategory, updateCategory} from "@/http/adminAPI.js";
 
-function CategoryManager() {
+function UsersManager() {
     const {product} = useContext(Context)
+    const [users, setUsers] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [editingCategory, setEditingCategory] = useState(null)
+    const [editingUser, setEditingUser] = useState(null)
 
     const [formData, setFormData] = useState({
-        name: '',
+        username: '',
+        email: '',
+        role: 'USER',
     })
 
     useEffect(() => {
         product.setLimit(8)
-        fetchCategories(product.currentPage, product.limit).then((res) => {
-            product.setCategories(res.data.content)
+
+        fetchUsers(product.currentPage, product.limit).then((res) => {
+            setUsers(res.data.content)
             product.setTotalPages(res.data.totalPages)
             setIsLoading(false)
         })
@@ -46,17 +51,17 @@ function CategoryManager() {
         e.preventDefault()
 
         try {
-            editingCategory ? await updateCategory(editingCategory.id, formData) : await createCategory(formData)
-            fetchCategories(product.currentPage, product.limit).then((res) => {
-                product.setCategories(res.data.content)
+            setIsLoading(true)
+            await updateUser(editingUser.id, formData)
+            fetchUsers(product.currentPage, product.limit).then((res) => {
+                setUsers(res.data.content)
                 product.setTotalPages(res.data.totalPages)
                 setIsLoading(false)
+                setIsDialogOpen(false)
+                toast.success("User successfully updated")
             })
-            toast.success("Success", {
-                description: `Category successfully ${editingCategory ? "updated" : "created"}`,
-            })
-            setIsDialogOpen(false)
-        } catch(e) {
+        } catch (e) {
+            setIsLoading(false);
             const responseData = e?.response?.data;
             if (responseData && typeof responseData === "object") {
                 const messages = Object.values(responseData);
@@ -76,27 +81,29 @@ function CategoryManager() {
         }
     }
 
-    const handleEdit = (category) => {
-        setEditingCategory(category)
+    const handleEdit = (user) => {
+        setEditingUser(user)
         setFormData({
-            name: category.name,
+            username: user.username,
+            email: user.email,
+            role: user.role,
         })
         setIsDialogOpen(true)
     }
 
     const handleDelete = async (id) => {
         try {
-            await deleteCategory(id)
-            fetchCategories(product.currentPage, product.limit).then((res) => {
-                product.setCategories(res.data.content)
+            setIsLoading(true)
+            await deleteUser(id)
+            fetchUsers(product.currentPage, product.limit).then((res) => {
+                setUsers(res.data.content)
                 product.setTotalPages(res.data.totalPages)
                 setIsLoading(false)
+                setIsDialogOpen(false)
+                toast.success("User successfully deleted")
             })
-            toast.success("Success", {
-                description: `Category successfully deleted`,
-            })
-            setIsDialogOpen(false)
-        } catch(e) {
+        } catch (e) {
+            setIsLoading(false);
             const responseData = e?.response?.data;
             if (responseData && typeof responseData === "object") {
                 const messages = Object.values(responseData);
@@ -114,13 +121,6 @@ function CategoryManager() {
                 });
             }
         }
-    }
-
-    const resetForm = () => {
-        setFormData({
-            name: '',
-        })
-        setEditingCategory(null)
     }
 
     if (isLoading) {
@@ -132,41 +132,60 @@ function CategoryManager() {
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
-                        <CardTitle>Categories Management</CardTitle>
-                        <CardDescription>View, create and edit categories</CardDescription>
+                        <CardTitle>Users Management</CardTitle>
+                        <CardDescription>Manage user accounts and permissions</CardDescription>
                     </div>
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                        <DialogTrigger asChild>
-                            <Button onClick={resetForm}>
-                                <Plus className="h-4 w-4 mr-2" />
-                                Add Category
-                            </Button>
-                        </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>
-                                    {editingCategory ? 'Edit Category' : 'Add New Category'}
+                                    Edit User
                                 </DialogTitle>
                                 <DialogDescription>
-                                    {editingCategory ? 'Update category information' : 'Create a new product category'}
+                                    Update user information
                                 </DialogDescription>
                             </DialogHeader>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Name</Label>
+                                    <Label htmlFor="name">Username</Label>
                                     <Input
                                         id="name"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        value={formData.username}
+                                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                         required
                                     />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="role">Role</Label>
+                                        <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="SELLER">Seller</SelectItem>
+                                                <SelectItem value="BUYER">Buyer</SelectItem>
+                                                <SelectItem value="ADMIN">Admin</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
                                 <DialogFooter>
                                     <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                                         Cancel
                                     </Button>
                                     <Button type="submit">
-                                        {editingCategory ? 'Update' : 'Create'} Category
+                                        Update User
                                     </Button>
                                 </DialogFooter>
                             </form>
@@ -179,21 +198,31 @@ function CategoryManager() {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-10">ID</TableHead>
-                            <TableHead className="">Name</TableHead>
+                            <TableHead className="w-1/6">Username</TableHead>
+                            <TableHead className="w-1/5">Email</TableHead>
+                            <TableHead className="w-1/12">Role</TableHead>
+                            <TableHead>Created</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {product.categories.map((category) => (
-                            <TableRow key={category.id} className="text-gray-300">
-                                <TableCell>{category.id}</TableCell>
-                                <TableCell className="font-medium">{category.name}</TableCell>
+                        {users.map((user) => (
+                            <TableRow key={user.id} className="text-gray-300">
+                                <TableCell>{user.id}</TableCell>
+                                <TableCell>{user.username}</TableCell>
+                                <TableCell>{user.email}</TableCell>
+                                <TableCell>
+                                    <Badge variant={user.role === 'ADMIN' ? 'default' : 'secondary'}>
+                                        {user.role}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                                 <TableCell className="flex justify-end">
-                                    <div className="flex gap-2">
+                                    <div className="flex items-center gap-2">
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => handleEdit(category)}
+                                            onClick={() => handleEdit(user)}
                                         >
                                             <Edit className="h-4 w-4" />
                                         </Button>
@@ -208,14 +237,14 @@ function CategoryManager() {
                                                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                                     <AlertDialogDescription>
                                                         This action cannot be undone. This will permanently delete this
-                                                        category
+                                                        user
                                                         and remove your data from our servers.
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
                                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                     <AlertDialogAction
-                                                        onClick={() => handleDelete(category.id)}>Continue</AlertDialogAction>
+                                                        onClick={() => handleDelete(user.id)}>Continue</AlertDialogAction>
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>
                                         </AlertDialog>
@@ -231,5 +260,4 @@ function CategoryManager() {
     )
 }
 
-
-export default observer(CategoryManager)
+export default observer(UsersManager)

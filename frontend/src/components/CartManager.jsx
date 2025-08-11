@@ -10,7 +10,8 @@ import {Label} from "@/components/ui/label"
 import {Badge} from "@/components/ui/badge"
 import {Search, Eye} from 'lucide-react'
 import Loading from "@/components/Loading.jsx";
-import {fetchCart, fetchCarts} from "@/http/cartAPI.js";
+import {fetchCart} from "@/http/cartAPI.js";
+import {fetchCarts} from "@/http/adminAPI.js"
 import {toast} from "sonner";
 import {Context} from "@/main.jsx";
 import Pages from "@/components/Pages.jsx";

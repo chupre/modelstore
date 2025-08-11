@@ -26,10 +26,3 @@ export const deleteCartItem = async (cartId, productId) => {
     await $authHost.delete(`/carts/${cartId}/items/${productId}`)
 }
 
-export const fetchCarts = async (page, size) => {
-    return await $authHost.get(`/carts`, {params: {
-            page,
-            size
-        }})
-}
-
