@@ -13,4 +13,8 @@ public interface UserMapper {
     User toEntity(RegisterUserRequest request);
 
     void update(UpdateUserRequest request, @MappingTarget User user);
+
+    default Role mapRole(String role) {
+        return Role.valueOf(role.toUpperCase());
+    }
 }
