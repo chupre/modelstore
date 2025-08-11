@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.users;
+package com.byllameister.modelstore.admin.users;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

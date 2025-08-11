@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.carts;
+package com.byllameister.modelstore.admin.carts;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

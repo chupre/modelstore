@@ -61,7 +61,7 @@ public class SecurityConfig {
                 featureSecurityRules.forEach(r -> r.configure(c));
                 c.requestMatchers(HttpMethod.GET, "/images/**").permitAll();
                 c.requestMatchers("/admin/**").hasRole(Role.ADMIN.name());
-                c.anyRequest().authenticated();
+                c.anyRequest().permitAll();
             })
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(c -> {

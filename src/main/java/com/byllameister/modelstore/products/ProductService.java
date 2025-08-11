@@ -1,5 +1,8 @@
 package com.byllameister.modelstore.products;
 
+import com.byllameister.modelstore.admin.products.CreateProductRequest;
+import com.byllameister.modelstore.admin.products.PatchProductRequest;
+import com.byllameister.modelstore.admin.products.UpdateProductRequest;
 import com.byllameister.modelstore.categories.Category;
 import com.byllameister.modelstore.common.PageableValidator;
 import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;

@@ -1,6 +1,7 @@
 package com.byllameister.modelstore.carts;
 
 import com.byllameister.modelstore.admin.carts.CartExposedResponse;
+import com.byllameister.modelstore.admin.carts.CreateCartRequest;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.users.User;

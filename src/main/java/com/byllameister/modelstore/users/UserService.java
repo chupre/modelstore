@@ -1,5 +1,6 @@
 package com.byllameister.modelstore.users;
 
+import com.byllameister.modelstore.admin.users.UpdateUserRequest;
 import com.byllameister.modelstore.admin.users.UserExposedResponse;
 import com.byllameister.modelstore.common.PageableValidator;
 import com.byllameister.modelstore.products.ProductRepository;

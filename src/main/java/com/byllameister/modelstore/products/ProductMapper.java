@@ -1,5 +1,8 @@
 package com.byllameister.modelstore.products;
 
+import com.byllameister.modelstore.admin.products.CreateProductRequest;
+import com.byllameister.modelstore.admin.products.PatchProductRequest;
+import com.byllameister.modelstore.admin.products.UpdateProductRequest;
 import com.byllameister.modelstore.categories.CategoryDto;
 import com.byllameister.modelstore.users.UserDto;
 import org.mapstruct.*;
