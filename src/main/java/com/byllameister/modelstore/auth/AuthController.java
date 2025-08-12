@@ -3,6 +3,7 @@ package com.byllameister.modelstore.auth;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.UserRepository;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -21,30 +22,45 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final JwtConfig jwtConfig;
+    private final IpAddressUtils ipAddressUtils;
+    private final IpBruteForceProtectionService ipBruteForceProtectionService;
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(
             @Valid @RequestBody LoginRequest request,
-            HttpServletResponse response
+            HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse
     ) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword())
-        );
+        String ip = ipAddressUtils.getClientIP(httpServletRequest);
+        if (ipBruteForceProtectionService.isBlocked(ip)) {
+            throw new TooManyAuthenticationRequestsException();
+        }
 
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        var accessToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword())
+            );
 
-        var cookie = new Cookie("refreshToken", refreshToken.toString());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/auth/refresh");
-        cookie.setMaxAge(jwtConfig.getRefreshTokenExpiration());
-        cookie.setSecure(true);
-        response.addCookie(cookie);
+            ipBruteForceProtectionService.loginSucceeded(ip);
 
-        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
+            var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+            var accessToken = jwtService.generateAccessToken(user);
+            var refreshToken = jwtService.generateRefreshToken(user);
+
+            var cookie = new Cookie("refreshToken", refreshToken.toString());
+            cookie.setHttpOnly(true);
+            cookie.setPath("/auth/refresh");
+            cookie.setMaxAge(jwtConfig.getRefreshTokenExpiration());
+            cookie.setSecure(true);
+            httpServletResponse.addCookie(cookie);
+
+            return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
+        } catch (BadCredentialsException e) {
+            ipBruteForceProtectionService.loginFailed(ip);
+            throw e;
+        }
     }
 
     @PostMapping("/refresh")
@@ -65,5 +81,10 @@ public class AuthController {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorDto> handleBadCredentialsException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDto("Invalid credentials"));
+    }
+
+    @ExceptionHandler(TooManyAuthenticationRequestsException.class)
+    public ResponseEntity<ErrorDto> handleTooManyAuthenticationRequestsException(TooManyAuthenticationRequestsException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(new ErrorDto(ex.getMessage()));
     }
 }
