@@ -97,6 +97,39 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/items/{productId}/toggleSelect")
+    public ResponseEntity<CartItemDto> toggleSelectItem(
+            @PathVariable UUID id,
+            @PathVariable Long productId
+    ) {
+        if (accessDenied(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        var cartItem = cartService.toggleSelectCartItem(id, productId);
+        return ResponseEntity.ok(cartItem);
+    }
+
+    @PostMapping("/{id}/items/selectAll")
+    public ResponseEntity<CartDto> selectAll(@PathVariable UUID id) {
+        if (accessDenied(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        var cart = cartService.selectAllItems(id);
+        return ResponseEntity.ok(cart);
+    }
+
+    @PostMapping("/{id}/items/unselectAll")
+    public ResponseEntity<CartDto> unselectAll(@PathVariable UUID id) {
+        if (accessDenied(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        var cart = cartService.unselectAllItems(id);
+        return ResponseEntity.ok(cart);
+    }
+
     public boolean accessDenied(UUID id) {
         var userId = cartService.getUserId(id);
         return accessDenied(userId);

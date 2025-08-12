@@ -8,4 +8,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class CartItemDto {
     private ProductDto product;
+    private Boolean selected;
 }

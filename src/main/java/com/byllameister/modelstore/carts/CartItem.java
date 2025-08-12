@@ -21,6 +21,9 @@ public class CartItem {
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
+    @JoinColumn(name = "is_selected")
+    private boolean isSelected;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;

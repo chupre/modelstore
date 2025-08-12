@@ -9,6 +9,7 @@ import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.products.ProductRepository;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import com.byllameister.modelstore.users.UserRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -123,5 +124,31 @@ public class CartService {
         var cart = cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
         cart.clear();
         cartRepository.save(cart);
+    }
+
+    public CartItemDto toggleSelectCartItem(UUID id, Long productId) {
+        var cart = cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
+        var product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
+
+        var cartItem = cart.getItem(product);
+        cartItem.setSelected(!cartItem.isSelected());
+        cartRepository.save(cart);
+        return cartMapper.toDto(cartItem);
+    }
+
+    @Transactional
+    public CartDto selectAllItems(UUID id) {
+        cartRepository.selectAllItemsByCartId(id);
+
+        var cart = cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
+        return cartMapper.toDto(cart);
+    }
+
+    @Transactional
+    public CartDto unselectAllItems(UUID id) {
+        cartRepository.unselectAllItemsByCartId(id);
+
+        var cart = cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
+        return cartMapper.toDto(cart);
     }
 }
