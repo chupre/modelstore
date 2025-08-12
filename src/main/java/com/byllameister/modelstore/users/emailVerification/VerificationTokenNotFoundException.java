@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.users.verification;
+package com.byllameister.modelstore.users.emailVerification;
 
 public class VerificationTokenNotFoundException extends RuntimeException {
     public VerificationTokenNotFoundException() {

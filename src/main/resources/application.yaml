@@ -40,6 +40,8 @@ spring:
 user:
   verificationToken:
     durationMinutes: 15
+  passwordResetToken:
+    durationMinutes: 10
 server:
   url: http://localhost:8080
 

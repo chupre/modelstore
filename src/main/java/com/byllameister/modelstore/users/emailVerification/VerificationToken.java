@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.users.verification;
+package com.byllameister.modelstore.users.emailVerification;
 
 import com.byllameister.modelstore.users.User;
 import jakarta.persistence.*;

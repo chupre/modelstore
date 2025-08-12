@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.users.verification;
+package com.byllameister.modelstore.users.emailVerification;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

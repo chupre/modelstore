@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.users.verification;
+package com.byllameister.modelstore.users.emailVerification;
 
 import com.byllameister.modelstore.auth.VerifiedAuthorizationManager;
 import com.byllameister.modelstore.common.SecurityRules;
