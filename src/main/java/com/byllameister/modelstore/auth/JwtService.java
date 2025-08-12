@@ -28,6 +28,7 @@ public class JwtService {
                 .add("email",  user.getEmail())
                 .add("username",  user.getUsername())
                 .add("role", user.getRole())
+                .add("verified", user.getVerified())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * tokenExpiration))
                 .build();

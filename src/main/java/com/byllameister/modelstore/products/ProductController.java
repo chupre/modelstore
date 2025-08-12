@@ -61,7 +61,6 @@ public class ProductController {
         return !ownerId.equals(User.getCurrentUserId()) && !User.isCurrentUserAdmin();
     }
 
-
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<Void> handleProductNotFound() {
         return ResponseEntity.notFound().build();

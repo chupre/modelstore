@@ -13,5 +13,6 @@ public class UserExposedResponse {
     private String username;
     private String email;
     private Role role;
+    private Boolean verified;
     private LocalDate createdAt;
 }

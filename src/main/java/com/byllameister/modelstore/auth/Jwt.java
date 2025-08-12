@@ -25,6 +25,10 @@ public class Jwt {
         return Role.valueOf(claims.get("role", String.class));
     }
 
+    public Boolean isVerified() {
+        return claims.get("verified", Boolean.class);
+    }
+
     public String toString() {
         return Jwts.builder().claims(claims).signWith(secretKey).compact();
     }

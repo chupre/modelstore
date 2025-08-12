@@ -1,5 +1,6 @@
 package com.byllameister.modelstore.users;
 
+import com.byllameister.modelstore.auth.CustomUserPrincipal;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,8 +36,15 @@ public class User {
     @CreationTimestamp
     private LocalDate createdAt;
 
+    @Column(name = "verified")
+    private Boolean verified;
+
     public static Long getCurrentUserId() {
-        return (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var principal = (CustomUserPrincipal) SecurityContextHolder
+                                                .getContext()
+                                                .getAuthentication()
+                                                .getPrincipal();
+        return principal.getUserId();
     }
 
     public static boolean isCurrentUserAdmin() {
