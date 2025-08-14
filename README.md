@@ -36,15 +36,14 @@ Create a PostgreSQL database named "modelshop" and add your DB credentials in .e
 1. ~~Refactor package structure towards a feature-based architecture~~
 2. ~~Add authentication and authorization (Spring Security)~~
 3. ~~Add shopping cart functionality~~
-4. Implement orders and checkout process
-5. Add seller functionality
+4. ~~Implement orders and checkout process~~
+5. ~~Add seller functionality~~
 6. ~~Authentication enhancements (email confirmation, password reset, brute-force defense)~~
 
 ### Later
 
-7. Integrate payment gateway (e.g. Stripe)
-8. Add likes for models
-9. Add reviews and ratings
+7. ~~Integrate payment gateway~~
+8. ~~Add likes for models~~
 10. Build a frontend (React or Vue)
 
 ### Other
