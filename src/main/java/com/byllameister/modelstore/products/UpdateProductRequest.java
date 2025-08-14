@@ -1,4 +1,4 @@
-package com.byllameister.modelstore.admin.products;
+package com.byllameister.modelstore.products;
 
 import com.byllameister.modelstore.upload.FileNotEmpty;
 import com.byllameister.modelstore.upload.FileSize;
@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CreateProductRequest {
+public class UpdateProductRequest {
     @NotBlank(message = "Title is required")
     private String title;
 
@@ -40,19 +40,16 @@ public class CreateProductRequest {
 
     @FileNotEmpty(message = "Model file is required and must be not empty")
     @FileType(
-        allowedTypes = {
-            "application/sla",
-            "application/vnd.ms-pki.stl",
-            "model/stl",
-            "application/octet-stream"
-    },  allowedExtensions = {"stl"},
-        message = "Unsupported file type"
+            allowedTypes = {
+                    "application/sla",
+                    "application/vnd.ms-pki.stl",
+                    "model/stl",
+                    "application/octet-stream"
+            },  allowedExtensions = {"stl"},
+            message = "Unsupported file type"
     )
     @FileSize(maxBytes = 200 * 1024 * 1024, message = "File is too big")
     private MultipartFile file;
-
-    @NotNull(message = "Owner is required")
-    private Long ownerId;
 
     @NotNull(message = "Category is required")
     private Long categoryId;

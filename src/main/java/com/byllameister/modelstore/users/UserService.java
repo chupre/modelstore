@@ -2,7 +2,7 @@ package com.byllameister.modelstore.users;
 
 import com.byllameister.modelstore.admin.users.UpdateUserRequest;
 import com.byllameister.modelstore.admin.users.UserExposedResponse;
-import com.byllameister.modelstore.common.PageableValidator;
+import com.byllameister.modelstore.common.PageableUtils;
 import com.byllameister.modelstore.products.ProductRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -12,27 +12,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @AllArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PageableValidator pageableValidator;
     private final ProductRepository productRepository;
     private PasswordEncoder passwordEncoder;
 
-    private final Set<String> VALID_SORT_FIELDS = Set.of("id", "username", "email");
-
     public Page<UserDto> getAllUsers(Pageable pageable) {
-        pageableValidator.validate(pageable, VALID_SORT_FIELDS);
+        PageableUtils.validate(pageable, PageableUtils.USER_SORT_FIELDS);
         var users = userRepository.findAll(pageable);
         return users.map(userMapper::toDto);
     }
 
     public Page<UserExposedResponse> getAllUsersExposed(Pageable pageable) {
-        pageableValidator.validate(pageable, VALID_SORT_FIELDS);
+        PageableUtils.validate(pageable, PageableUtils.USER_SORT_FIELDS);
         var users = userRepository.findAll(pageable);
         return users.map(userMapper::toExposedResponse);
     }

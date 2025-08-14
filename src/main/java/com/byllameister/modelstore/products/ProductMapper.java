@@ -1,8 +1,5 @@
 package com.byllameister.modelstore.products;
 
-import com.byllameister.modelstore.admin.products.CreateProductRequest;
-import com.byllameister.modelstore.admin.products.PatchProductRequest;
-import com.byllameister.modelstore.admin.products.UpdateProductRequest;
 import com.byllameister.modelstore.categories.CategoryDto;
 import com.byllameister.modelstore.users.UserDto;
 import org.mapstruct.*;
@@ -13,7 +10,7 @@ public interface ProductMapper {
 
     @Mapping(target = "previewImage", ignore = true)
     @Mapping(target = "file", ignore = true)
-    Product toEntity(CreateProductRequest createProductRequest);
+    Product toEntity(CreateProductDto createProductRequest);
 
     @Mapping(target = "previewImage", ignore = true)
     @Mapping(target = "file", ignore = true)

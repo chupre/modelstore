@@ -49,7 +49,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
               )
             """,
             countQuery = """
-                        SELECT COUNT(*) 
+                        SELECT COUNT(*)
                         FROM products p
                         JOIN users u ON p.owner_id = u.id
                         WHERE (:categoryId IS NULL OR p.category_id = :categoryId)
@@ -73,4 +73,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("threshold") double threshold,
             Pageable pageable
     );
+
+    @EntityGraph(attributePaths = "category")
+    Page<Product> findAllByOwnerId(Long id, Pageable pageable);
 }

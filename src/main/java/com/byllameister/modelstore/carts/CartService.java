@@ -4,7 +4,7 @@ import com.byllameister.modelstore.admin.carts.CartExposedResponse;
 import com.byllameister.modelstore.admin.carts.CreateCartRequest;
 import com.byllameister.modelstore.admin.carts.UpdateCartItemRequest;
 import com.byllameister.modelstore.admin.carts.UpdateCartRequest;
-import com.byllameister.modelstore.common.PageableValidator;
+import com.byllameister.modelstore.common.PageableUtils;
 import com.byllameister.modelstore.orders.OrderRepository;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.products.ProductRepository;
@@ -18,23 +18,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class CartService {
-    private final PageableValidator pageableValidator;
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
 
-    private final Set<String> VALID_SORT_FIELDS = Set.of("createdAt");
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
 
     public Page<CartExposedResponse> getCarts(Pageable pageable) {
-        pageableValidator.validate(pageable, VALID_SORT_FIELDS);
+        PageableUtils.validate(pageable, PageableUtils.CART_SORT_FIELDS);
         var carts = cartRepository.findAll(pageable);
         return carts.map(cartMapper::toCartExposedResponse);
     }

@@ -2,7 +2,7 @@ package com.byllameister.modelstore.categories;
 
 import com.byllameister.modelstore.admin.categories.CreateCategoryRequest;
 import com.byllameister.modelstore.admin.categories.UpdateCategoryRequest;
-import com.byllameister.modelstore.common.PageableValidator;
+import com.byllameister.modelstore.common.PageableUtils;
 import com.byllameister.modelstore.products.ProductRepository;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -10,20 +10,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @AllArgsConstructor
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
-    private final PageableValidator pageableValidator;
 
-    private final Set<String> VALID_SORT_FIELDS = Set.of("id", "name");
     private final CategoryMapper categoryMapper;
     private final ProductRepository productRepository;
 
     public Page<CategoryDto> getAllCategories(Pageable pageable) {
-        pageableValidator.validate(pageable, VALID_SORT_FIELDS);
+        PageableUtils.validate(pageable, PageableUtils.CATEGORY_SORT_FIELDS);
         var categories = categoryRepository.findAll(pageable);
         return categories.map(categoryMapper::toDto);
     }

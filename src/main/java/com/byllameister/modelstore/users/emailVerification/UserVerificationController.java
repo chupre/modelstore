@@ -2,7 +2,7 @@ package com.byllameister.modelstore.users.emailVerification;
 
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.UserNotFoundException;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class UserVerificationController {
     }
 
     @GetMapping("/{verificationToken}")
-    public void verify(@PathVariable @NotBlank UUID verificationToken) {
+    public void verify(@PathVariable @NotNull UUID verificationToken) {
         userVerificationService.verify(verificationToken);
     }
 

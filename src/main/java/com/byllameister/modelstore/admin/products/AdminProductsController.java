@@ -22,7 +22,7 @@ public class AdminProductsController {
 
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(
-            @Valid @ModelAttribute CreateProductRequest request,
+            @Valid @ModelAttribute AdminCreateProductRequest request,
             UriComponentsBuilder uriComponentsBuilder
     ) throws IOException {
         var product = productService.createProduct(request);
@@ -44,7 +44,7 @@ public class AdminProductsController {
             @PathVariable Long id,
             @Valid @ModelAttribute UpdateProductRequest request
     ) throws IOException {
-        var product = productService.updateProductById(id, request);
+        var product = productService.updateProduct(id, request);
         return ResponseEntity.ok().body(product);
     }
 
@@ -90,6 +90,11 @@ public class AdminProductsController {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorDto> handleUserNotFound(UserNotFoundException e) {
+        return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
+    }
+
+    @ExceptionHandler(ForbiddenOwnerRoleException.class)
+    public ResponseEntity<ErrorDto> handleForbiddenOwnerRole(ForbiddenOwnerRoleException e) {
         return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
     }
 }

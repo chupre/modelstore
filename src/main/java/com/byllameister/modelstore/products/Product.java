@@ -35,11 +35,11 @@ public class Product {
     @Column(name = "file")
     private String file;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 

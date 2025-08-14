@@ -1,12 +1,14 @@
 package com.byllameister.modelstore.products;
 
-import com.byllameister.modelstore.admin.products.CreateProductRequest;
-import com.byllameister.modelstore.admin.products.PatchProductRequest;
-import com.byllameister.modelstore.admin.products.UpdateProductRequest;
+import com.byllameister.modelstore.admin.products.AdminCreateProductRequest;
+import com.byllameister.modelstore.admin.products.ForbiddenOwnerRoleException;
 import com.byllameister.modelstore.categories.Category;
-import com.byllameister.modelstore.common.PageableValidator;
 import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
+import com.byllameister.modelstore.common.PageableUtils;
+import com.byllameister.modelstore.sellers.SellerNotFoundException;
+import com.byllameister.modelstore.sellers.SellerRepository;
 import com.byllameister.modelstore.upload.UploadService;
+import com.byllameister.modelstore.users.Role;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import com.byllameister.modelstore.categories.CategoryRepository;
 import com.byllameister.modelstore.users.UserRepository;
@@ -23,7 +25,6 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Set;
 
 @AllArgsConstructor
 @Service
@@ -32,10 +33,9 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
-    private final PageableValidator pageableValidator;
     private final UploadService uploadService;
 
-    private final Set<String> VALID_SORT_FIELDS = Set.of("id", "title", "price", "categoryId", "createdAt");
+    private final SellerRepository sellerRepository;
 
     public Page<ProductDto> getProducts(
             String search,
@@ -44,7 +44,7 @@ public class ProductService {
             BigDecimal maxPrice,
             Pageable pageable
     ) {
-        pageableValidator.validate(pageable, VALID_SORT_FIELDS);
+        PageableUtils.validate(pageable, PageableUtils.PRODUCT_SORT_FIELDS);
 
         var products = productRepository.fuzzySearch(search, categoryId, minPrice, maxPrice, 0.2, pageable);
         return products.map(productMapper::toDtoFromFlatDto);
@@ -55,12 +55,28 @@ public class ProductService {
         return productMapper.toDto(product);
     }
 
-    public ProductDto createProduct(CreateProductRequest request) throws IOException {
+    public ProductDto createProduct(AdminCreateProductRequest request) throws IOException {
+        return createProductInternal(request, request.getOwnerId(), true);
+    }
+
+    public ProductDto createProduct(CreateProductRequest request, Long sellerId) throws IOException {
+        var seller = sellerRepository.findById(sellerId).orElseThrow(SellerNotFoundException::new);
+        return createProductInternal(request, seller.getUser().getId(), false);
+    }
+
+    private ProductDto createProductInternal(CreateProductDto request,
+                                             Long ownerId,
+                                             boolean isAdmin
+    ) throws IOException {
         var category = categoryRepository.findById(request.getCategoryId()).
                 orElseThrow(CategoryNotFoundInBodyException::new);
 
-        var owner = userRepository.findById(request.getOwnerId()).
+        var owner = userRepository.findById(ownerId).
                 orElseThrow(UserNotFoundException::new);
+
+        if (isAdmin && owner.getRole() == Role.BUYER) {
+            throw new ForbiddenOwnerRoleException();
+        }
 
         var imageFileUrl = uploadService.uploadImage(request.getPreviewImage());
         var modelFileUrl = uploadService.uploadModel(request.getFile());
@@ -77,6 +93,7 @@ public class ProductService {
         return productMapper.toDto(product);
     }
 
+
     public void deleteProductById(Long id) throws IOException {
         var product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
         uploadService.deleteFile(product.getFile());
@@ -84,7 +101,7 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public ProductDto updateProductById(Long id, UpdateProductRequest request) throws IOException {
+    public ProductDto updateProduct(Long id, UpdateProductRequest request) throws IOException {
         var category = categoryRepository.findById(request.getCategoryId()).
                 orElseThrow(CategoryNotFoundInBodyException::new);
 
@@ -160,5 +177,12 @@ public class ProductService {
     public Long getOwnerId(Long productId) {
         var product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
         return product.getOwner().getId();
+    }
+
+    public Page<ProductDto> getProductsBySellerId(Long id, Pageable pageable) {
+        PageableUtils.validate(pageable, PageableUtils.PRODUCT_SORT_FIELDS);
+        var seller = sellerRepository.findById(id).orElseThrow(SellerNotFoundException::new);
+        var products = productRepository.findAllByOwnerId(seller.getUser().getId(), pageable);
+        return products.map(productMapper::toDto);
     }
 }

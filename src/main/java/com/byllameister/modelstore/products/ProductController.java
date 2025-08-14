@@ -40,7 +40,6 @@ public class ProductController {
         return productService.getProductById(id);
     }
 
-
     @PreAuthorize("@productPermissionEvaluator.hasAccess(#id)")
     @GetMapping("/{id}/downloadModel")
     public ResponseEntity<Resource> downloadModel(@PathVariable Long id) throws MalformedURLException {
