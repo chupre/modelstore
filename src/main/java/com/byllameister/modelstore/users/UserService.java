@@ -4,6 +4,8 @@ import com.byllameister.modelstore.admin.users.UpdateUserRequest;
 import com.byllameister.modelstore.admin.users.UserExposedResponse;
 import com.byllameister.modelstore.common.PageableUtils;
 import com.byllameister.modelstore.products.ProductRepository;
+import com.byllameister.modelstore.users.profiles.UserProfile;
+import com.byllameister.modelstore.users.profiles.UserProfileRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ProductRepository productRepository;
+    private final UserProfileRepository userProfileRepository;
     private PasswordEncoder passwordEncoder;
 
     public Page<UserDto> getAllUsers(Pageable pageable) {
@@ -56,6 +59,11 @@ public class UserService {
         user.setRole(Role.BUYER);
         userRepository.save(user);
 
+        var userProfile = new UserProfile();
+        userProfile.setUser(user);
+        userProfile.setName(user.getUsername());
+        userProfileRepository.save(userProfile);
+
         return userMapper.toDto(user);
     }
 
@@ -74,6 +82,11 @@ public class UserService {
 
         userMapper.update(request, user);
         userRepository.save(user);
+
+        var userProfile = userProfileRepository.findById(user.getId()).orElse(new UserProfile());
+        userProfile.setUser(user);
+        userProfile.setName(user.getUsername());
+        userProfileRepository.save(userProfile);
 
         return userMapper.toExposedResponse(user);
     }

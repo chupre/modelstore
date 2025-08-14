@@ -1,6 +1,7 @@
 package com.byllameister.modelstore.users;
 
 import com.byllameister.modelstore.auth.CustomUserPrincipal;
+import com.byllameister.modelstore.users.profiles.UserProfile;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,6 +40,9 @@ public class User {
 
     @Column(name = "verified")
     private Boolean verified;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserProfile profile;
 
     public static Long getCurrentUserId() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();

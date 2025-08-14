@@ -1,10 +1,14 @@
 package com.byllameister.modelstore.users;
 
 import com.byllameister.modelstore.common.ErrorDto;
+import com.byllameister.modelstore.users.profiles.UserProfileDto;
+import com.byllameister.modelstore.users.profiles.UserProfileNotFoundException;
+import com.byllameister.modelstore.users.profiles.UserProfileService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -14,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private UserProfileService userProfileService;
 
     @GetMapping
     public Page<UserDto> getAllUsers(Pageable pageable) {
@@ -42,6 +47,17 @@ public class UserController {
     public ResponseEntity<UserDto> me() {
         var user = userService.getCurrentUser();
         return ResponseEntity.ok().body(user);
+    }
+
+    @GetMapping("/{userId}/profile")
+    public ResponseEntity<UserProfileDto> getUserProfile(@PathVariable("userId") Long userId) {
+        var profile = userProfileService.getUserProfile(userId);
+        return ResponseEntity.ok(profile);
+    }
+
+    @ExceptionHandler(UserProfileNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleUserProfileNotFoundException(UserProfileNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto(ex.getMessage()));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
