@@ -36,4 +36,8 @@ public interface CartRepository extends JpaRepository<Cart, UUID> {
     @Modifying
     @Query("UPDATE CartItem ci SET ci.isSelected = false WHERE ci.cart.id = :cartId")
     void unselectAllItemsByCartId(@Param("cartId") UUID cartId);
+
+    @Modifying
+    @Query("DELETE FROM CartItem ci WHERE ci.isSelected = true AND ci.cart.id = :id")
+    void deleteAllSelectedItems(@Param("id") UUID id);
 }

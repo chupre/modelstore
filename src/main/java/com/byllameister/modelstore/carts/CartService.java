@@ -5,8 +5,10 @@ import com.byllameister.modelstore.admin.carts.CreateCartRequest;
 import com.byllameister.modelstore.admin.carts.UpdateCartItemRequest;
 import com.byllameister.modelstore.admin.carts.UpdateCartRequest;
 import com.byllameister.modelstore.common.PageableValidator;
+import com.byllameister.modelstore.orders.OrderRepository;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.products.ProductRepository;
+import com.byllameister.modelstore.users.User;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import com.byllameister.modelstore.users.UserRepository;
 import jakarta.transaction.Transactional;
@@ -29,6 +31,7 @@ public class CartService {
     private final Set<String> VALID_SORT_FIELDS = Set.of("createdAt");
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     public Page<CartExposedResponse> getCarts(Pageable pageable) {
         pageableValidator.validate(pageable, VALID_SORT_FIELDS);
@@ -63,8 +66,19 @@ public class CartService {
 
     public CartDto updateCart(UUID id, UpdateCartRequest request) {
         var cart = cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
+
+        var userId = cart.getUser().getId();
+        var alreadyBought = request.getCartItems().stream()
+                .anyMatch(item ->
+                        orderRepository.hasUserBoughtProduct(userId, item.getProduct().getId()));
+
+        if (alreadyBought) {
+            throw new ItemAlreadyBoughtException();
+        }
+
         cartMapper.update(request, cart);
         cartRepository.save(cart);
+
         return cartMapper.toDto(cart);
     }
 
@@ -76,6 +90,14 @@ public class CartService {
     public CartItemDto addItem(UUID id, @Valid AddCartItemRequest request) {
         var cart = cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
         var product = productRepository.findById(request.getProductId()).orElseThrow(ProductNotFoundException::new);
+
+        boolean hasBought = orderRepository.hasUserBoughtProduct(
+                User.getCurrentUserId(),
+                product.getId());
+
+        if (hasBought) {
+            throw new ItemAlreadyBoughtException();
+        }
 
         var cartItem = cart.addItem(product);
         cartRepository.save(cart);
@@ -97,10 +119,16 @@ public class CartService {
         var newProduct = productRepository.findById(request.getProductId())
                 .orElseThrow(ProductNotFoundException::new);
 
+
+        var userId = cart.getUser().getId();
+        var hasBought = orderRepository.hasUserBoughtProduct(userId, request.getProductId());
+        if (hasBought) {
+            throw new ItemAlreadyBoughtException();
+        }
+
         if (cart.getItem(newProduct) != null) {
             throw new CartItemAlreadyExists();
         }
-
 
         cartItem.setProduct(newProduct);
         cartRepository.save(cart);
@@ -150,5 +178,11 @@ public class CartService {
 
         var cart = cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
         return cartMapper.toDto(cart);
+    }
+
+    @Transactional
+    public void deleteSelectedItems(UUID id) {
+        cartRepository.deleteAllSelectedItems(id);
+        cartRepository.findById(id).orElseThrow(CartNotFoundException::new);
     }
 }

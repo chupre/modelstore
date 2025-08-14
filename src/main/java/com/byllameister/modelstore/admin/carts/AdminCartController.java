@@ -48,6 +48,11 @@ public class AdminCartController {
         return ResponseEntity.ok(cartItem);
     }
 
+    @ExceptionHandler(ItemAlreadyBoughtException.class)
+    public ResponseEntity<ErrorDto> handleItemAlreadyBoughtException(ItemAlreadyBoughtException ex) {
+        return ResponseEntity.badRequest().body(new ErrorDto(ex.getMessage()));
+    }
+
     @ExceptionHandler(CartNotFoundException.class)
     public ResponseEntity<Void> handleException() {
         return ResponseEntity.notFound().build();

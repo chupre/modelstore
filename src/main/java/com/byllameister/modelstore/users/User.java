@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
@@ -40,11 +41,14 @@ public class User {
     private Boolean verified;
 
     public static Long getCurrentUserId() {
-        var principal = (CustomUserPrincipal) SecurityContextHolder
-                                                .getContext()
-                                                .getAuthentication()
-                                                .getPrincipal();
-        return principal.getUserId();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() ||
+                authentication.getPrincipal().equals("anonymousUser")) {
+            throw new AccessDeniedException("User is not authenticated");
+        }
+
+        return ((CustomUserPrincipal) authentication.getPrincipal()).getUserId();
     }
 
     public static boolean isCurrentUserAdmin() {

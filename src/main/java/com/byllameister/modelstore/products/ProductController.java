@@ -3,16 +3,15 @@ package com.byllameister.modelstore.products;
 import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
 import com.byllameister.modelstore.categories.CategoryNotFoundInQueryException;
 import com.byllameister.modelstore.common.ErrorDto;
-import com.byllameister.modelstore.users.User;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -42,23 +41,15 @@ public class ProductController {
     }
 
 
+    @PreAuthorize("@productPermissionEvaluator.hasAccess(#id)")
     @GetMapping("/{id}/downloadModel")
     public ResponseEntity<Resource> downloadModel(@PathVariable Long id) throws MalformedURLException {
-        if (accessDenied(id)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
         var resource = productService.getModelResource(id);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-    }
-
-    public boolean accessDenied(Long productId) {
-        var ownerId = productService.getOwnerId(productId);
-        return !ownerId.equals(User.getCurrentUserId()) && !User.isCurrentUserAdmin();
     }
 
     @ExceptionHandler(ProductNotFoundException.class)

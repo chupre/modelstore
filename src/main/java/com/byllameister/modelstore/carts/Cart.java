@@ -62,6 +62,7 @@ public class Cart {
             cartItem = new CartItem();
             cartItem.setProduct(product);
             cartItem.setCart(this);
+            cartItem.setSelected(true);
             cartItems.add(cartItem);
         }
 
@@ -79,6 +80,7 @@ public class Cart {
 
     public BigDecimal getTotalPrice() {
         return cartItems.stream()
+                .filter(CartItem::isSelected)
                 .map(CartItem::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
@@ -93,5 +95,9 @@ public class Cart {
 
     public void clear() {
         cartItems.clear();
+    }
+
+    public boolean isEmpty() {
+        return cartItems.stream().noneMatch(CartItem::isSelected);
     }
 }

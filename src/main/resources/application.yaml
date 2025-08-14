@@ -44,4 +44,7 @@ user:
     durationMinutes: 10
 server:
   url: http://localhost:8080
+yookassa:
+  shop-id: ${YOOKASSA_SHOP_ID}
+  secret-key: ${YOOKASSA_SECRET_KEY}
 
