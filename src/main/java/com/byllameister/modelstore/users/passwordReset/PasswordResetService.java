@@ -58,6 +58,7 @@ public class PasswordResetService {
         var token = validate(request.getToken());
         var user = userRepository.findById(token.getUserId()).orElseThrow(UserNotFoundException::new);
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setVerified(true);
         userRepository.save(user);
         passwordResetTokenRepository.deleteById(token.getId());
     }
