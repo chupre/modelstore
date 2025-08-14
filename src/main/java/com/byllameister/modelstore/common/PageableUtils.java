@@ -14,6 +14,7 @@ public class PageableUtils {
     public static final Set<String> PRODUCT_SORT_FIELDS = Set.of("id", "title", "price", "categoryId", "createdAt");
     public static final Set<String> SELLER_SORT_FIELDS = Set.of();
     public static final Set<String> USER_SORT_FIELDS = Set.of("id", "username", "email");
+    public static final Set<String> COMMENT_SORT_FIELDS = Set.of("id", "comment", "createdAt");
 
     public static void validate(Pageable pageable, Set<String> validSortFields) {
         for (Sort.Order order : pageable.getSort()) {
