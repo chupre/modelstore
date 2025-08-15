@@ -4,20 +4,13 @@ import { Package, ShoppingCart, Users, FolderOpen } from 'lucide-react'
 import CategoriesManager from "@/components/CategoryManager.jsx"
 import CartsManager from "@/components/CartManager.jsx"
 import UsersManager from "@/components/UserManager.jsx"
-// import FileUploadManager from "@/components/admin/file-upload-manager"
 import ProductsManager from "@/components/ProductsManager.jsx";
 
 function AdminPage() {
     const [activeTab, setActiveTab] = useState("products")
 
     return (
-        <div className="min-h-screen bg-background text-left">
-            <div className="border-b">
-                <div className="flex h-16 items-center px-4">
-                    <h1 className="text-2xl font-bold">3D Model Store Admin</h1>
-                </div>
-            </div>
-
+        <div className="text-left bg-background/80 mt-13 min-h-screen">
             <div className="flex-1 space-y-4 p-8 pt-6">
                 <div className="flex items-center justify-between space-y-2">
                     <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
@@ -58,10 +51,6 @@ function AdminPage() {
                     <TabsContent value="users" className="space-y-4">
                         <UsersManager />
                     </TabsContent>
-
-                    {/*<TabsContent value="uploads" className="space-y-4">*/}
-                    {/*    <FileUploadManager />*/}
-                    {/*</TabsContent>*/}
                 </Tabs>
             </div>
         </div>

@@ -1,149 +1,237 @@
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
-import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
-import {Button} from "@/components/ui/button";
-import {useLocation, useNavigate} from "react-router-dom";
-import {HOME_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE} from "../utils/consts";
-import {login, registration} from "@/http/userAPI.js";
-import {useContext, useState} from "react";
-import {observer} from "mobx-react-lite";
-import {Context} from "@/main.jsx";
-import {toast} from "sonner";
-import {AlertCircleIcon} from "lucide-react";
+import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {Button} from "@/components/ui/button"
+import {useLocation, useNavigate, useSearchParams} from "react-router-dom"
+import {HOME_ROUTE, LOGIN_ROUTE} from "../utils/consts"
+import {
+    changePassword,
+    login,
+    registration,
+    sendPasswordResetEmail,
+    validatePasswordResetToken
+} from "@/http/userAPI.js"
+import {useContext, useEffect, useState} from "react"
+import {observer} from "mobx-react-lite"
+import {Context} from "@/main.jsx"
+import {toast} from "sonner"
+import errorToast from "@/utils/errorToast.jsx"
+import {Eye, EyeOff} from "lucide-react"
 
 function Auth() {
-    const {user} = useContext(Context);
-    const location = useLocation();
-    const isLogin = location.pathname === LOGIN_ROUTE;
-    const navigate = useNavigate();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [username, setUsername] = useState("");
+    const {user} = useContext(Context)
+    const location = useLocation()
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
 
-    const signIn = async (email, username, password) => {
-        try {
-            let data;
-            if (isLogin) {
-                data = await login(email, password);
-            } else {
-                data = await registration(username, email, password);
-            }
-            user.setUser(data);
-            user.setIsAuth(true);
-            navigate(HOME_ROUTE);
-        } catch (error) {
-            const responseData = error?.response?.data;
-            if (responseData && typeof responseData === "object") {
-                const messages = Object.values(responseData);
+    const initialMode = location.pathname === LOGIN_ROUTE ? "login" : "signup"
 
-                toast('', {
-                    description: (
-                        <div className="space-y-1">
-                            <div className="flex items-center gap-x-2">
-                                <AlertCircleIcon className="text-sm"/>
-                                <p className="text-sm font-bold">Unable to sign {isLogin ? "in" : "up"}</p>
-                            </div>
-                            <p>Please verify your credentials and try again.</p>
-                            <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                                {messages.map((msg, i) => (
-                                    <li key={i}>{msg}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    ),
-                    className: "text-left max-w-sm flex flex-col justify-between",
-                    classNames: {
-                        actionButton: "-mt-4 self-end"
-                    },
-                    action: {
-                        label: "OK",
-                    },
-                    duration: 5000,
-                });
+    const [mode, setMode] = useState(initialMode)
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-            } else {
-                toast.error("Unexpected error", {
-                    description: "Something went wrong. Please try again.",
-                });
+    const [formData, setFormData] = useState({
+        email: "",
+        username: "",
+        password: "",
+        confirmPassword: "",
+    })
+
+    useEffect(() => {
+        const token = searchParams?.get("passwordReset")
+        if (!token) {
+            toast.error("No token is provided")
+            return
+        }
+
+        async function validateToken() {
+            try {
+                await validatePasswordResetToken(token);
+            } catch (e) {
+                errorToast(e)
+                setMode("login")
+                navigate(LOGIN_ROUTE)
             }
         }
-    };
+
+        validateToken().then(() => {
+            setMode("reset")
+        })
+    }, []);
+
+    const updateField = (name, value) => {
+        setFormData((prev) => ({...prev, [name]: value}))
+    }
+
+    const handleSubmit = async () => {
+        try {
+            if (mode === "login") {
+                const data = await login(formData.email, formData.password)
+                user.setUser(data)
+                user.setIsAuth(true)
+                navigate(HOME_ROUTE)
+            } else if (mode === "signup") {
+                const data = await registration(formData.username, formData.email, formData.password)
+                user.setUser(data)
+                user.setIsAuth(true)
+                navigate(HOME_ROUTE)
+            } else if (mode === "forgot") {
+                try {
+                    await sendPasswordResetEmail(formData.email)
+
+                    toast.success("Password reset link sent", {
+                        description: "If an account with this email exists, you will receive a link.",
+                    })
+                } catch (e) {
+                    errorToast(e)
+                }
+
+            } else if (mode === "reset") {
+                if (formData.password !== formData.confirmPassword) {
+                    toast.error("Passwords do not match")
+                } else {
+                        await changePassword(formData.password, searchParams.get("passwordReset"))
+                        toast.success("Password changed successfully")
+                        setMode("login")
+                }
+            }
+        } catch (e) {
+            errorToast(e)
+        }
+    }
+
+    const fieldConfig = {
+        login: [
+            {name: "email", label: "Email", type: "email"},
+            {name: "password", label: "Password", type: "password"},
+        ],
+        signup: [
+            {name: "email", label: "Email", type: "email"},
+            {name: "username", label: "Username", type: "text"},
+            {name: "password", label: "Password", type: "password"},
+        ],
+        forgot: [{name: "email", label: "Email", type: "email"}],
+        reset: [
+            {name: "password", label: "New Password", type: "password"},
+            {name: "confirmPassword", label: "Confirm Password", type: "password"},
+        ],
+    }
+
+    const titles = {
+        login: "Sign In",
+        signup: "Sign Up",
+        forgot: "Forgot Password",
+        reset: "Reset Password",
+    }
+
+    const primaryButtonLabels = {
+        login: "Login",
+        signup: "Sign Up",
+        forgot: "Send Reset Link",
+        reset: "Change Password",
+    }
+
+    const secondaryActions = {
+        login: [{label: "Don't have an account?", onClick: () => setMode("signup")}],
+        signup: [{label: "Already have an account?", onClick: () => setMode("login")}],
+        forgot: [{label: "Back to Login", onClick: () => setMode("login")}],
+        reset: [{label: "Back to Login", onClick: () => setMode("login")}],
+    }
+
+    const renderPasswordField = (field, isConfirmPassword = false) => {
+        const showPasswordState = isConfirmPassword ? showConfirmPassword : showPassword
+        const setShowPasswordState = isConfirmPassword ? setShowConfirmPassword : setShowPassword
+
+        return (
+            <div className="space-y-2" key={field.name}>
+                <Label htmlFor={field.name}>{field.label}</Label>
+                <div className="relative">
+                    <Input
+                        id={field.name}
+                        type={showPasswordState ? "text" : "password"}
+                        value={formData[field.name]}
+                        onChange={(e) => updateField(field.name, e.target.value)}
+                        className="pr-10"
+                        autoComplete="off"
+                    />
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-muted/50 transition-colors duration-200"
+                        onClick={() => setShowPasswordState(!showPasswordState)}
+                    >
+                        {showPasswordState ? (
+                            <EyeOff
+                                className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors duration-200"/>
+                        ) : (
+                            <Eye
+                                className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors duration-200"/>
+                        )}
+                        <span className="sr-only">{showPasswordState ? "Hide password" : "Show password"}</span>
+                    </Button>
+                </div>
+            </div>
+        )
+    }
 
     return (
-        <div className="w-full min-h-screen flex items-center justify-center bg-background px-4 pt-20">
+        <div className="w-full min-h-screen flex items-center justify-center bg-background/80 px-4 pt-20">
             <Card className="w-full max-w-md p-4 -mt-30">
                 <CardHeader>
-                    <CardTitle className="text-2xl text-center">
-                        Sign {isLogin ? "In" : "Up"}
-                    </CardTitle>
+                    <CardTitle className="text-2xl text-center">{titles[mode]}</CardTitle>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="you@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
+                    {fieldConfig[mode].map((field) => {
+                        if (field.type === "password") {
+                            const isConfirmPassword = field.name === "confirmPassword"
+                            return renderPasswordField(field, isConfirmPassword)
+                        }
 
-                    {!isLogin && (
-                        <div className="space-y-2">
-                            <Label htmlFor="username">Username</Label>
-                            <Input
-                                id="username"
-                                type="text"
-                                placeholder="Your username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
+                        return (
+                            <div className="space-y-2" key={field.name}>
+                                <Label htmlFor={field.name}>{field.label}</Label>
+                                <Input
+                                    id={field.name}
+                                    type={field.type}
+                                    value={formData[field.name]}
+                                    onChange={(e) => updateField(field.name, e.target.value)}
+                                    autoComplete="off"
+                                />
+                            </div>
+                        )
+                    })}
+
+                    {/* Show "Don't remember password?" link below password input in login mode */}
+                    {mode === "login" && (
+                        <div className="flex justify-start">
+                            <Button
+                                variant="link"
+                                className="h-auto p-0 text-sm text-muted-foreground hover:text-foreground"
+                                onClick={() => setMode("forgot")}
+                            >
+                                Don't remember password?
+                            </Button>
                         </div>
                     )}
-
-                    <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                            id="password"
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
                 </CardContent>
 
                 <CardFooter className="flex flex-col gap-2">
-                    <Button
-                        className="w-full"
-                        onClick={() => signIn(email, username, password)}
-                    >
-                        {isLogin ? "Login" : "Sign Up"}
+                    <Button className="w-full" onClick={handleSubmit}>
+                        {primaryButtonLabels[mode]}
                     </Button>
 
-                    {isLogin ? (
-                        <Button
-                            variant="link"
-                            className="w-full text-sm text-muted-foreground"
-                            onClick={() => navigate(REGISTRATION_ROUTE)}
-                        >
-                            Don't have an account?
+                    {secondaryActions[mode].map((action, idx) => (
+                        <Button key={idx} variant="link" className="w-full text-sm text-muted-foreground"
+                                onClick={action.onClick}>
+                            {action.label}
                         </Button>
-                    ) : (
-                        <Button
-                            variant="link"
-                            className="w-full text-sm text-muted-foreground"
-                            onClick={() => navigate(LOGIN_ROUTE)}
-                        >
-                            Already have an account?
-                        </Button>
-                    )}
+                    ))}
                 </CardFooter>
             </Card>
         </div>
-    );
+    )
 }
 
-export default observer(Auth);
+export default observer(Auth)

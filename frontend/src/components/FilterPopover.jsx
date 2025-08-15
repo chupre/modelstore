@@ -17,7 +17,7 @@ function FilterPopover({
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="">
+        <div>
             <Popover open={isOpen} onOpenChange={setIsOpen}>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="gap-2 bg-transparent">

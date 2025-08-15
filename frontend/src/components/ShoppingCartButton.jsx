@@ -63,7 +63,7 @@ function ShoppingCartButton() {
                     <span className="sr-only">Shopping Cart</span>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-80 p-4 overflow-hidden" align="end">
+            <DropdownMenuContent className="w-80 p-4 mt-1 rounded-t-none border-t-0 bg-background/50 backdrop-blur-lg overflow-hidden" align="end">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg">Cart ({totalItems} item{totalItems === 1 ? "" : "s"})</h3>
                     {cart.cart.cartItems.length > 0 && (

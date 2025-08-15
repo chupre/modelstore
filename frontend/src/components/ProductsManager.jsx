@@ -31,6 +31,7 @@ import {
     AlertDialogTitle, AlertDialogTrigger
 } from "@/components/ui/alert-dialog.js";
 import {createProduct, deleteProduct, patchProduct} from "@/http/adminAPI.js";
+import errorToast from "@/utils/errorToast.jsx";
 
 function ProductsManager() {
     const {product} = useContext(Context);
@@ -98,22 +99,7 @@ function ProductsManager() {
                 description: `Product successfully ${editingProduct ? "updated" : "created"}`,
             })
         } catch (e) {
-            const responseData = e?.response?.data;
-            if (responseData && typeof responseData === "object") {
-                const messages = Object.values(responseData);
-
-                toast.error('Error', {
-                    description: (
-                        messages.map((msg, i) => (
-                            <p key={i}>{msg}</p>
-                        ))
-                    ),
-                });
-            } else {
-                toast.error("Unexpected error", {
-                    description: "Something went wrong. Please try again.",
-                });
-            }
+            errorToast(e)
         }
     }
 
@@ -144,22 +130,7 @@ function ProductsManager() {
                 })
             })
         } catch (e) {
-            const responseData = e?.response?.data;
-            if (responseData && typeof responseData === "object") {
-                const messages = Object.values(responseData);
-
-                toast.error('Error', {
-                    description: (
-                        messages.map((msg, i) => (
-                            <p key={i}>{msg}</p>
-                        ))
-                    ),
-                });
-            } else {
-                toast.error("Unexpected error", {
-                    description: "Something went wrong. Please try again.",
-                });
-            }
+            errorToast(e)
         }
     }
 
@@ -191,22 +162,7 @@ function ProductsManager() {
                     window.URL.revokeObjectURL(url);
                 })
             } catch (e) {
-                const responseData = e?.response?.data;
-                if (responseData && typeof responseData === "object") {
-                    const messages = Object.values(responseData);
-
-                    toast.error('Error', {
-                        description: (
-                            messages.map((msg, i) => (
-                                <p key={i}>{msg}</p>
-                            ))
-                        ),
-                    });
-                } else {
-                    toast.error("Unexpected error", {
-                        description: "Something went wrong. Please try again.",
-                    });
-                }
+                errorToast(e)
             }
         }
     }

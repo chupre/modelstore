@@ -6,6 +6,7 @@ import App from './App.jsx'
 import UserStore from './store/UserStore.js'
 import ProductStore from './store/ProductStore.js';
 import CartStore from "@/store/CartStore.js";
+import {BrowserRouter} from "react-router-dom";
 
 const rootElement = document.getElementById('root')
 if (!rootElement) throw new Error("Root element not found")
@@ -19,7 +20,9 @@ createRoot(rootElement).render(
     cart: new CartStore()
   }}>
     <StrictMode>
-      <App />
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
     </StrictMode>
   </Context.Provider>
 )

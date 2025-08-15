@@ -13,11 +13,9 @@ function Store() {
     const backFromProductPage = location.state?.backFromProductPage;
 
     useEffect(() => {
-        product.setLimit(6)
+        product.setLimit(9)
 
-        if (categoryFromNav) {
-            product.setCategoryId(categoryFromNav);
-        }
+        product.setCategoryId(categoryFromNav);
 
         product.fetchProducts()
     }, [product.currentPage, categoryFromNav]);

@@ -1,4 +1,4 @@
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.js";
+import {Avatar, AvatarFallback} from "@/components/ui/avatar.js";
 import {Button} from "@/components/ui/button.js";
 import {Badge} from "@/components/ui/badge.js";
 import {STORE_ROUTE} from "@/utils/consts.js";
@@ -44,7 +44,7 @@ function ProductPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 bg-background min-h-screen text-left pt-24">
+        <div className="container max-w-7xl mx-auto px-8 py-8 bg-background rounded-2xl text-left mt-20">
             {/* Back button */}
             <div
                 className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-200 mb-8 hover:cursor-pointer"

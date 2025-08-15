@@ -17,7 +17,7 @@ function SearchBar({className}) {
 
     return (
         <div className={`flex flex-col sm:flex-row sm:items-center mb-6 gap-4 ${className}`}>
-            <div className="flex w-full overflow-hidden rounded-md border border-input focus-within:border-ring focus-within:ring-1 focus-within:ring-ring">
+            <div className="bg-background/40 backdrop-blur-lg flex w-full overflow-hidden rounded-md border border-input focus-within:border-ring focus-within:ring-1 focus-within:ring-ring drop-shadow-2xl">
                 <Input
                     type="text"
                     placeholder="Search products..."

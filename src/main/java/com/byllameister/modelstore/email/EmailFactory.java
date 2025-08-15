@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EmailFactory {
-    @Value("${server.url}")
-    private String serverUrl;
+    @Value("${spring.cors.frontendUrl}")
+    private String frontendUrl;
 
     @Value("${user.verificationToken.durationMinutes}")
     private int verificationTokenDurationMinutes;
@@ -16,7 +16,7 @@ public class EmailFactory {
     private long passwordResetTokenDurationMinutes;
 
     public Email createAccountVerificationEmail(VerificationToken verificationToken) {
-        String verificationLink = String.format("%s/users/verification/%s", serverUrl, verificationToken.getId());
+        String verificationLink = String.format("%s/home/?verification=%s", frontendUrl, verificationToken.getId());
 
         String subject = "Verify Your Account";
         String body = String.format(
@@ -35,7 +35,7 @@ public class EmailFactory {
     }
 
     public Email createPasswordResetEmail(String recipientEmail, String rawToken) {
-        String passwordResetLink = String.format("%s/users/passwordReset/%s", serverUrl, rawToken);
+        String passwordResetLink = String.format("%s/login?passwordReset=%s", frontendUrl, rawToken);
 
         String subject = "Reset Password";
         String body = String.format(

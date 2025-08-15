@@ -1,4 +1,4 @@
-import {$host} from "./index";
+import {$authHost, $host} from "./index";
 import {jwtDecode} from 'jwt-decode';
 
 export const registration = async (username, email, password) => {
@@ -18,4 +18,24 @@ export const refresh = async () => {
     const {data} = await $host.post('/auth/refresh')
     localStorage.setItem('token', data.token)
     return jwtDecode(data.token)
+}
+
+export const sendVerificationEmail = async () => {
+    return $authHost.post('/users/verification')
+}
+
+export const verify = async (token) => {
+    return $authHost.get(`users/verification/${token}`)
+}
+
+export const sendPasswordResetEmail = async (email) => {
+    return $authHost.post(`users/passwordReset`, {email})
+}
+
+export const validatePasswordResetToken = async (token) => {
+    return $authHost.get(`users/passwordReset?token=${token}`)
+}
+
+export const changePassword = async (newPassword, token) => {
+    return $authHost.post(`users/passwordReset/confirm`, {token, newPassword})
 }
