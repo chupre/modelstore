@@ -1,6 +1,7 @@
 package com.byllameister.modelstore.users;
 
 import com.byllameister.modelstore.common.ErrorDto;
+import com.byllameister.modelstore.products.interaction.ProductInteractionService;
 import com.byllameister.modelstore.users.profiles.UserProfileDto;
 import com.byllameister.modelstore.users.profiles.UserProfileNotFoundException;
 import com.byllameister.modelstore.users.profiles.UserProfileService;
@@ -18,7 +19,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private UserProfileService userProfileService;
+    private final UserProfileService userProfileService;
+    private final ProductInteractionService productInteractionService;
 
     @GetMapping
     public Page<UserDto> getAllUsers(Pageable pageable) {
@@ -53,6 +55,12 @@ public class UserController {
     public ResponseEntity<UserProfileDto> getUserProfile(@PathVariable("userId") Long userId) {
         var profile = userProfileService.getUserProfile(userId);
         return ResponseEntity.ok(profile);
+    }
+
+    @GetMapping("/{userId}/likes")
+    public ResponseEntity<LikedProductsResponse> getLikedProducts(@PathVariable("userId") Long userId) {
+        var likes = productInteractionService.getLikedProducts(userId);
+        return ResponseEntity.ok(likes);
     }
 
     @ExceptionHandler(UserProfileNotFoundException.class)

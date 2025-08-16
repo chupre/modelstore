@@ -3,6 +3,7 @@ package com.byllameister.modelstore.products.interaction;
 import com.byllameister.modelstore.common.PageableUtils;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.products.ProductRepository;
+import com.byllameister.modelstore.users.LikedProductsResponse;
 import com.byllameister.modelstore.users.User;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import com.byllameister.modelstore.users.UserRepository;
@@ -104,5 +105,10 @@ public class ProductInteractionService {
 
     public void unlikeComment(Long commentId) {
         productCommentLikeRepository.deleteLike(commentId, User.getCurrentUserId());
+    }
+
+    public LikedProductsResponse getLikedProducts(Long userId) {
+        var likes = productLikeRepository.findAllByUserId(userId);
+        return productLikeMapper.toResponse(likes);
     }
 }

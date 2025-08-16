@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface ProductLikeRepository extends JpaRepository<ProductLike, Long> {
     Long countAllByProductId(Long id);
 
@@ -16,4 +18,6 @@ public interface ProductLikeRepository extends JpaRepository<ProductLike, Long> 
 
     @Query("select (count(p) > 0) from ProductLike p where p.product.id = :productId and p.user.id = :userId")
     boolean exists(@Param("productId") Long productId, @Param("userId") Long userId);
+
+    List<ProductLike> findAllByUserId(Long userId);
 }
