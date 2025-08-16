@@ -108,6 +108,7 @@ public class ProductInteractionService {
     }
 
     public LikedProductsResponse getLikedProducts(Long userId) {
+        userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         var likes = productLikeRepository.findAllByUserId(userId);
         return productLikeMapper.toResponse(likes);
     }

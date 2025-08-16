@@ -1,5 +1,6 @@
 package com.byllameister.modelstore.products.interaction;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,5 +20,6 @@ public interface ProductLikeRepository extends JpaRepository<ProductLike, Long> 
     @Query("select (count(p) > 0) from ProductLike p where p.product.id = :productId and p.user.id = :userId")
     boolean exists(@Param("productId") Long productId, @Param("userId") Long userId);
 
+    @EntityGraph("product")
     List<ProductLike> findAllByUserId(Long userId);
 }
