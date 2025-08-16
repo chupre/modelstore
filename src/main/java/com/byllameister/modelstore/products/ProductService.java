@@ -5,6 +5,7 @@ import com.byllameister.modelstore.admin.products.ForbiddenOwnerRoleException;
 import com.byllameister.modelstore.categories.Category;
 import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
 import com.byllameister.modelstore.common.PageableUtils;
+import com.byllameister.modelstore.products.interaction.ProductWithLikesDto;
 import com.byllameister.modelstore.sellers.SellerNotFoundException;
 import com.byllameister.modelstore.sellers.SellerRepository;
 import com.byllameister.modelstore.upload.UploadService;
@@ -37,7 +38,7 @@ public class ProductService {
 
     private final SellerRepository sellerRepository;
 
-    public Page<ProductDto> getProducts(
+    public Page<ProductWithLikesDto> getProducts(
             String search,
             Long categoryId,
             BigDecimal minPrice,
@@ -50,9 +51,9 @@ public class ProductService {
         return products.map(productMapper::toDtoFromFlatDto);
     }
 
-    public ProductDto getProductById(Long id) {
-        var product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
-        return productMapper.toDto(product);
+    public ProductWithLikesDto getProductById(Long id) {
+        var product = productRepository.findByIdWithLikes(id).orElseThrow(ProductNotFoundException::new);
+        return productMapper.toDtoFromFlatDto(product);
     }
 
     public ProductDto createProduct(AdminCreateProductRequest request) throws IOException {
@@ -92,7 +93,6 @@ public class ProductService {
 
         return productMapper.toDto(product);
     }
-
 
     public void deleteProductById(Long id) throws IOException {
         var product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
@@ -179,10 +179,10 @@ public class ProductService {
         return product.getOwner().getId();
     }
 
-    public Page<ProductDto> getProductsBySellerId(Long id, Pageable pageable) {
+    public Page<ProductWithLikesDto> getProductsBySellerId(Long id, Pageable pageable) {
         PageableUtils.validate(pageable, PageableUtils.PRODUCT_SORT_FIELDS);
         var seller = sellerRepository.findById(id).orElseThrow(SellerNotFoundException::new);
-        var products = productRepository.findAllByOwnerId(seller.getUser().getId(), pageable);
-        return products.map(productMapper::toDto);
+        var products = productRepository.findAllByOwnerIdWithLikes(seller.getUser().getId(), pageable);
+        return products.map(productMapper::toDtoFromFlatDto);
     }
 }

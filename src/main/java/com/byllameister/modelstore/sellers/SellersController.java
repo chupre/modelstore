@@ -2,6 +2,7 @@ package com.byllameister.modelstore.sellers;
 
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.products.*;
+import com.byllameister.modelstore.products.interaction.ProductWithLikesDto;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -55,7 +56,7 @@ public class SellersController {
     }
 
     @GetMapping("/me/products")
-    public Page<ProductDto> getSellerProducts(Pageable pageable) {
+    public Page<ProductWithLikesDto> getSellerProducts(Pageable pageable) {
         var id = sellerService.getCurrentSeller().getId();
         return productService.getProductsBySellerId(id, pageable);
     }

@@ -1,6 +1,7 @@
 package com.byllameister.modelstore.products;
 
 import com.byllameister.modelstore.categories.CategoryDto;
+import com.byllameister.modelstore.products.interaction.ProductWithLikesDto;
 import com.byllameister.modelstore.users.UserDto;
 import org.mapstruct.*;
 
@@ -23,7 +24,7 @@ public interface ProductMapper {
 
     @Mapping(target = "owner", expression = "java(mapUser(productFlatDto))")
     @Mapping(target = "category", expression = "java(mapCategory(productFlatDto))")
-    ProductDto toDtoFromFlatDto(ProductFlatDto productFlatDto);
+    ProductWithLikesDto toDtoFromFlatDto(ProductFlatDto productFlatDto);
 
     default UserDto mapUser(ProductFlatDto productFlatDto) {
         return new UserDto(

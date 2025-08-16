@@ -3,6 +3,7 @@ package com.byllameister.modelstore.products;
 import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
 import com.byllameister.modelstore.categories.CategoryNotFoundInQueryException;
 import com.byllameister.modelstore.common.ErrorDto;
+import com.byllameister.modelstore.products.interaction.ProductWithLikesDto;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -25,7 +26,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public Page<ProductDto> getAllProducts(
+    public Page<ProductWithLikesDto> getAllProducts(
             @RequestParam(name = "search", required = false ) String search,
             @RequestParam(name = "categoryId", required = false ) Long categoryId,
             @RequestParam(name = "minPrice", required = false) BigDecimal minPrice,
@@ -36,7 +37,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ProductDto getProductById(@PathVariable Long id) {
+    public ProductWithLikesDto getProductById(@PathVariable Long id) {
         return productService.getProductById(id);
     }
 

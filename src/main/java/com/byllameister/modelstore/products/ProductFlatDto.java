@@ -13,5 +13,6 @@ public interface ProductFlatDto {
     String getOwnerUsername();
     Long getCategoryId();
     String getCategoryName();
+    Long getLikesCount();
     LocalDate getCreatedAt();
 }
