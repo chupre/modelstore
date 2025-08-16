@@ -139,7 +139,6 @@ function ProductPage() {
     }
 
     const isCommentLiked = (id) => {
-        console.log(commentLikes, id)
         return commentLikes.includes(id)
     }
 
@@ -185,6 +184,14 @@ function ProductPage() {
             }
         }
     };
+
+    function handleEditComment(comment) {
+        
+    }
+
+    function handleDeleteComment(id) {
+        
+    }
 
     return (
         <div className="container max-w-7xl mx-auto px-8 py-8 bg-background rounded-2xl text-left mt-20">
@@ -351,11 +358,35 @@ function ProductPage() {
 
                                         {/* Comment content */}
                                         <div className="flex-1 space-y-3">
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-medium text-foreground">@{comment.userId}</span>
-                                                <span className="text-sm text-muted-foreground">
-                                                    {formatDate(comment.createdAt)}
-                                                </span>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-medium text-foreground">@{comment.userId}</span>
+                                                    <span className="text-sm text-muted-foreground">
+                            {formatDate(comment.createdAt)}
+                        </span>
+                                                </div>
+
+                                                {/* Show edit/delete if user owns the comment */}
+                                                {parseInt(user.user?.sub) === comment.userId && (
+                                                    <div className="flex gap-2">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleEditComment(comment)}
+                                                            className="text-muted-foreground hover:text-foreground"
+                                                        >
+                                                            Edit
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleDeleteComment(comment.id)}
+                                                            className="text-destructive hover:bg-destructive/10"
+                                                        >
+                                                            Delete
+                                                        </Button>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <p className="text-muted-foreground leading-relaxed">
@@ -374,7 +405,9 @@ function ProductPage() {
                                         >
                                             <Heart
                                                 className={`w-4 h-4 transition-colors ${
-                                                    isCommentLiked(comment.id) ? "fill-red-500 text-red-500" : "text-muted-foreground"
+                                                    isCommentLiked(comment.id)
+                                                        ? "fill-red-500 text-red-500"
+                                                        : "text-muted-foreground"
                                                 }`}
                                             />
                                             <span className="text-sm">{comment.likes}</span>
