@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface ProductCommentLikeRepository extends JpaRepository<ProductCommentLike, Long> {
     Long countAllByCommentId(Long commentId);
 
@@ -18,4 +20,13 @@ public interface ProductCommentLikeRepository extends JpaRepository<ProductComme
     boolean exists(@Param("commentId") Long commentId, @Param("userId") Long userId);
 
     Long countByCommentId(Long commentId);
+
+    @Query("""
+    select pcl
+    from ProductCommentLike pcl
+    where pcl.user.id = :userId
+      and pcl.comment.product.id = :productId
+""")
+    List<ProductCommentLike> findAllByUserAndProduct(@Param("userId") Long userId,
+                                                     @Param("productId") Long productId);
 }

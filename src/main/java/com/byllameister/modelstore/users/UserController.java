@@ -1,6 +1,7 @@
 package com.byllameister.modelstore.users;
 
 import com.byllameister.modelstore.common.ErrorDto;
+import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.products.interaction.ProductInteractionService;
 import com.byllameister.modelstore.users.profiles.UserProfileDto;
 import com.byllameister.modelstore.users.profiles.UserProfileNotFoundException;
@@ -57,10 +58,24 @@ public class UserController {
         return ResponseEntity.ok(profile);
     }
 
+    @GetMapping("/{userId}/products/{productId}/commentLikes")
+    public ResponseEntity<LikedCommentsResponse> getLikedComments(
+            @PathVariable("userId") Long userId,
+            @PathVariable("productId") Long productId
+    ) {
+        var comments = productInteractionService.getLikedComments(userId, productId);
+        return ResponseEntity.ok(comments);
+    }
+
     @GetMapping("/{userId}/likes")
     public ResponseEntity<LikedProductsResponse> getLikedProducts(@PathVariable("userId") Long userId) {
         var likes = productInteractionService.getLikedProducts(userId);
         return ResponseEntity.ok(likes);
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleProductNotFoundException(ProductNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto(ex.getMessage()));
     }
 
     @ExceptionHandler(UserProfileNotFoundException.class)

@@ -3,10 +3,7 @@ package com.byllameister.modelstore.products.interaction;
 import com.byllameister.modelstore.common.PageableUtils;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.products.ProductRepository;
-import com.byllameister.modelstore.users.LikedProductsResponse;
-import com.byllameister.modelstore.users.User;
-import com.byllameister.modelstore.users.UserNotFoundException;
-import com.byllameister.modelstore.users.UserRepository;
+import com.byllameister.modelstore.users.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -111,5 +108,13 @@ public class ProductInteractionService {
         userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         var likes = productLikeRepository.findAllByUserId(userId);
         return productLikeMapper.toResponse(likes);
+    }
+
+    public LikedCommentsResponse getLikedComments(Long userId, Long productId) {
+        userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
+
+        var comments = productCommentLikeRepository.findAllByUserAndProduct(userId, productId);
+        return productCommentMapper.toResponse(comments);
     }
 }
