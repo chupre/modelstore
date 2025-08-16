@@ -1,4 +1,4 @@
-INSERT INTO category (name) VALUES
+INSERT INTO categories (name) VALUES
                                 ('Sci-Fi'),
                                 ('Fantasy'),
                                 ('Medieval'),

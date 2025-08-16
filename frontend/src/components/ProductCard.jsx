@@ -3,7 +3,7 @@ import {Button} from "@/components/ui/button";
 import {Heart, ShoppingCart, User} from "lucide-react"
 import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
-import {PRODUCT_ROUTE} from "@/utils/consts.js";
+import {LOGIN_ROUTE, PRODUCT_ROUTE} from "@/utils/consts.js";
 import useAddToCart from "@/hooks/useAddToCart.js";
 import {useContext, useState} from "react";
 import {Context} from "@/main.jsx";
@@ -11,13 +11,18 @@ import {likeProduct, unlikeProduct} from "@/http/productAPI.js";
 import errorToast from "@/utils/errorToast.jsx";
 
 function ProductCard({product, isLikedInitial}) {
-    const {cart} = useContext(Context);
+    const {cart, user} = useContext(Context);
     const navigate = useNavigate();
 
     const [isLiked, setIsLiked] = useState(isLikedInitial)
     const [likesCount, setLikesCount] = useState(product.likesCount)
 
     const handleLike = async () => {
+        if (!user.isAuth) {
+            navigate(LOGIN_ROUTE)
+            return
+        }
+
         if (isLiked) {
             setIsLiked(false)
             setLikesCount((prev) => prev - 1)

@@ -2,6 +2,7 @@ package com.byllameister.modelstore.auth;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -9,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class IpBruteForceProtectionService {
 
-    private final Cache<String, Integer> attemptsCache;
+    private final Cache<@NonNull String, Integer> attemptsCache;
 
     private static final int MAX_ATTEMPTS = 5;
     private static final int BLOCK_TIME_MINUTES = 15;

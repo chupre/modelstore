@@ -1,7 +1,7 @@
 import {Avatar, AvatarFallback} from "@/components/ui/avatar.js";
 import {Button} from "@/components/ui/button.js";
 import {Badge} from "@/components/ui/badge.js";
-import {STORE_ROUTE} from "@/utils/consts.js";
+import {LOGIN_ROUTE, STORE_ROUTE} from "@/utils/consts.js";
 import {useNavigate, useParams} from "react-router-dom";
 import {ShoppingCart, ArrowLeft, Calendar, User, Heart, MessageCircle, Send} from "lucide-react"
 import {observer} from "mobx-react-lite";
@@ -126,6 +126,11 @@ function ProductPage() {
     }
 
     const handleAddComment = async () => {
+        if (!user.isAuth) {
+            navigate(LOGIN_ROUTE)
+            return
+        }
+
         try {
             await comment(product.id, newComment).then(() => {
                 fetchComments(product.id).then((res) => {
@@ -143,6 +148,11 @@ function ProductPage() {
     }
 
     const handleCommentLike = async (comment) => {
+        if (!user.isAuth) {
+            navigate(LOGIN_ROUTE)
+            return
+        }
+
         const isLiked = isCommentLiked(comment.id);
 
         // Optimistic update

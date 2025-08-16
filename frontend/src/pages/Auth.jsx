@@ -3,7 +3,7 @@ import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Button} from "@/components/ui/button"
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom"
-import {HOME_ROUTE, LOGIN_ROUTE} from "../utils/consts"
+import {HOME_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE} from "../utils/consts"
 import {
     changePassword,
     login,
@@ -40,7 +40,6 @@ function Auth() {
     useEffect(() => {
         const token = searchParams?.get("passwordReset")
         if (!token) {
-            toast.error("No token is provided")
             return
         }
 
@@ -49,7 +48,6 @@ function Auth() {
                 await validatePasswordResetToken(token);
             } catch (e) {
                 errorToast(e)
-                setMode("login")
                 navigate(LOGIN_ROUTE)
             }
         }
@@ -58,6 +56,14 @@ function Auth() {
             setMode("reset")
         })
     }, []);
+
+    useEffect(() => {
+        if (location.pathname === LOGIN_ROUTE) {
+            setMode("login")
+        } else {
+            setMode("signup")
+        }
+    }, [location.pathname])
 
     const updateField = (name, value) => {
         setFormData((prev) => ({...prev, [name]: value}))
@@ -132,10 +138,16 @@ function Auth() {
     }
 
     const secondaryActions = {
-        login: [{label: "Don't have an account?", onClick: () => setMode("signup")}],
-        signup: [{label: "Already have an account?", onClick: () => setMode("login")}],
-        forgot: [{label: "Back to Login", onClick: () => setMode("login")}],
-        reset: [{label: "Back to Login", onClick: () => setMode("login")}],
+        login: [{label: "Don't have an account?", onClick: () => navigate(REGISTRATION_ROUTE)}],
+        signup: [{label: "Already have an account?", onClick: () => navigate(LOGIN_ROUTE)}],
+        forgot: [{label: "Back to Login", onClick: () => {
+                navigate(LOGIN_ROUTE)
+                setMode("login")
+            }}],
+        reset: [{label: "Back to Login", onClick: () => {
+                navigate(LOGIN_ROUTE)
+                setMode("login")
+            }}],
     }
 
     const renderPasswordField = (field, isConfirmPassword = false) => {

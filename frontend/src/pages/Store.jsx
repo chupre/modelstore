@@ -7,6 +7,7 @@ import SearchBar from "@/components/SearchBar.jsx";
 import {useLocation} from "react-router-dom";
 import {fetchLikedProducts} from "@/http/productAPI.js";
 import Loading from "@/components/Loading.jsx";
+import errorToast from "@/utils/errorToast.jsx";
 
 function Store() {
     const {product, user} = useContext(Context);
@@ -18,16 +19,25 @@ function Store() {
     const [isLoading, setLoading] = useState(true);
 
     useEffect(() => {
-        product.setLimit(9)
-        product.setCategoryId(categoryFromNav);
-        product.fetchProducts()
+        const fetchData = async () => {
+            try {
+                product.setLimit(9)
+                product.setCategoryId(categoryFromNav);
+                await product.fetchProducts()
 
-        if (user.isAuth) {
-            fetchLikedProducts(user.user.sub).then((res) => {
-                setLikes(res.data.productId)
+                if (user.isAuth) {
+                    await fetchLikedProducts(user.user.sub).then((res) => {
+                        setLikes(res.data.productId)
+                    })
+                }
+            } catch (e) {
+                errorToast(e)
+            } finally {
                 setLoading(false)
-            })
+            }
         }
+
+        fetchData()
     }, [product.currentPage, categoryFromNav]);
 
     useEffect(() => {
