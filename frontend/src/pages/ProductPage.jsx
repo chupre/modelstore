@@ -3,11 +3,23 @@ import {Button} from "@/components/ui/button.js";
 import {Badge} from "@/components/ui/badge.js";
 import {LOGIN_ROUTE, STORE_ROUTE} from "@/utils/consts.js";
 import {useNavigate, useParams} from "react-router-dom";
-import {ShoppingCart, ArrowLeft, Calendar, User, Heart, MessageCircle, Send} from "lucide-react"
-import {observer} from "mobx-react-lite";
-import {useContext, useEffect, useState} from "react";
 import {
-    comment,
+    ShoppingCart,
+    ArrowLeft,
+    Calendar,
+    User,
+    Heart,
+    MessageCircle,
+    Send,
+    Trash2,
+    Edit2,
+    Check,
+    X
+} from "lucide-react"
+import {observer} from "mobx-react-lite";
+import {useContext, useEffect, useRef, useState} from "react";
+import {
+    comment, deleteComment, editComment,
     fetchComments, fetchLikedComments,
     fetchLikedProducts,
     fetchProduct, likeComment,
@@ -18,8 +30,16 @@ import Loading from "@/components/Loading.jsx";
 import useAddToCart from "@/hooks/useAddToCart.js";
 import {Context} from "@/main.jsx";
 import errorToast from "@/utils/errorToast.jsx";
-import {Card, CardContent} from "@/components/ui/card.js";
 import {Textarea} from "@/components/ui/textarea.js";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent, AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger
+} from "@/components/ui/alert-dialog.js";
 
 function ProductPage() {
     const {cart, user} = useContext(Context);
@@ -34,6 +54,9 @@ function ProductPage() {
     const [commentLikes, setCommentLikes] = useState([]);
     const [comments, setComments] = useState([])
     const [newComment, setNewComment] = useState("")
+    const [editingCommentId, setEditingCommentId] = useState(null)
+    const [editingText, setEditingText] = useState("")
+    const commentsRef = useRef(null);
 
     useEffect(() => {
         const loadData = async () => {
@@ -195,12 +218,53 @@ function ProductPage() {
         }
     };
 
-    function handleEditComment(comment) {
-        
+    const handleDeleteComment = async (comment) => {
+        if (!user.isAuth) {
+            navigate(LOGIN_ROUTE)
+            return
+        }
+
+        try {
+            await deleteComment(comment.id).then(() => {
+                fetchComments(product.id).then((res) => {
+                    setComments(res.data.content)
+                })
+            })
+        } catch (e) {
+            errorToast(e)
+        }
     }
 
-    function handleDeleteComment(id) {
-        
+    const handleEditComment = (comment) => {
+        setEditingCommentId(comment.id)
+        setEditingText(comment.comment)
+    }
+
+    const handleSaveEdit = async (commentId) => {
+        if (!editingText.trim()) return
+
+        if (!user.isAuth) {
+            navigate(LOGIN_ROUTE)
+            return
+        }
+
+        try {
+            await editComment(commentId, editingText).then(() => {
+                fetchComments(product.id).then((res) => {
+                    setComments(res.data.content)
+                })
+            })
+        } catch (e) {
+            errorToast(e)
+        }
+
+        setEditingCommentId(null)
+        setEditingText("")
+    }
+
+    const handleCancelEdit = () => {
+        setEditingCommentId(null)
+        setEditingText("")
     }
 
     return (
@@ -260,26 +324,28 @@ function ProductPage() {
                     </div>
 
                     <div className="flex items-center gap-4 p-4 bg-card rounded-xl ring-1 ring-border">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleProductLike}
-                            className="flex items-center gap-2 hover:bg-muted text-muted-foreground"
-                        >
-                            <Heart
-                                className={`w-5 h-5 transition-colors ${isProductLiked ? "fill-red-500 text-red-500" : "text-muted-foreground"}`}
-                            />
-                            <span className="font-medium">{product.likesCount}</span>
-                        </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleProductLike}
+                                className={`flex items-center gap-1 h-8 px-2 ${
+                                    isProductLiked
+                                        ? "text-red-500 hover:text-red-600"
+                                        : "text-muted-foreground hover:text-foreground"
+                                }`}
+                            >
+                                <Heart className={`w-4 h-4 ${isProductLiked ? "fill-current" : ""}`} />
+                                <span className="text-sm min-w-[0.5rem] text-center">{product.likesCount}</span>
+                            </Button>
 
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={handleAddComment}
-                            className="flex items-center gap-2 hover:bg-muted text-muted-foreground"
+                            onClick={() => commentsRef.current?.scrollIntoView({ behavior: "smooth" })}
+                            className="flex items-center gap-1 h-8 px-2 text-muted-foreground"
                         >
                             <MessageCircle className="w-5 h-5"/>
-                            <span className="font-medium">{comments.length} comments</span>
+                            <span className="font-medium text-sm min-w-[0.5rem] text-center">{comments.length} comments</span>
                         </Button>
                     </div>
 
@@ -322,111 +388,143 @@ function ProductPage() {
 
                 </div>
             </div>
-            <div className="mt-16 space-y-8 p-10">
-                <div className="border-t border-border pt-8">
-                    <h2 className="text-2xl font-bold text-foreground mb-6">Comments ({comments.length})</h2>
+            <div className="mx-auto p-6 space-y-6">
+                <div className="flex items-center gap-2 mb-6">
+                    <h2 className="text-2xl font-semibold">Comments</h2>
+                    <span className="px-2 py-1 bg-muted text-muted-foreground rounded-md text-sm">{comments.length}</span>
+                </div>
 
-                    {/* Add Comment Form */}
-                    <Card className="mb-8">
-                        <CardContent className="p-6">
-                            <div className="flex gap-4">
+                {/* Add Comment Form */}
+                <div ref={commentsRef} className="border rounded-lg p-4 bg-card">
+                    <div className="flex gap-3">
+                        <Avatar className="w-10 h-10 flex-shrink-0">
+                            <AvatarFallback>
+                                <User className="w-5 h-5" />
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 space-y-3">
+                            <Textarea
+                                placeholder="Write a comment..."
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                className="min-h-[80px] resize-none"
+                            />
+                            <div className="flex justify-end">
+                                <Button onClick={handleAddComment} disabled={!newComment.trim()} size="sm">
+                                    <Send className="w-4 h-4 mr-0" />
+                                    Post
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Comments List */}
+                <div className="space-y-4">
+                    {comments.map((comment) => (
+                        <div key={comment.id} className="border rounded-lg p-4 bg-card group">
+                            <div className="flex gap-3">
                                 <Avatar className="w-10 h-10 flex-shrink-0">
-                                    <AvatarFallback className="bg-muted text-muted-foreground">
-                                        <User className="w-5 h-5"/>
+                                    <AvatarFallback>
+                                        <User className="w-5 h-5" />
                                     </AvatarFallback>
                                 </Avatar>
-                                <div className="flex-1 space-y-4">
-                                    <Textarea
-                                        placeholder="Share your thoughts about this product..."
-                                        value={newComment}
-                                        onChange={(e) => setNewComment(e.target.value)}
-                                        className="min-h-[100px] resize-none"
-                                    />
-                                    <div className="flex justify-end">
-                                        <Button onClick={handleAddComment} disabled={!newComment.trim()}>
-                                            <Send className="w-4 h-4 mr-2"/>
-                                            Comment
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
 
-                    {/* Comments List */}
-                    <div className="space-y-6">
-                        {comments.map((comment) => (
-                            <Card key={comment.id}>
-                                <CardContent className="p-6 py-2 relative">
-                                    <div className="flex gap-4">
-                                        {/* Avatar */}
-                                        <Avatar className="w-10 h-10 flex-shrink-0">
-                                            <AvatarFallback className="bg-muted text-muted-foreground">
-                                                <User className="w-5 h-5"/>
-                                            </AvatarFallback>
-                                        </Avatar>
+                                <div className="flex-1 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-medium">@user{comment.userId}</span>
+                                            <span className="text-sm text-muted-foreground">{formatDate(comment.createdAt)}</span>
+                                        </div>
 
-                                        {/* Comment content */}
-                                        <div className="flex-1 space-y-3">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-medium text-foreground">@{comment.userId}</span>
-                                                    <span className="text-sm text-muted-foreground">
-                            {formatDate(comment.createdAt)}
-                        </span>
-                                                </div>
+                                        {/* Edit/Delete buttons */}
+                                        {user.user && parseInt(user.user.sub) === comment.userId && editingCommentId !== comment.id && (
+                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                {/* Edit Button */}
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => handleEditComment(comment)}
+                                                    className="h-8 w-8 p-0"
+                                                >
+                                                    <Edit2 className="h-4 w-4" />
+                                                    <span className="sr-only">Edit comment</span>
+                                                </Button>
 
-                                                {/* Show edit/delete if user owns the comment */}
-                                                {parseInt(user.user?.sub) === comment.userId && (
-                                                    <div className="flex gap-2">
+                                                {/* Delete Button styled like edit */}
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
                                                         <Button
                                                             variant="ghost"
                                                             size="sm"
-                                                            onClick={() => handleEditComment(comment)}
-                                                            className="text-muted-foreground hover:text-foreground"
+                                                            className="h-8 w-8 p-0"
                                                         >
-                                                            Edit
+                                                            <Trash2 className="h-4 w-4 text-destructive" />
                                                         </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => handleDeleteComment(comment.id)}
-                                                            className="text-destructive hover:bg-destructive/10"
-                                                        >
-                                                            Delete
-                                                        </Button>
-                                                    </div>
-                                                )}
+                                                    </AlertDialogTrigger>
+
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                onClick={() => handleDeleteComment(comment)}
+                                                            >
+                                                                Continue
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
                                             </div>
 
-                                            <p className="text-muted-foreground leading-relaxed">
-                                                {comment.comment}
-                                            </p>
-                                        </div>
+                                        )}
                                     </div>
 
-                                    {/* Fixed bottom-right like button */}
-                                    <div className="absolute -bottom-2 right-4">
+                                    {editingCommentId === comment.id ? (
+                                        <div className="space-y-3">
+                                            <Textarea
+                                                value={editingText}
+                                                onChange={(e) => setEditingText(e.target.value)}
+                                                className="min-h-[80px] resize-none"
+                                            />
+                                            <div className="flex gap-2">
+                                                <Button size="sm" onClick={() => handleSaveEdit(comment.id)} disabled={!editingText.trim()}>
+                                                    <Check className="w-4 h-4 mr-1" />
+                                                    Save
+                                                </Button>
+                                                <Button variant="outline" size="sm" onClick={handleCancelEdit}>
+                                                    <X className="w-4 h-4 mr-1" />
+                                                    Cancel
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm leading-relaxed">{comment.comment}</p>
+                                    )}
+
+                                    {/* Like button */}
+                                    <div className="flex items-center justify-between pt-2">
+                                        <div></div>
                                         <Button
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => handleCommentLike(comment)}
-                                            className="flex items-center gap-2 hover:bg-muted"
+                                            className={`flex items-center gap-1 h-8 px-2 ${
+                                                isCommentLiked(comment.id)
+                                                    ? "text-red-500 hover:text-red-600"
+                                                    : "text-muted-foreground hover:text-foreground"
+                                            }`}
                                         >
-                                            <Heart
-                                                className={`w-4 h-4 transition-colors ${
-                                                    isCommentLiked(comment.id)
-                                                        ? "fill-red-500 text-red-500"
-                                                        : "text-muted-foreground"
-                                                }`}
-                                            />
+                                            <Heart className={`w-4 h-4 ${isCommentLiked(comment.id) ? "fill-current" : ""}`} />
                                             <span className="text-sm">{comment.likes}</span>
                                         </Button>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

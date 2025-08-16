@@ -73,3 +73,11 @@ export const likeComment = async (id) => {
 export const unlikeComment = async (id) => {
     return $authHost.delete(`interactions/products/comments/${id}/likes`)
 }
+
+export const editComment = async (id, comment) => {
+    return $authHost.put(`interactions/products/comments/${id}`, {comment})
+}
+
+export const deleteComment = async (id) => {
+    return $authHost.delete(`interactions/products/comments/${id}`)
+}
