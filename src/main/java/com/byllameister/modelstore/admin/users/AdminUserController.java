@@ -2,9 +2,6 @@ package com.byllameister.modelstore.admin.users;
 
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.*;
-import com.byllameister.modelstore.users.profiles.UpdateUserProfileRequest;
-import com.byllameister.modelstore.users.profiles.UserProfileDto;
-import com.byllameister.modelstore.users.profiles.UserProfileService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,14 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-
 @RestController
 @RequestMapping("/admin/users")
 @AllArgsConstructor
 public class AdminUserController {
     UserService userService;
-    UserProfileService userProfileService;
 
     @GetMapping
     public ResponseEntity<Page<UserExposedResponse>> getAllUsers(Pageable pageable) {
@@ -44,19 +38,8 @@ public class AdminUserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-
         return ResponseEntity.noContent().build();
     }
-
-    @PutMapping("/{id}/profile")
-    public ResponseEntity<UserProfileDto> updateUserProfile(
-            @PathVariable Long id,
-            @Valid @ModelAttribute UpdateUserProfileRequest request
-    ) throws IOException {
-        var updatedProfile = userProfileService.updateProfile(id, request);
-        return ResponseEntity.ok(updatedProfile);
-    }
-
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Void> handleUserNotFound() {

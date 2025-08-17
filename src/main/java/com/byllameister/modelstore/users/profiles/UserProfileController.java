@@ -1,32 +1,35 @@
 package com.byllameister.modelstore.users.profiles;
 
 import com.byllameister.modelstore.common.ErrorDto;
-import com.byllameister.modelstore.users.User;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/users/me/profile")
+@RequestMapping("/users/{id}/profile")
 @AllArgsConstructor
 public class UserProfileController {
     private UserProfileService userProfileService;
 
+    @PreAuthorize("@userProfilePermissionEvaluator.hasAccess(#id)")
     @GetMapping
-    public ResponseEntity<UserProfileDto> getCurrentProfile() {
-        var profile = userProfileService.getCurrentUserProfile();
+    public ResponseEntity<UserProfileDto> getProfile(@PathVariable Long id) {
+        var profile = userProfileService.getUserProfile(id);
         return ResponseEntity.ok(profile);
     }
 
+    @PreAuthorize("@userProfilePermissionEvaluator.hasAccess(#id)")
     @PutMapping
     public ResponseEntity<UserProfileDto> updateProfile(
-            @Valid @ModelAttribute UpdateUserProfileRequest request
+            @Valid @ModelAttribute UpdateUserProfileRequest request,
+            @PathVariable Long id
     ) throws IOException {
-        var updatedProfile = userProfileService.updateProfile(User.getCurrentUserId(), request);
+        var updatedProfile = userProfileService.updateProfile(id, request);
         return ResponseEntity.ok(updatedProfile);
     }
 
