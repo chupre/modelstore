@@ -34,7 +34,13 @@ import java.util.UUID;
                         name = "product.details",
                         attributeNodes = {
                                 @NamedAttributeNode("category"),
-                                @NamedAttributeNode("owner")
+                                @NamedAttributeNode(value = "owner", subgraph = "owner.details")
+                        }
+                ),
+                @NamedSubgraph(
+                        name = "owner.details",
+                        attributeNodes = {
+                                @NamedAttributeNode("profile")
                         }
                 )
         }

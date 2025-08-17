@@ -39,3 +39,15 @@ export const validatePasswordResetToken = async (token) => {
 export const changePassword = async (newPassword, token) => {
     return $authHost.post(`users/passwordReset/confirm`, {token, newPassword})
 }
+
+export const fetchProfile = async (id) => {
+    return $host.get(`users/${id}/profile`)
+}
+
+export const updateProfile = async (id, profileFormData) => {
+    return await $authHost.put(`users/${id}/profile`, profileFormData, {
+        headers: {
+            "content-type": "multipart/form-data"
+        }
+    })
+}

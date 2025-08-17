@@ -27,7 +27,6 @@ export const updateCategory = async (id, category) => {
     return await $authHost.put(`admin/categories/${id}`, category)
 }
 
-
 export const fetchUsers = async (page, size) => {
     return await $authHost.get('admin/users', {params: {
             page,

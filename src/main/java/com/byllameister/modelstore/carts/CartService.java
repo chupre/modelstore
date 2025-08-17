@@ -42,8 +42,8 @@ public class CartService {
     }
 
     public CartExposedResponse getCartByUserId(Long userId) {
-        var user =  userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        var cart = cartRepository.findByUser(user).orElseThrow(CartNotFoundException::new);
+        userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        var cart = cartRepository.findByUserId(userId).orElseThrow(CartNotFoundException::new);
         return cartMapper.toCartExposedResponse(cart);
     }
 

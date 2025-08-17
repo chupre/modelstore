@@ -27,7 +27,7 @@ public interface CartRepository extends JpaRepository<Cart, UUID> {
     Optional<Cart> findById(@NonNull UUID id);
 
     @EntityGraph(value = "Cart.withAll")
-    Optional<Cart> findByUser(User user);
+    Optional<Cart> findByUserId(Long userId);
 
     @Modifying
     @Query("UPDATE CartItem ci SET ci.isSelected = true WHERE ci.cart.id = :cartId")

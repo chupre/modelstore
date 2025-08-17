@@ -3,9 +3,7 @@ package com.byllameister.modelstore.users;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.products.interaction.ProductInteractionService;
-import com.byllameister.modelstore.users.profiles.UserProfileDto;
 import com.byllameister.modelstore.users.profiles.UserProfileNotFoundException;
-import com.byllameister.modelstore.users.profiles.UserProfileService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,7 +18,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private final UserProfileService userProfileService;
     private final ProductInteractionService productInteractionService;
 
     @GetMapping
@@ -50,12 +47,6 @@ public class UserController {
     public ResponseEntity<UserDto> me() {
         var user = userService.getCurrentUser();
         return ResponseEntity.ok().body(user);
-    }
-
-    @GetMapping("/{userId}/profile")
-    public ResponseEntity<UserProfileDto> getUserProfile(@PathVariable("userId") Long userId) {
-        var profile = userProfileService.getUserProfile(userId);
-        return ResponseEntity.ok(profile);
     }
 
     @GetMapping("/{userId}/products/{productId}/commentLikes")

@@ -1,8 +1,9 @@
 import {
     Pagination,
-    PaginationContent, PaginationEllipsis,
+    PaginationContent,
     PaginationItem,
-    PaginationLink, PaginationNext,
+    PaginationLink,
+    PaginationNext,
     PaginationPrevious
 } from "@/components/ui/pagination.js";
 import {observer} from "mobx-react-lite";
@@ -21,7 +22,7 @@ function Pages() {
     }, [product.currentPage]);
 
     return (
-        <Pagination className="pt-6">
+        <Pagination className="pt-6 bg-0 backdrop-blur-lg">
             <PaginationContent>
                 <PaginationItem>
                     <PaginationPrevious

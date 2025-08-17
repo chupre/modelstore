@@ -1,4 +1,3 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import React, { createContext } from 'react';
 import './index.css'
@@ -19,10 +18,8 @@ createRoot(rootElement).render(
     product: new ProductStore(),
     cart: new CartStore()
   }}>
-    <StrictMode>
         <BrowserRouter>
             <App />
         </BrowserRouter>
-    </StrictMode>
   </Context.Provider>
 )

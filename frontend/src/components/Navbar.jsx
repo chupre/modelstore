@@ -4,11 +4,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {useContext, useEffect} from "react";
 import { Context } from '../main';
 import { useNavigate } from "react-router-dom";
-import {ADMIN_ROUTE, HOME_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE} from "../utils/consts";
-import {LogOut} from "lucide-react";
+import {ADMIN_ROUTE, HOME_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE} from "../utils/consts";
+import {LogOut, User} from "lucide-react";
 import NavbarCatalogButton from "@/components/NavbarCatalogButton.jsx";
 import {fetchCategories} from "@/http/productAPI.js";
 import ShoppingCartButton from "@/components/ShoppingCartButton.jsx";
+import {fetchProfile} from "@/http/userAPI.js";
 
 const Navbar = observer(() => {
     const { user, product } = useContext(Context);
@@ -18,7 +19,13 @@ const Navbar = observer(() => {
         fetchCategories().then((res) => {
             product.setCategories(res.data.content);
         })
-    }, [])
+
+        if (user.isAuth) {
+            fetchProfile(user.user.sub).then((res) => {
+                user.setProfile(res.data)
+            })
+        }
+    }, [user.isAuth])
 
     const logOut = () => {
         user.setUser({});
@@ -63,9 +70,14 @@ const Navbar = observer(() => {
                     >
                         <LogOut className="w-4 h-4" />
                     </Button>
-                    <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                        <AvatarFallback>JD</AvatarFallback>
+                    <Avatar
+                        onClick={() => navigate(PROFILE_ROUTE + '/' + user.user.sub)}
+                        className="hover:cursor-pointer"
+                    >
+                        <AvatarImage src={`${import.meta.env.VITE_API_URL}${user.profile.avatarUrl}`} alt="User" />
+                        <AvatarFallback>
+                            <User/>
+                        </AvatarFallback>
                     </Avatar>
                 </div>
             ) : (

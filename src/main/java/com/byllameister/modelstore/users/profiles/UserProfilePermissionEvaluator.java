@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 public class UserProfilePermissionEvaluator {
     private final UserProfileService profileService;
 
-    public boolean hasAccess(Long profileId) {
-        var userId = profileService.getUserProfile(profileId).getUserId();
-        return userId.equals(User.getCurrentUserId()) || User.isCurrentUserAdmin();
+    public boolean hasAccess(Long userId) {
+        var profile = profileService.getUserProfile(userId);
+        return profile.getUserId().equals(User.getCurrentUserId()) || User.isCurrentUserAdmin();
     }
 }
