@@ -123,4 +123,9 @@ public class ProductInteractionService {
         userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return productCommentRepository.findLikedByUserId(userId, pageable);
     }
+
+    public CommentWithUserLikeResponse getCommentWithUserLike(Long commentId) {
+        return productCommentRepository.findWithUserLike(commentId, User.getCurrentUserId())
+                .orElseThrow(ProductCommentNotFoundException::new);
+    }
 }

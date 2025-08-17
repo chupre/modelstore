@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface ProductCommentRepository extends JpaRepository<ProductComment, Long> {
     @Query("""
                 SELECT new com.byllameister.modelstore.products.interaction.ProductCommentDto(
@@ -60,4 +62,27 @@ public interface ProductCommentRepository extends JpaRepository<ProductComment, 
                 GROUP BY c.id
             """)
     Page<ProductCommentDto> findLikedByUserId(Long userId, Pageable pageable);
+
+    @Query(value = """
+                SELECT new com.byllameister.modelstore.products.interaction.CommentWithUserLikeResponse(
+                            c.id,
+                            c.product.id,
+                            c.user.id,
+                            c.comment,
+                            COUNT(cl.id),
+                            c.createdAt,
+                            EXISTS(
+                                SELECT 1 FROM ProductCommentLike pcl
+                                WHERE pcl.comment.id = c.id
+                                    AND pcl.user.id = :userId
+                            )
+                )
+                FROM ProductComment c
+                LEFT JOIN ProductCommentLike cl ON cl.comment.id = c.id
+                WHERE c.id = :commentId
+                GROUP BY c.id
+    """)
+    Optional<CommentWithUserLikeResponse> findWithUserLike(
+            @Param("commentId") Long commentId,
+            @Param("userId") Long userId);
 }

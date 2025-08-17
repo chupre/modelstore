@@ -133,6 +133,39 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<ProductFlatDto> findAllByOwnerIdWithLikes(@Param("sellerId") Long sellerId, Pageable pageable);
 
 
+    @Query(value = """
+                        SELECT * FROM (
+                            SELECT p.id as id,
+                                   p.title as title,
+                                   p.description as description,
+                                   p.price as price,
+                                   p.previewimage as previewImage,
+                                   p.file as file,
+                                   u.id as ownerId,
+                                   u.username as ownerUsername,
+                                   c.id as categoryId,
+                                   c.name as categoryName,
+                                   p.createdat as createdAt,
+                                   COUNT(l.id) as likesCount,
+                                   EXISTS (
+                                     SELECT 1 FROM product_likes pl
+                                     WHERE pl.product_id = p.id AND pl.user_id = :userId
+                                   ) as isLiked
+                            FROM products p
+                            JOIN users u ON p.owner_id = u.id
+                            JOIN categories c ON p.category_id = c.id
+                            LEFT JOIN product_likes l ON l.product_id = p.id
+                            WHERE p.id = :productId
+                            GROUP BY p.id, u.id, c.id
+                        ) sub
+            """,
+            nativeQuery = true
+    )
+    Optional<ProductWithUserLikeFlatDto> findByIdWithUserLike(
+            @Param("productId") Long productId,
+            @Param("userId") Long userId
+    );
+
     @Query(
             value = """
                     SELECT * FROM (

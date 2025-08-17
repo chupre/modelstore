@@ -43,8 +43,17 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ProductWithLikesResponse getProductById(@PathVariable Long id) {
-        return productService.getProductById(id);
+    public ResponseEntity<? extends ProductDto> getProductById(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserPrincipal user
+    ) {
+        if (user == null) {
+            var product = productService.getProductById(id);
+            return ResponseEntity.ok(product);
+        } else {
+            var product = productService.getProductWithUserLike(id);
+            return ResponseEntity.ok(product);
+        }
     }
 
     @PreAuthorize("@productPermissionEvaluator.hasAccess(#id)")

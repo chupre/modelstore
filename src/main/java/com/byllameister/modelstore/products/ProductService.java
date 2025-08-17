@@ -63,6 +63,13 @@ public class ProductService {
         return productMapper.toDtoFromFlatDto(product);
     }
 
+    public ProductWithUserLikeResponse getProductWithUserLike(Long id) {
+        var product = productRepository.findByIdWithUserLike(id, User.getCurrentUserId())
+                .orElseThrow(ProductNotFoundException::new);
+
+        return productMapper.toDtoFromFlatDto(product);
+    }
+
     public ProductDto createProduct(AdminCreateProductRequest request) throws IOException {
         return createProductInternal(request, request.getOwnerId(), true);
     }

@@ -75,9 +75,17 @@ public class ProductInteractionController {
     }
 
     @GetMapping("/comments/{commentId}")
-    public ResponseEntity<ProductCommentDto> getComment(@PathVariable Long commentId) {
-        var comment = productInteractionService.getComment(commentId);
-        return ResponseEntity.ok(comment);
+    public ResponseEntity<? extends ProductCommentDto> getComment(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal CustomUserPrincipal user
+    ) {
+        if (user == null) {
+            var comment = productInteractionService.getComment(commentId);
+            return ResponseEntity.ok(comment);
+        } else {
+            var comment = productInteractionService.getCommentWithUserLike(commentId);
+            return ResponseEntity.ok(comment);
+        }
     }
 
     @GetMapping("/comments/{commentId}/likes")
