@@ -1,5 +1,6 @@
 package com.byllameister.modelstore.products.interaction;
 
+import com.byllameister.modelstore.auth.CustomUserPrincipal;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.users.UserNotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,8 +26,16 @@ public class ProductInteractionController {
     }
 
     @GetMapping("/{id}/comments")
-    public Page<ProductCommentDto> getComments(@PathVariable Long id, Pageable pageable) {
-        return productInteractionService.getComments(id, pageable);
+    public Page<? extends ProductCommentDto> getComments(
+            @PathVariable Long id,
+            Pageable pageable,
+            @AuthenticationPrincipal CustomUserPrincipal user
+    ) {
+        if (user == null) {
+            return productInteractionService.getComments(id, pageable);
+        } else {
+            return productInteractionService.getCommentsWithUserLike(id, pageable);
+        }
     }
 
     @PostMapping("/{id}/likes")

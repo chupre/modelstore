@@ -1,20 +1,14 @@
 package com.byllameister.modelstore.products;
 
-import com.byllameister.modelstore.categories.Category;
 import com.byllameister.modelstore.categories.CategoryDto;
 import com.byllameister.modelstore.users.UserDto;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class ProductDto {

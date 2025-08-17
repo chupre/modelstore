@@ -2,6 +2,8 @@ package com.byllameister.modelstore.users;
 
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.products.ProductNotFoundException;
+import com.byllameister.modelstore.products.ProductWithLikesResponse;
+import com.byllameister.modelstore.products.interaction.ProductCommentDto;
 import com.byllameister.modelstore.products.interaction.ProductInteractionService;
 import com.byllameister.modelstore.users.profiles.UserProfileNotFoundException;
 import jakarta.validation.Valid;
@@ -49,18 +51,21 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @GetMapping("/{userId}/products/{productId}/commentLikes")
-    public ResponseEntity<LikedCommentsResponse> getLikedComments(
+    @GetMapping("/{userId}/comments/likes")
+    public ResponseEntity<Page<ProductCommentDto>> getLikedComments(
             @PathVariable("userId") Long userId,
-            @PathVariable("productId") Long productId
+            Pageable pageable
     ) {
-        var comments = productInteractionService.getLikedComments(userId, productId);
+        var comments = productInteractionService.getLikedComments(userId, pageable);
         return ResponseEntity.ok(comments);
     }
 
-    @GetMapping("/{userId}/likes")
-    public ResponseEntity<LikedProductsResponse> getLikedProducts(@PathVariable("userId") Long userId) {
-        var likes = productInteractionService.getLikedProducts(userId);
+    @GetMapping("/{userId}/products/likes")
+    public ResponseEntity<Page<ProductWithLikesResponse>> getLikedProducts(
+            @PathVariable("userId") Long userId,
+            Pageable pageable
+    ) {
+        var likes = productInteractionService.getLikedProducts(userId, pageable);
         return ResponseEntity.ok(likes);
     }
 

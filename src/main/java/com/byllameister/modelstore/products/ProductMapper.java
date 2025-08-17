@@ -1,7 +1,6 @@
 package com.byllameister.modelstore.products;
 
 import com.byllameister.modelstore.categories.CategoryDto;
-import com.byllameister.modelstore.products.interaction.ProductWithLikesDto;
 import com.byllameister.modelstore.users.UserDto;
 import org.mapstruct.*;
 
@@ -24,7 +23,11 @@ public interface ProductMapper {
 
     @Mapping(target = "owner", expression = "java(mapUser(productFlatDto))")
     @Mapping(target = "category", expression = "java(mapCategory(productFlatDto))")
-    ProductWithLikesDto toDtoFromFlatDto(ProductFlatDto productFlatDto);
+    ProductWithLikesResponse toDtoFromFlatDto(ProductFlatDto productFlatDto);
+
+    @Mapping(target = "owner", expression = "java(mapUser(productFlatDto))")
+    @Mapping(target = "category", expression = "java(mapCategory(productFlatDto))")
+    ProductWithUserLikeResponse toDtoFromFlatDto(ProductWithUserLikeFlatDto productFlatDto);
 
     default UserDto mapUser(ProductFlatDto productFlatDto) {
         return new UserDto(
@@ -34,6 +37,20 @@ public interface ProductMapper {
     }
 
     default CategoryDto mapCategory(ProductFlatDto productFlatDto) {
+        return new CategoryDto(
+                productFlatDto.getCategoryId(),
+                productFlatDto.getCategoryName()
+        );
+    }
+
+    default UserDto mapUser(ProductWithUserLikeFlatDto productFlatDto) {
+        return new UserDto(
+                productFlatDto.getOwnerId(),
+                productFlatDto.getOwnerUsername()
+        );
+    }
+
+    default CategoryDto mapCategory(ProductWithUserLikeFlatDto productFlatDto) {
         return new CategoryDto(
                 productFlatDto.getCategoryId(),
                 productFlatDto.getCategoryName()

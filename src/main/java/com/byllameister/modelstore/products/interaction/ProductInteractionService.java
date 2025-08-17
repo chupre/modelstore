@@ -1,8 +1,10 @@
 package com.byllameister.modelstore.products.interaction;
 
 import com.byllameister.modelstore.common.PageableUtils;
+import com.byllameister.modelstore.products.ProductMapper;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.products.ProductRepository;
+import com.byllameister.modelstore.products.ProductWithLikesResponse;
 import com.byllameister.modelstore.users.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -21,6 +23,7 @@ public class ProductInteractionService {
     private final ProductLikeMapper productLikeMapper;
     private final ProductCommentLikeRepository productCommentLikeRepository;
     private final ProductCommentLikeMapper productCommentLikeMapper;
+    private final ProductMapper productMapper;
 
     public Long getLikesCount(Long id) {
         return productLikeRepository.countAllByProductId(id);
@@ -28,7 +31,13 @@ public class ProductInteractionService {
 
     public Page<ProductCommentDto> getComments(Long id, Pageable pageable) {
         PageableUtils.validate(pageable, PageableUtils.COMMENT_SORT_FIELDS);
-        return productCommentRepository.findAllWithLikes(id, pageable);
+        return productCommentRepository.findAll(id, pageable);
+    }
+
+    public Page<CommentWithUserLikeResponse> getCommentsWithUserLike(Long id, Pageable pageable) {
+        PageableUtils.validate(pageable, PageableUtils.COMMENT_SORT_FIELDS);
+        var userId = User.getCurrentUserId();
+        return productCommentRepository.findAllWithUserLike(id, userId, pageable);
     }
 
     public ProductLikeDto like(Long id) {
@@ -38,7 +47,7 @@ public class ProductInteractionService {
 
         var product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
         var user = userRepository.findById(User.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
-        
+
         var like = new ProductLike();
         like.setProduct(product);
         like.setUser(user);
@@ -104,17 +113,14 @@ public class ProductInteractionService {
         productCommentLikeRepository.deleteLike(commentId, User.getCurrentUserId());
     }
 
-    public LikedProductsResponse getLikedProducts(Long userId) {
+    public Page<ProductWithLikesResponse> getLikedProducts(Long userId, Pageable pageable) {
         userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        var likes = productLikeRepository.findAllByUserId(userId);
-        return productLikeMapper.toResponse(likes);
+        var products = productRepository.findLikedByUserId(userId, pageable);
+        return products.map(productMapper::toDtoFromFlatDto);
     }
 
-    public LikedCommentsResponse getLikedComments(Long userId, Long productId) {
+    public Page<ProductCommentDto> getLikedComments(Long userId, Pageable pageable) {
         userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
-
-        var comments = productCommentLikeRepository.findAllByUserAndProduct(userId, productId);
-        return productCommentMapper.toResponse(comments);
+        return productCommentRepository.findLikedByUserId(userId, pageable);
     }
 }

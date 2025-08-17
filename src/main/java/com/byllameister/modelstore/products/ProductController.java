@@ -1,9 +1,9 @@
 package com.byllameister.modelstore.products;
 
+import com.byllameister.modelstore.auth.CustomUserPrincipal;
 import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
 import com.byllameister.modelstore.categories.CategoryNotFoundInQueryException;
 import com.byllameister.modelstore.common.ErrorDto;
-import com.byllameister.modelstore.products.interaction.ProductWithLikesDto;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -26,18 +27,23 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public Page<ProductWithLikesDto> getAllProducts(
+    public Page<? extends ProductDto> getAllProducts(
             @RequestParam(name = "search", required = false ) String search,
             @RequestParam(name = "categoryId", required = false ) Long categoryId,
             @RequestParam(name = "minPrice", required = false) BigDecimal minPrice,
             @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice,
-            Pageable pageable
+            Pageable pageable,
+            @AuthenticationPrincipal CustomUserPrincipal user
     ) {
-        return productService.getProducts(search, categoryId, minPrice, maxPrice, pageable);
+        if (user == null) {
+            return productService.getProducts(search, categoryId, minPrice, maxPrice, pageable);
+        } else {
+            return productService.getProductsWithUserLike(search, categoryId, minPrice, maxPrice, pageable);
+        }
     }
 
     @GetMapping("/{id}")
-    public ProductWithLikesDto getProductById(@PathVariable Long id) {
+    public ProductWithLikesResponse getProductById(@PathVariable Long id) {
         return productService.getProductById(id);
     }
 

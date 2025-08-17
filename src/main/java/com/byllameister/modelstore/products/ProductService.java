@@ -5,11 +5,11 @@ import com.byllameister.modelstore.admin.products.ForbiddenOwnerRoleException;
 import com.byllameister.modelstore.categories.Category;
 import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
 import com.byllameister.modelstore.common.PageableUtils;
-import com.byllameister.modelstore.products.interaction.ProductWithLikesDto;
 import com.byllameister.modelstore.sellers.SellerNotFoundException;
 import com.byllameister.modelstore.sellers.SellerRepository;
 import com.byllameister.modelstore.upload.UploadService;
 import com.byllameister.modelstore.users.Role;
+import com.byllameister.modelstore.users.User;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import com.byllameister.modelstore.categories.CategoryRepository;
 import com.byllameister.modelstore.users.UserRepository;
@@ -38,7 +38,7 @@ public class ProductService {
 
     private final SellerRepository sellerRepository;
 
-    public Page<ProductWithLikesDto> getProducts(
+    public Page<ProductWithLikesResponse> getProducts(
             String search,
             Long categoryId,
             BigDecimal minPrice,
@@ -51,7 +51,14 @@ public class ProductService {
         return products.map(productMapper::toDtoFromFlatDto);
     }
 
-    public ProductWithLikesDto getProductById(Long id) {
+    public Page<ProductWithUserLikeResponse> getProductsWithUserLike(String search, Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+        PageableUtils.validate(pageable, PageableUtils.PRODUCT_SORT_FIELDS);
+        var userId = User.getCurrentUserId();
+        var products = productRepository.fuzzySearchWithUserLike(search, categoryId, minPrice, maxPrice, 0.2, userId, pageable);
+        return products.map(productMapper::toDtoFromFlatDto);
+    }
+
+    public ProductWithLikesResponse getProductById(Long id) {
         var product = productRepository.findByIdWithLikes(id).orElseThrow(ProductNotFoundException::new);
         return productMapper.toDtoFromFlatDto(product);
     }
@@ -179,7 +186,7 @@ public class ProductService {
         return product.getOwner().getId();
     }
 
-    public Page<ProductWithLikesDto> getProductsBySellerId(Long id, Pageable pageable) {
+    public Page<ProductWithLikesResponse> getProductsBySellerId(Long id, Pageable pageable) {
         PageableUtils.validate(pageable, PageableUtils.PRODUCT_SORT_FIELDS);
         var seller = sellerRepository.findById(id).orElseThrow(SellerNotFoundException::new);
         var products = productRepository.findAllByOwnerIdWithLikes(seller.getUser().getId(), pageable);
