@@ -7,34 +7,31 @@ import {
     PaginationPrevious
 } from "@/components/ui/pagination.js";
 import {observer} from "mobx-react-lite";
-import {useContext, useEffect} from "react";
-import {Context} from "@/main.jsx";
+import {useEffect} from "react";
 
-function Pages() {
-    const {product} = useContext(Context);
-
+function Pages({totalPages, currentPage, setCurrentPage}) {
     const goToPage = (page) => {
-        product.setCurrentPage(page);
+        setCurrentPage(page);
     };
 
     useEffect(() => {
         window.scrollTo({ top: 0 });
-    }, [product.currentPage]);
+    }, [currentPage]);
 
     return (
         <Pagination className="pt-6 bg-0 backdrop-blur-lg">
             <PaginationContent>
                 <PaginationItem>
                     <PaginationPrevious
-                        onClick={() => product.currentPage > 0 && goToPage(product.currentPage - 1)}
+                        onClick={() => currentPage > 0 && goToPage(currentPage - 1)}
                         className="cursor-pointer"
                     />
                 </PaginationItem>
 
-                {[...Array(product.totalPages)].map((_, i) => (
+                {[...Array(totalPages)].map((_, i) => (
                     <PaginationItem key={i}>
                         <PaginationLink
-                            isActive={i === product.currentPage}
+                            isActive={i === currentPage}
                             onClick={() => goToPage(i)}
                             className="cursor-pointer"
                         >
@@ -45,7 +42,7 @@ function Pages() {
 
                 <PaginationItem>
                     <PaginationNext
-                        onClick={() => product.currentPage < product.totalPages - 1 && goToPage(product.currentPage + 1)}
+                        onClick={() => currentPage < totalPages - 1 && goToPage(currentPage + 1)}
                         className="cursor-pointer"
                     />
                 </PaginationItem>

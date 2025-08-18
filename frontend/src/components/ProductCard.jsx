@@ -10,7 +10,7 @@ import {Context} from "@/main.jsx";
 import {likeProduct, unlikeProduct} from "@/http/productAPI.js";
 import errorToast from "@/utils/errorToast.jsx";
 
-function ProductCard({product}) {
+function ProductCard({product, showLike= true}) {
     const {cart, user} = useContext(Context);
     const navigate = useNavigate();
 
@@ -82,14 +82,16 @@ function ProductCard({product}) {
                         <span>{product.owner.username}</span>
                     </div>
 
-                    <Button size="sm" variant="ghost" className="p-1 h-auto hover:bg-transparent" onClick={handleLike}>
-                        <div className="flex items-center gap-1">
-                            <Heart
-                                className={`w-4 h-4 transition-colors ${isLiked ? "fill-red-500 text-red-500" : "text-muted-foreground hover:text-red-400"}`}
-                            />
-                            <span className="text-xs">{likesCount}</span>
-                        </div>
-                    </Button>
+                    {showLike &&
+                        <Button size="sm" variant="ghost" className="p-1 h-auto hover:bg-transparent" onClick={handleLike}>
+                            <div className="flex items-center gap-1">
+                                <Heart
+                                    className={`w-4 h-4 transition-colors ${isLiked ? "fill-red-500 text-red-500" : "text-muted-foreground hover:text-red-400"}`}
+                                />
+                                <span className="text-xs">{likesCount}</span>
+                            </div>
+                        </Button>
+                    }
                 </div>
             </CardContent>
 

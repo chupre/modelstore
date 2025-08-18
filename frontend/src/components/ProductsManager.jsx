@@ -403,7 +403,7 @@ function ProductsManager() {
                         ))}
                     </TableBody>
                 </Table>
-                <Pages/>
+                <Pages totalPages={product.totalPages} currentPage={product.currentPage} setCurrentPage={(page) => product.setCurrentPage(page)}/>
             </CardContent>
         </Card>
     )

@@ -43,14 +43,16 @@ function ProfilePage() {
     const cropperRef = useRef(null)
 
     const [favoriteProducts, setFavoriteProducts] = useState([])
+    const [totalPages, setTotalPages] = useState(0)
+    const [currentPage, setCurrentPage] = useState(0)
 
     useEffect(() => {
         if (user.isAuth && id === user.user.sub) {
             setProfile(user.profile)
             setLoading(false)
-            fetchLikedProducts(id).then((res) => {
+            fetchLikedProducts(id, currentPage, 3).then((res) => {
                 setFavoriteProducts(res.data.content)
-
+                setTotalPages(res.data.totalPages)
             })
         } else {
             fetchProfile(id).then((res) => {
@@ -58,7 +60,7 @@ function ProfilePage() {
                 setLoading(false)
             })
         }
-    }, [user.isAuth, user.profile]);
+    }, [user.isAuth, user.profile, currentPage]);
 
     if (loading) {
         return <Loading/>
@@ -491,10 +493,10 @@ function ProfilePage() {
                                             <div>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                                                     {favoriteProducts.map((product) => (
-                                                        <ProductCard key={product.id} product={product}></ProductCard>
+                                                        <ProductCard key={product.id} product={product} showLike={false}/>
                                                     ))}
                                                 </div>
-                                                <Pages/>
+                                                <Pages currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages}/>
                                             </div>
                                         :
                                         <div>

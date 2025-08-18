@@ -61,7 +61,7 @@ function Home() {
         <h2 className="text-2xl font-bold mb-6">Featured Models</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {product.products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} showLike={false}/>
           ))}
         </div>
       </section>

@@ -32,6 +32,9 @@ function UsersManager() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [editingUser, setEditingUser] = useState(null)
 
+    const [totalPages, setTotalPages] = useState(0)
+    const [currentPage, setCurrentPage] = useState(0)
+
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -41,12 +44,12 @@ function UsersManager() {
     useEffect(() => {
         product.setLimit(8)
 
-        fetchUsers(product.currentPage, product.limit).then((res) => {
+        fetchUsers(currentPage, product.limit).then((res) => {
             setUsers(res.data.content)
-            product.setTotalPages(res.data.totalPages)
+            setTotalPages(res.data.totalPages)
             setIsLoading(false)
         })
-    }, [product.currentPage])
+    }, [currentPage])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -54,9 +57,9 @@ function UsersManager() {
         try {
             setIsLoading(true)
             await updateUser(editingUser.id, formData)
-            fetchUsers(product.currentPage, product.limit).then((res) => {
+            fetchUsers(currentPage, product.limit).then((res) => {
                 setUsers(res.data.content)
-                product.setTotalPages(res.data.totalPages)
+                setTotalPages(res.data.totalPages)
                 setIsLoading(false)
                 setIsDialogOpen(false)
                 toast.success("User successfully updated")
@@ -81,9 +84,9 @@ function UsersManager() {
         try {
             setIsLoading(true)
             await deleteUser(id)
-            fetchUsers(product.currentPage, product.limit).then((res) => {
+            fetchUsers(currentPage, product.limit).then((res) => {
                 setUsers(res.data.content)
-                product.setTotalPages(res.data.totalPages)
+                setTotalPages(res.data.totalPages)
                 setIsLoading(false)
                 setIsDialogOpen(false)
                 toast.success("User successfully deleted")
@@ -225,7 +228,7 @@ function UsersManager() {
                         ))}
                     </TableBody>
                 </Table>
-                <Pages/>
+                <Pages totalPages={totalPages} setCurrentPage={setCurrentPage} currentPage={currentPage}/>
             </CardContent>
         </Card>
     )

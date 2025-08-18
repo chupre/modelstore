@@ -30,27 +30,30 @@ function CategoryManager() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [editingCategory, setEditingCategory] = useState(null)
 
+    const [totalPages, setTotalPages] = useState(0)
+    const [currentPage, setCurrentPage] = useState(0)
+
     const [formData, setFormData] = useState({
         name: '',
     })
 
     useEffect(() => {
         product.setLimit(8)
-        fetchCategories(product.currentPage, product.limit).then((res) => {
+        fetchCategories(currentPage, product.limit).then((res) => {
             product.setCategories(res.data.content)
-            product.setTotalPages(res.data.totalPages)
+            setTotalPages(res.data.totalPages)
             setIsLoading(false)
         })
-    }, [product.currentPage])
+    }, [currentPage])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
 
         try {
             editingCategory ? await updateCategory(editingCategory.id, formData) : await createCategory(formData)
-            fetchCategories(product.currentPage, product.limit).then((res) => {
+            fetchCategories(currentPage, product.limit).then((res) => {
                 product.setCategories(res.data.content)
-                product.setTotalPages(res.data.totalPages)
+                setTotalPages(res.data.totalPages)
                 setIsLoading(false)
             })
             toast.success("Success", {
@@ -73,9 +76,9 @@ function CategoryManager() {
     const handleDelete = async (id) => {
         try {
             await deleteCategory(id)
-            fetchCategories(product.currentPage, product.limit).then((res) => {
+            fetchCategories(currentPage, product.limit).then((res) => {
                 product.setCategories(res.data.content)
-                product.setTotalPages(res.data.totalPages)
+                setTotalPages(res.data.totalPages)
                 setIsLoading(false)
             })
             toast.success("Success", {
@@ -196,7 +199,7 @@ function CategoryManager() {
                         ))}
                     </TableBody>
                 </Table>
-                <Pages/>
+                <Pages setCurrentPage={setCurrentPage} currentPage={currentPage} totalPages={totalPages}/>
             </CardContent>
         </Card>
     )

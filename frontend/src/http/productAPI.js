@@ -72,8 +72,11 @@ export const downloadProductModel = async (id) => {
     return await $authHost.get(`products/${id}`, {responseType: "blob"})
 }
 
-export const fetchLikedProducts = async (id) => {
-    return await $authHost.get(`/users/${id}/products/likes`)
+export const fetchLikedProducts = async (id, page, size) => {
+    return await $authHost.get(`/users/${id}/products/likes`, {params: {
+        page,
+        size
+    }})
 }
 
 export const likeProduct = async (id) => {

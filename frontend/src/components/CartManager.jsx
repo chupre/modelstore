@@ -26,15 +26,18 @@ function CartsManager() {
     const [selectedCart, setSelectedCart] = useState(null)
     const [searchUserId, setSearchUserId] = useState('')
 
+    const [totalPages, setTotalPages] = useState(0)
+    const [currentPage, setCurrentPage] = useState(0)
+
     useEffect(() => {
         product.setLimit(8)
 
-        fetchCarts(product.currentPage, product.limit).then((res) => {
+        fetchCarts(currentPage, product.limit).then((res) => {
             setCarts(res.data.content)
-            product.setTotalPages(res.data.totalPages)
+            setTotalPages(res.data.totalPages)
             setIsLoading(false)
         })
-    }, [product.currentPage])
+    }, [currentPage])
 
     const handleEditCart = async (cart) => {
         setSelectedCart(cart)
@@ -43,10 +46,10 @@ function CartsManager() {
 
     const handleSearch = async () => {
         if (searchUserId.trim() === "") {
-            product.setCurrentPage(0)
-            fetchCarts(product.currentPage, product.limit).then((res) => {
+            setCurrentPage(0)
+            fetchCarts(currentPage, product.limit).then((res) => {
                 setCarts(res.data.content)
-                product.setTotalPages(res.data.totalPages)
+                setTotalPages(res.data.totalPages)
                 setIsLoading(false)
             })
             return
@@ -180,7 +183,7 @@ function CartsManager() {
                         )}
                     </DialogContent>
                 </Dialog>
-                <Pages/>
+                <Pages totalPages={totalPages} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
             </CardContent>
         </Card>
     )

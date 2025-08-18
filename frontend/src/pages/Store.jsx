@@ -53,7 +53,7 @@ function Store() {
                     ))}
             </div>
 
-            <Pages/>
+            <Pages totalPages={product.totalPages} currentPage={product.currentPage} setCurrentPage={(page) => product.setCurrentPage(page)}/>
         </div>
     );
 }
