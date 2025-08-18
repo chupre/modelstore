@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,6 +30,9 @@ public class ProductComment {
 
     @Column(name = "comment", length = 1000)
     private String comment;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ProductCommentLike> likes = new ArrayList<>();
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt = Instant.now();
