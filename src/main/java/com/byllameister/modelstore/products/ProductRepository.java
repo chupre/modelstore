@@ -251,6 +251,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                                 WHERE pl.user_id = :userId
                                 GROUP BY p.id, u.id, c.id
                             ) sub
-            """, nativeQuery = true)
+            """,
+            countQuery = """
+                    SELECT COUNT(*)
+                    FROM (
+                        SELECT p.id
+                        FROM products p
+                        JOIN product_likes pl ON pl.product_id = p.id
+                        JOIN users u ON p.owner_id = u.id
+                        JOIN categories c ON p.category_id = c.id
+                        WHERE pl.user_id = :userId
+                        GROUP BY p.id, u.id, c.id
+                    ) sub
+                    """,
+            nativeQuery = true)
     Page<ProductFlatDto> findLikedByUserId(Long userId, Pageable pageable);
 }
