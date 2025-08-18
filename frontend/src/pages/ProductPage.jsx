@@ -11,33 +11,18 @@ import {
     Heart,
     MessageCircle,
     Send,
-    Trash2,
-    Edit2,
-    Check,
-    X
 } from "lucide-react"
 import {observer} from "mobx-react-lite";
 import {useContext, useEffect, useRef, useState} from "react";
 import {
-    comment, deleteComment, editComment,
-    fetchComments, fetchCommentsWithUserLike, fetchProduct, fetchProductWithUserLike, likeComment,
-    likeProduct, unlikeComment,
-    unlikeProduct
+    comment, fetchComments, fetchCommentsWithUserLike, fetchProduct, fetchProductWithUserLike, likeProduct, unlikeProduct
 } from "@/http/productAPI.js";
 import Loading from "@/components/Loading.jsx";
 import useAddToCart from "@/hooks/useAddToCart.js";
 import {Context} from "@/main.jsx";
 import errorToast from "@/utils/errorToast.jsx";
 import {Textarea} from "@/components/ui/textarea.js";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent, AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger
-} from "@/components/ui/alert-dialog.js";
+import CommentCard from "@/components/CommentCard.jsx";
 
 function ProductPage() {
     const {cart, user} = useContext(Context);
@@ -49,8 +34,6 @@ function ProductPage() {
 
     const [comments, setComments] = useState([])
     const [newComment, setNewComment] = useState("")
-    const [editingCommentId, setEditingCommentId] = useState(null)
-    const [editingText, setEditingText] = useState("")
     const commentsRef = useRef(null);
 
     useEffect(() => {
@@ -158,112 +141,6 @@ function ProductPage() {
         } catch (e) {
             errorToast(e)
         }
-    }
-
-    const handleCommentLike = async (comment) => {
-        if (!user.isAuth) {
-            navigate(LOGIN_ROUTE)
-            return
-        }
-
-        const isLiked = comment.isLiked;
-
-        setComments(prev =>
-            prev.map(c =>
-                c.id === comment.id
-                    ? {
-                        ...c,
-                        isLiked: !isLiked,
-                        likes: c.likes + (isLiked ? -1 : 1)
-                    }
-                    : c
-            )
-        );
-
-        if (isLiked) {
-            try {
-                await unlikeComment(comment.id);
-            } catch (e) {
-                errorToast(e);
-                setComments(prev =>
-                    prev.map(c =>
-                        c.id === comment.id
-                            ? {
-                                ...c,
-                                isLiked: true,
-                                likes: c.likes + 1
-                            }
-                            : c
-                    )
-                );
-            }
-        } else {
-            try {
-                await likeComment(comment.id);
-            } catch (e) {
-                errorToast(e);
-                setComments(prev =>
-                    prev.map(c =>
-                        c.id === comment.id
-                            ? {
-                                ...c,
-                                isLiked: false,
-                                likes: c.likes - 1
-                            }
-                            : c
-                    )
-                );
-            }
-        }
-    };
-
-    const handleDeleteComment = async (comment) => {
-        if (!user.isAuth) {
-            navigate(LOGIN_ROUTE)
-            return
-        }
-
-        try {
-            await deleteComment(comment.id).then(() => {
-                fetchComments(product.id).then((res) => {
-                    setComments(res.data.content)
-                })
-            })
-        } catch (e) {
-            errorToast(e)
-        }
-    }
-
-    const handleEditComment = (comment) => {
-        setEditingCommentId(comment.id)
-        setEditingText(comment.comment)
-    }
-
-    const handleSaveEdit = async (commentId) => {
-        if (!editingText.trim()) return
-
-        if (!user.isAuth) {
-            navigate(LOGIN_ROUTE)
-            return
-        }
-
-        try {
-            await editComment(commentId, editingText).then(() => {
-                fetchComments(product.id).then((res) => {
-                    setComments(res.data.content)
-                })
-            })
-        } catch (e) {
-            errorToast(e)
-        }
-
-        setEditingCommentId(null)
-        setEditingText("")
-    }
-
-    const handleCancelEdit = () => {
-        setEditingCommentId(null)
-        setEditingText("")
     }
 
     return (
@@ -421,108 +298,16 @@ function ProductPage() {
                 {/* Comments List */}
                 <div className="space-y-4">
                     {comments.map((comment) => (
-                        <div key={comment.id} className="border rounded-lg p-4 bg-card group">
-                            <div className="flex gap-3">
-                                <Avatar className="w-10 h-10 flex-shrink-0">
-                                    <AvatarFallback>
-                                        <User className="w-5 h-5" />
-                                    </AvatarFallback>
-                                </Avatar>
-
-                                <div className="flex-1 space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-medium">@user{comment.userId}</span>
-                                            <span className="text-sm text-muted-foreground">{formatDate(comment.createdAt)}</span>
-                                        </div>
-
-                                        {/* Edit/Delete buttons */}
-                                        {user.user && parseInt(user.user.sub) === comment.userId && editingCommentId !== comment.id && (
-                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                {/* Edit Button */}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleEditComment(comment)}
-                                                    className="h-8 w-8 p-0"
-                                                >
-                                                    <Edit2 className="h-4 w-4" />
-                                                    <span className="sr-only">Edit comment</span>
-                                                </Button>
-
-                                                {/* Delete Button styled like edit */}
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="h-8 w-8 p-0"
-                                                        >
-                                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                                        </Button>
-                                                    </AlertDialogTrigger>
-
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction
-                                                                onClick={() => handleDeleteComment(comment)}
-                                                            >
-                                                                Continue
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
-                                            </div>
-
-                                        )}
-                                    </div>
-
-                                    {editingCommentId === comment.id ? (
-                                        <div className="space-y-3">
-                                            <Textarea
-                                                value={editingText}
-                                                onChange={(e) => setEditingText(e.target.value)}
-                                                className="min-h-[80px] resize-none"
-                                            />
-                                            <div className="flex gap-2">
-                                                <Button size="sm" onClick={() => handleSaveEdit(comment.id)} disabled={!editingText.trim()}>
-                                                    <Check className="w-4 h-4 mr-1" />
-                                                    Save
-                                                </Button>
-                                                <Button variant="outline" size="sm" onClick={handleCancelEdit}>
-                                                    <X className="w-4 h-4 mr-1" />
-                                                    Cancel
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <p className="text-sm leading-relaxed">{comment.comment}</p>
-                                    )}
-
-                                    {/* Like button */}
-                                    <div className="flex items-center justify-between pt-2">
-                                        <div></div>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => handleCommentLike(comment)}
-                                            className={`flex items-center gap-1 h-8 px-2 ${
-                                                comment.isLiked
-                                                    ? "text-red-500 hover:text-red-600"
-                                                    : "text-muted-foreground hover:text-foreground"
-                                            }`}
-                                        >
-                                            <Heart className={`w-4 h-4 ${comment.isLiked ? "fill-current" : ""}`} />
-                                            <span className="text-sm">{comment.likes}</span>
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <CommentCard
+                            key={comment.id}
+                            comment={comment}
+                            setComments={setComments}
+                            fetch={user.isAuth ?
+                                () => fetchCommentsWithUserLike(comment.productId)
+                                :
+                                () => fetchComments(comment.productId)
+                            }
+                        />
                     ))}
                 </div>
             </div>

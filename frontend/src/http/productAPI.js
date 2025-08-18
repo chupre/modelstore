@@ -72,10 +72,11 @@ export const downloadProductModel = async (id) => {
     return await $authHost.get(`products/${id}`, {responseType: "blob"})
 }
 
-export const fetchLikedProducts = async (id, page, size) => {
-    return await $authHost.get(`/users/${id}/products/likes`, {params: {
+export const fetchLikedProducts = async (id, page, size, sort = "id") => {
+    return await $host.get(`/users/${id}/products/likes`, {params: {
         page,
-        size
+        size,
+        sort
     }})
 }
 
@@ -99,8 +100,20 @@ export const comment = async (id, comment) => {
     return await $authHost.post(`/interactions/products/${id}/comments`, {comment})
 }
 
-export const fetchLikedComments = async (userId, productId) => {
-    return $authHost.get(`/users/${userId}/products/${productId}/commentLikes`)
+export const fetchLikedComments = async (userId, page, size, sort = "id") => {
+    return $host.get(`/users/${userId}/comments/likes`, {params: {
+            page,
+            size,
+            sort
+        }})
+}
+
+export const fetchUserComments = async (userId, page, size, sort = "id") => {
+    return $host.get(`/users/${userId}/comments`, {params: {
+            page,
+            size,
+            sort
+        }})
 }
 
 export const likeComment = async (id) => {

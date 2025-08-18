@@ -13,9 +13,10 @@ import {fetchProfile, updateProfile} from "@/http/userAPI.js";
 import Loading from "@/components/Loading.jsx";
 import {observer} from "mobx-react-lite";
 import errorToast from "@/utils/errorToast.jsx";
-import {fetchLikedProducts} from "@/http/productAPI.js";
+import {fetchLikedComments, fetchLikedProducts, fetchUserComments} from "@/http/productAPI.js";
 import ProductCard from "@/components/ProductCard.jsx";
 import Pages from "@/components/Pages.jsx";
+import CommentCard from "@/components/CommentCard.jsx";
 
 function ProfilePage() {
     const {user} = useContext(Context)
@@ -42,25 +43,58 @@ function ProfilePage() {
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
     const cropperRef = useRef(null)
 
-    const [favoriteProducts, setFavoriteProducts] = useState([])
-    const [totalPages, setTotalPages] = useState(0)
-    const [currentPage, setCurrentPage] = useState(0)
+    const [favoriteProducts, setFavoriteProducts] = useState(null)
+    const [likedProductsTotalPages, setLikedProductsTotalPages] = useState(0)
+    const [likedProductsCurrentPage, setLikedProductsCurrentPage] = useState(0)
+
+    const [likedComments, setLikedComments] = useState(null)
+    const [likedCommentsTotalPages, setLikedCommentsTotalPages] = useState(0)
+    const [likedCommentsCurrentPage, setLikedCommentsCurrentPage] = useState(0)
+
+    const [postedComments, setPostedComments] = useState(null)
+    const [postedCommentsTotalPages, setPostedCommentsTotalPages] = useState(0)
+    const [postedCommentsCurrentPage, setPostedCommentsCurrentPage] = useState(0)
+
+    useEffect(() => {
+        fetchLikedProducts(id, likedProductsCurrentPage, 3)
+            .then((res) => {
+                setFavoriteProducts(res.data.content);
+                setLikedProductsTotalPages(res.data.totalPages);
+            })
+            .catch(errorToast);
+    }, [id, likedProductsCurrentPage]);
+
+    useEffect(() => {
+        fetchLikedComments(id, likedCommentsCurrentPage, 3)
+            .then((res) => {
+                setLikedComments(res.data.content);
+                setLikedCommentsTotalPages(res.data.totalPages);
+            })
+            .catch(errorToast);
+    }, [id, likedCommentsCurrentPage]);
+
+    useEffect(() => {
+        fetchUserComments(id, postedCommentsCurrentPage, 3)
+            .then((res) => {
+                setPostedComments(res.data.content);
+                setPostedCommentsTotalPages(res.data.totalPages);
+            })
+            .catch(errorToast);
+    }, [id, postedCommentsCurrentPage]);
 
     useEffect(() => {
         if (user.isAuth && id === user.user.sub) {
-            setProfile(user.profile)
-            setLoading(false)
-            fetchLikedProducts(id, currentPage, 3).then((res) => {
-                setFavoriteProducts(res.data.content)
-                setTotalPages(res.data.totalPages)
-            })
+            setProfile(user.profile);
+            setLoading(false);
         } else {
-            fetchProfile(id).then((res) => {
-                setProfile(res.data)
-                setLoading(false)
-            })
+            fetchProfile(id)
+                .then((res) => {
+                    setProfile(res.data);
+                    setLoading(false);
+                })
+                .catch(errorToast);
         }
-    }, [user.isAuth, user.profile, currentPage]);
+    }, [id, user.isAuth, user.user?.sub, user.profile]);
 
     if (loading) {
         return <Loading/>
@@ -496,7 +530,7 @@ function ProfilePage() {
                                                         <ProductCard key={product.id} product={product} showLike={false}/>
                                                     ))}
                                                 </div>
-                                                <Pages currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages}/>
+                                                <Pages currentPage={likedProductsCurrentPage} setCurrentPage={setLikedProductsCurrentPage} totalPages={likedProductsTotalPages}/>
                                             </div>
                                         :
                                         <div>
@@ -512,9 +546,60 @@ function ProfilePage() {
                             <TabsContent value="comments" className="space-y-4 mt-0">
                                 <Card className="border-border bg-card/0 backdrop-blur-lg">
                                     <CardContent className="p-8 text-center">
-                                        <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                                        <h3 className="text-lg font-semibold mb-2">Your Comments</h3>
-                                        <p className="text-muted-foreground">Comments you've left on products will be shown here</p>
+                                        <Tabs defaultValue="liked-comments">
+                                            <TabsList className="bg-secondary/0"  >
+                                                <TabsTrigger value="liked-comments">Liked Comments</TabsTrigger>
+                                                <TabsTrigger value="posted-comments">Posted Comments</TabsTrigger>
+                                            </TabsList>
+                                            <TabsContent value="liked-comments">
+                                                {likedComments ?
+                                                    <div className="text-left space-y-4">
+                                                        {likedComments.map((comment) => (
+                                                            <CommentCard
+                                                                key={comment.id}
+                                                                setComments={setLikedComments}
+                                                                comment={comment}
+                                                                showLiked={false}
+                                                                fetch={() => fetchLikedComments(id, likedCommentsCurrentPage, 3)}
+                                                                currentPage={likedCommentsCurrentPage}
+                                                            />
+                                                        ))}
+                                                        <Pages currentPage={likedCommentsCurrentPage}
+                                                               totalPages={likedCommentsTotalPages}
+                                                               setCurrentPage={setLikedCommentsCurrentPage}/>
+                                                    </div>
+                                                    :
+                                                    <div>
+                                                        <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                                                        <h3 className="text-lg font-semibold mb-2">Liked Comments</h3>
+                                                        <p className="text-muted-foreground">Comments you've liked will be shown here</p>
+                                                    </div>}
+                                            </TabsContent>
+                                            <TabsContent value="posted-comments">
+                                                {postedComments ?
+                                                        <div className="text-left space-y-4">
+                                                            {postedComments.map((comment) => (
+                                                                <CommentCard
+                                                                    key={comment.id}
+                                                                    setComments={setPostedComments}
+                                                                    comment={comment}
+                                                                    showLiked={false}
+                                                                    fetch={() => fetchUserComments(id, postedCommentsCurrentPage, 3)}
+                                                                    currentPage={postedCommentsCurrentPage}
+                                                                />
+                                                            ))}
+                                                            <Pages currentPage={postedCommentsCurrentPage}
+                                                                   totalPages={postedCommentsTotalPages}
+                                                                   setCurrentPage={setPostedCommentsCurrentPage}/>
+                                                        </div>
+                                                :
+                                                    <div>
+                                                        <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                                                        <h3 className="text-lg font-semibold mb-2">Your Comments</h3>
+                                                        <p className="text-muted-foreground">Comments you've left on products will be shown here</p>
+                                                    </div>}
+                                            </TabsContent>
+                                        </Tabs>
                                     </CardContent>
                                 </Card>
                             </TabsContent>
