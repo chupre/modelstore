@@ -5,16 +5,16 @@ import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
 import {LOGIN_ROUTE, PRODUCT_ROUTE} from "@/utils/consts.js";
 import useAddToCart from "@/hooks/useAddToCart.js";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {Context} from "@/main.jsx";
 import {likeProduct, unlikeProduct} from "@/http/productAPI.js";
 import errorToast from "@/utils/errorToast.jsx";
 
-function ProductCard({product, isLikedInitial}) {
+function ProductCard({product}) {
     const {cart, user} = useContext(Context);
     const navigate = useNavigate();
 
-    const [isLiked, setIsLiked] = useState(isLikedInitial)
+    const [isLiked, setIsLiked] = useState(product.isLiked)
     const [likesCount, setLikesCount] = useState(product.likesCount)
 
     const handleLike = async () => {
@@ -45,6 +45,11 @@ function ProductCard({product, isLikedInitial}) {
             }
         }
     }
+
+    useEffect(() => {
+        setIsLiked(product.isLiked)
+        setLikesCount(product.likesCount)
+    }, [product.isLiked, product.likesCount])
 
     const addToCart = useAddToCart()
 

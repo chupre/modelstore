@@ -13,6 +13,9 @@ import {fetchProfile, updateProfile} from "@/http/userAPI.js";
 import Loading from "@/components/Loading.jsx";
 import {observer} from "mobx-react-lite";
 import errorToast from "@/utils/errorToast.jsx";
+import {fetchLikedProducts} from "@/http/productAPI.js";
+import ProductCard from "@/components/ProductCard.jsx";
+import Pages from "@/components/Pages.jsx";
 
 function ProfilePage() {
     const {user} = useContext(Context)
@@ -39,10 +42,16 @@ function ProfilePage() {
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
     const cropperRef = useRef(null)
 
+    const [favoriteProducts, setFavoriteProducts] = useState([])
+
     useEffect(() => {
         if (user.isAuth && id === user.user.sub) {
             setProfile(user.profile)
             setLoading(false)
+            fetchLikedProducts(id).then((res) => {
+                setFavoriteProducts(res.data.content)
+
+            })
         } else {
             fetchProfile(id).then((res) => {
                 setProfile(res.data)
@@ -478,9 +487,22 @@ function ProfilePage() {
                             <TabsContent value="liked" className="space-y-4 mt-0">
                                 <Card className="border-border bg-card/0 backdrop-blur-lg">
                                     <CardContent className="p-8 text-center">
-                                        <Heart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                                        <h3 className="text-lg font-semibold mb-2">Liked Products</h3>
-                                        <p className="text-muted-foreground">Your favorite products will appear here</p>
+                                        {favoriteProducts ?
+                                            <div>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                                                    {favoriteProducts.map((product) => (
+                                                        <ProductCard key={product.id} product={product}></ProductCard>
+                                                    ))}
+                                                </div>
+                                                <Pages/>
+                                            </div>
+                                        :
+                                        <div>
+                                            <Heart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                                            <h3 className="text-lg font-semibold mb-2">Liked Products</h3>
+                                            <p className="text-muted-foreground">Your favorite products will appear here</p>
+                                        </div>
+                                        }
                                     </CardContent>
                                 </Card>
                             </TabsContent>

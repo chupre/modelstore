@@ -5,7 +5,6 @@ import {Context} from "@/main.jsx";
 import Pages from "@/components/Pages.jsx";
 import SearchBar from "@/components/SearchBar.jsx";
 import {useLocation} from "react-router-dom";
-import {fetchLikedProducts} from "@/http/productAPI.js";
 import Loading from "@/components/Loading.jsx";
 import errorToast from "@/utils/errorToast.jsx";
 
@@ -15,21 +14,14 @@ function Store() {
     const categoryFromNav = location.state?.categoryId;
     const backFromProductPage = location.state?.backFromProductPage;
 
-    const [likes, setLikes] = useState([]);
-    const [isLoading, setLoading] = useState(true);
+    const [isLoading, setLoading] = useState(false)
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 product.setLimit(9)
                 product.setCategoryId(categoryFromNav);
-                await product.fetchProducts()
-
-                if (user.isAuth) {
-                    await fetchLikedProducts(user.user.sub).then((res) => {
-                        setLikes(res.data.productId)
-                    })
-                }
+                await product.fetchProducts(user.isAuth)
             } catch (e) {
                 errorToast(e)
             } finally {
@@ -38,17 +30,13 @@ function Store() {
         }
 
         fetchData()
-    }, [product.currentPage, categoryFromNav]);
+    }, [product.currentPage, categoryFromNav, user.isAuth]);
 
     useEffect(() => {
         if (!backFromProductPage) {
             product.setCurrentPage(0);
         }
     }, []);
-
-    function isLiked(id) {
-        return likes.includes(id)
-    }
 
     if (isLoading) {
         return <Loading/>
@@ -61,7 +49,7 @@ function Store() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {product.products
                     .map((product) => (
-                        <ProductCard key={product.id} product={product} isLikedInitial={isLiked(product.id)}/>
+                        <ProductCard key={product.id} product={product}/>
                     ))}
             </div>
 

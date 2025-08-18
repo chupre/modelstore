@@ -20,9 +20,39 @@ export const fetchProducts = async ({
     }});
 }
 
+export const fetchProductsWithUserLike = async ({
+                                        page = 0,
+                                        size = 20,
+                                        category,
+                                        search,
+                                        sortBy,
+                                        priceRange
+                                    }
+) => {
+    return $authHost.get(`/products`, {params: {
+            page,
+            size,
+            categoryId: category || undefined,
+            search: search || undefined,
+            sort: sortBy || "id",
+            minPrice: priceRange ? priceRange[0] : undefined,
+            maxPrice: priceRange ? priceRange[1] : undefined,
+        }});
+}
+
 export const fetchProduct = async (id) => {
     try {
         return await $host.get(`/products/${id}`, {})
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
+            return null;
+        }
+    }
+}
+
+export const fetchProductWithUserLike = async (id) => {
+    try {
+        return await $authHost.get(`/products/${id}`, {})
     } catch (error) {
         if (error.response && error.response.status === 404) {
             return null;
@@ -43,7 +73,7 @@ export const downloadProductModel = async (id) => {
 }
 
 export const fetchLikedProducts = async (id) => {
-    return await $authHost.get(`/users/${id}/likes`)
+    return await $authHost.get(`/users/${id}/products/likes`)
 }
 
 export const likeProduct = async (id) => {
@@ -56,6 +86,10 @@ export const unlikeProduct = async (id) => {
 
 export const fetchComments = async(id) => {
     return await $host.get(`/interactions/products/${id}/comments?sort=createdAt,desc`)
+}
+
+export const fetchCommentsWithUserLike = async(id) => {
+    return await $authHost.get(`/interactions/products/${id}/comments?sort=createdAt,desc`)
 }
 
 export const comment = async (id, comment) => {

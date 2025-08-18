@@ -20,9 +20,7 @@ import {observer} from "mobx-react-lite";
 import {useContext, useEffect, useRef, useState} from "react";
 import {
     comment, deleteComment, editComment,
-    fetchComments, fetchLikedComments,
-    fetchLikedProducts,
-    fetchProduct, likeComment,
+    fetchComments, fetchCommentsWithUserLike, fetchProduct, fetchProductWithUserLike, likeComment,
     likeProduct, unlikeComment,
     unlikeProduct
 } from "@/http/productAPI.js";
@@ -49,9 +47,6 @@ function ProductPage() {
     const {id} = useParams();
     const addToCart = useAddToCart()
 
-    const [productLikes, setProductLikes] = useState([]);
-    const [isProductLiked, setIsProductLiked] = useState(false)
-    const [commentLikes, setCommentLikes] = useState([]);
     const [comments, setComments] = useState([])
     const [newComment, setNewComment] = useState("")
     const [editingCommentId, setEditingCommentId] = useState(null)
@@ -61,23 +56,20 @@ function ProductPage() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const productPromise = fetchProduct(id);
-                const commentsPromise = fetchComments(id);
+                const productPromise = user.isAuth ?
+                    await fetchProductWithUserLike(id)
+                    :
+                    await fetchProduct(id);
 
-                let likedProductsPromise = Promise.resolve(null);
-                let likedCommentsPromise = Promise.resolve(null);
+                const commentsPromise = user.isAuth ?
+                    await fetchCommentsWithUserLike(id)
+                    :
+                    await fetchComments(id);
 
-                if (user.isAuth) {
-                    likedProductsPromise = fetchLikedProducts(user.user.sub);
-                    likedCommentsPromise = fetchLikedComments(user.user.sub, id);
-                }
-
-                const [productRes, commentsRes, likedProductsRes, likedCommentsRes] =
+                const [productRes, commentsRes] =
                     await Promise.all([
                         productPromise,
                         commentsPromise,
-                        likedProductsPromise,
-                        likedCommentsPromise,
                     ]);
 
                 if (productRes) {
@@ -87,17 +79,6 @@ function ProductPage() {
                 }
 
                 setComments(commentsRes.data.content);
-
-                if (likedProductsRes) {
-                    setProductLikes(likedProductsRes.data.productId);
-                    setIsProductLiked(
-                        likedProductsRes.data.productId.includes(parseInt(id))
-                    );
-                }
-
-                if (likedCommentsRes) {
-                    setCommentLikes(likedCommentsRes.data.commentId);
-                }
             } catch (err) {
                 errorToast(err);
             } finally {
@@ -121,29 +102,42 @@ function ProductPage() {
     }
 
     const handleProductLike = async () => {
-        if (isProductLiked) {
-            setIsProductLiked(false)
-            product.likesCount--;
-            setProduct(product)
+        if (!user.isAuth) {
+            navigate(LOGIN_ROUTE)
+            return
+        }
+
+        if (product.isLiked) {
+            setProduct(prev => ({
+                ...prev,
+                isLiked: false,
+                likesCount: prev.likesCount - 1,
+            }));
             try {
                 await unlikeProduct(product.id)
             } catch (e) {
                 errorToast(e)
-                setIsProductLiked(true)
-                product.likesCount++;
-                setProduct(product)
+                setProduct(prev => ({
+                    ...prev,
+                    isLiked: true,
+                    likesCount: prev.likesCount + 1,
+                }));
             }
         } else {
-            setIsProductLiked(true)
-            product.likesCount++;
-            setProduct(product)
+            setProduct(prev => ({
+                ...prev,
+                isLiked: true,
+                likesCount: prev.likesCount + 1,
+            }));
             try {
                 await likeProduct(product.id)
             } catch (e) {
                 errorToast(e)
-                setIsProductLiked(false)
-                product.likesCount--;
-                setProduct(product)
+                setProduct(prev => ({
+                    ...prev,
+                    isLiked: false,
+                    likesCount: prev.likesCount - 1,
+                }));
             }
         }
     }
@@ -166,54 +160,59 @@ function ProductPage() {
         }
     }
 
-    const isCommentLiked = (id) => {
-        return commentLikes.includes(id)
-    }
-
     const handleCommentLike = async (comment) => {
         if (!user.isAuth) {
             navigate(LOGIN_ROUTE)
             return
         }
 
-        const isLiked = isCommentLiked(comment.id);
+        const isLiked = comment.isLiked;
 
-        // Optimistic update
         setComments(prev =>
             prev.map(c =>
                 c.id === comment.id
-                    ? { ...c, likes: c.likes + (isLiked ? -1 : 1) }
+                    ? {
+                        ...c,
+                        isLiked: !isLiked,
+                        likes: c.likes + (isLiked ? -1 : 1)
+                    }
                     : c
             )
         );
 
         if (isLiked) {
-            setCommentLikes(prev => prev.filter(item => item !== comment.id));
             try {
                 await unlikeComment(comment.id);
             } catch (e) {
                 errorToast(e);
-                // rollback on error
                 setComments(prev =>
                     prev.map(c =>
-                        c.id === comment.id ? { ...c, likes: c.likes + 1 } : c
+                        c.id === comment.id
+                            ? {
+                                ...c,
+                                isLiked: true,
+                                likes: c.likes + 1
+                            }
+                            : c
                     )
                 );
-                setCommentLikes(prev => [...prev, comment.id]);
             }
         } else {
-            setCommentLikes(prev => [...prev, comment.id]);
             try {
                 await likeComment(comment.id);
             } catch (e) {
                 errorToast(e);
-                // rollback on error
                 setComments(prev =>
                     prev.map(c =>
-                        c.id === comment.id ? { ...c, likes: c.likes - 1 } : c
+                        c.id === comment.id
+                            ? {
+                                ...c,
+                                isLiked: false,
+                                likes: c.likes - 1
+                            }
+                            : c
                     )
                 );
-                setCommentLikes(prev => prev.filter(item => item !== comment.id));
             }
         }
     };
@@ -329,12 +328,12 @@ function ProductPage() {
                                 size="sm"
                                 onClick={handleProductLike}
                                 className={`flex items-center gap-1 h-8 px-2 ${
-                                    isProductLiked
+                                    product.isLiked
                                         ? "text-red-500 hover:text-red-600"
                                         : "text-muted-foreground hover:text-foreground"
                                 }`}
                             >
-                                <Heart className={`w-4 h-4 ${isProductLiked ? "fill-current" : ""}`} />
+                                <Heart className={`w-4 h-4 ${product.isLiked ? "fill-current" : ""}`} />
                                 <span className="text-sm min-w-[0.5rem] text-center">{product.likesCount}</span>
                             </Button>
 
@@ -512,12 +511,12 @@ function ProductPage() {
                                             size="sm"
                                             onClick={() => handleCommentLike(comment)}
                                             className={`flex items-center gap-1 h-8 px-2 ${
-                                                isCommentLiked(comment.id)
+                                                comment.isLiked
                                                     ? "text-red-500 hover:text-red-600"
                                                     : "text-muted-foreground hover:text-foreground"
                                             }`}
                                         >
-                                            <Heart className={`w-4 h-4 ${isCommentLiked(comment.id) ? "fill-current" : ""}`} />
+                                            <Heart className={`w-4 h-4 ${comment.isLiked ? "fill-current" : ""}`} />
                                             <span className="text-sm">{comment.likes}</span>
                                         </Button>
                                     </div>

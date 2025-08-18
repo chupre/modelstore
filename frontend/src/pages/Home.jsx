@@ -4,7 +4,7 @@ import {useNavigate, useSearchParams} from "react-router-dom"
 import { STORE_ROUTE } from "../utils/consts"
 import {useContext, useEffect} from "react";
 import {Context} from "@/main.jsx";
-import {fetchProducts} from "@/http/productAPI.js";
+import {fetchProducts, fetchProductsWithUserLike} from "@/http/productAPI.js";
 import {observer} from "mobx-react-lite";
 import {verify} from "@/http/userAPI.js";
 import {toast} from "sonner";
@@ -13,7 +13,7 @@ import errorToast from "@/utils/errorToast.jsx";
 function Home() {
   const navigate = useNavigate()
   const searchParams = useSearchParams()
-  const {product} = useContext(Context)
+  const {product, user} = useContext(Context)
 
   useEffect(() => {
     const filters = {
@@ -21,9 +21,15 @@ function Home() {
       size: 3,
     };
 
-    fetchProducts(filters).then((res) => {
-      product.setProducts(res.data.content);
-    })
+    if (!user.isAuth) {
+      fetchProducts(filters).then((res) => {
+        product.setProducts(res.data.content);
+      })
+    } else {
+      fetchProductsWithUserLike(filters).then((res) => {
+        product.setProducts(res.data.content);
+      })
+    }
 
     const verificationToken = searchParams[0].get("verification")
     if (verificationToken) {

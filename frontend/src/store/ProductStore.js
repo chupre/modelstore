@@ -1,5 +1,5 @@
 import {makeAutoObservable, runInAction} from 'mobx'
-import { fetchProducts as fetchProductsApi } from "@/http/productAPI.js";
+import {fetchProducts as fetchProductsApi, fetchProductsWithUserLike as fetchProductsWithUserLikeApi} from "@/http/productAPI.js";
 
 export default class ProductStore {
     constructor() {
@@ -16,7 +16,7 @@ export default class ProductStore {
 
         makeAutoObservable(this);
     }
-    async fetchProducts() {
+    async fetchProducts(isAuth) {
         const filters = {
             page: this.currentPage,
             size: this.limit,
@@ -29,7 +29,9 @@ export default class ProductStore {
             filters.priceRange = [this.priceRange[0], this.priceRange[1]];
         }
 
-        const res = await fetchProductsApi(filters);
+        const res = isAuth ?
+            await fetchProductsWithUserLikeApi(filters) :
+            await fetchProductsApi(filters);
 
         runInAction(() => {
             this.setProducts(res.data.content);
