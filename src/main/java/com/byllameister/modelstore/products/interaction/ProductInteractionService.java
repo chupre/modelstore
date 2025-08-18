@@ -128,4 +128,9 @@ public class ProductInteractionService {
         return productCommentRepository.findWithUserLike(commentId, User.getCurrentUserId())
                 .orElseThrow(ProductCommentNotFoundException::new);
     }
+
+    public Page<ProductCommentDto> getCommentsByUserId(Long userId, Pageable pageable) {
+        userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return productCommentRepository.findAllByUserId(userId, pageable);
+    }
 }

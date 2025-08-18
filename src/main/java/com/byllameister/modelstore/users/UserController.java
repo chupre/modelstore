@@ -60,6 +60,15 @@ public class UserController {
         return ResponseEntity.ok(comments);
     }
 
+   @GetMapping("/{userId}/comments")
+   public ResponseEntity<Page<ProductCommentDto>> getUserComments(
+           @PathVariable("userId") Long userId,
+           Pageable pageable
+   ) {
+        var comments = productInteractionService.getCommentsByUserId(userId, pageable);
+        return ResponseEntity.ok(comments);
+   }
+
     @GetMapping("/{userId}/products/likes")
     public ResponseEntity<Page<ProductWithLikesResponse>> getLikedProducts(
             @PathVariable("userId") Long userId,

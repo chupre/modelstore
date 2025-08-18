@@ -85,4 +85,20 @@ public interface ProductCommentRepository extends JpaRepository<ProductComment, 
     Optional<CommentWithUserLikeResponse> findWithUserLike(
             @Param("commentId") Long commentId,
             @Param("userId") Long userId);
+
+
+    @Query(value = """
+                                SELECT new com.byllameister.modelstore.products.interaction.ProductCommentDto(
+                                    c.id,
+                                    c.product.id,
+                                    c.user.id,
+                                    c.comment,
+                                    COUNT(cl.id),
+                                    c.createdAt)
+                        FROM ProductComment c
+                        LEFT JOIN ProductCommentLike cl ON cl.comment.id = c.id
+                        WHERE c.user.id = :userId
+                        GROUP BY c.id
+            """)
+    Page<ProductCommentDto> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 }
