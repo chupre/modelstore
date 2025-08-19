@@ -34,7 +34,7 @@ function App() {
                 setShowEmailVerification(true)
             }
         }).finally(() => {setLoading(false)});
-    }, [])
+    }, [user.user?.role])
 
     useEffect(() => {
         if (!user.isAuth) {
@@ -56,7 +56,7 @@ function App() {
                     classNames: {
                         toast: "items-start text-left"
                     },
-                    duration: 1000
+                    duration: 1500
                 }}/>
         </ThemeProvider>
     )

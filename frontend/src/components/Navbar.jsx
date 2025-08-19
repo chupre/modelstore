@@ -4,12 +4,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {useContext, useEffect} from "react";
 import { Context } from '../main';
 import { useNavigate } from "react-router-dom";
-import {ADMIN_ROUTE, HOME_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE} from "../utils/consts";
+import {ADMIN_ROUTE, HOME_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE, SELLER_ROUTE} from "../utils/consts";
 import {LogOut, User} from "lucide-react";
 import NavbarCatalogButton from "@/components/NavbarCatalogButton.jsx";
 import {fetchCategories} from "@/http/productAPI.js";
 import ShoppingCartButton from "@/components/ShoppingCartButton.jsx";
 import {fetchProfile} from "@/http/userAPI.js";
+import {toast} from "sonner";
 
 const Navbar = observer(() => {
     const { user, product } = useContext(Context);
@@ -34,6 +35,21 @@ const Navbar = observer(() => {
         navigate(HOME_ROUTE);
     }
 
+    const handleSeller = () => {
+        if (!user.isAuth) {
+            navigate(LOGIN_ROUTE)
+            return
+        }
+
+        if (!user.user.verified) {
+            toast.error("Please verify your account to get access to seller functionality.")
+            return
+
+        }
+
+        navigate(SELLER_ROUTE)
+    }
+
     return (
         <header className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 py-2 border-b bg-background/50 backdrop-blur-lg">
             <div className="flex items-center space-x-4">
@@ -51,6 +67,16 @@ const Navbar = observer(() => {
                 <div className="flex items-center">
                     <Button variant="ghost" onClick={() => navigate(HOME_ROUTE)}>Home</Button>
                     <NavbarCatalogButton categories={product.categories} />
+                    <Button
+                        variant="ghost"
+                        onClick={handleSeller}
+                    >
+                        {user.user?.role === "SELLER" || user.user?.role === "ADMIN" ? (
+                            "Seller Page"
+                        ) : (
+                            "Become Seller"
+                        )}
+                    </Button>
                     {user.user?.role === "ADMIN" &&
                         <Button variant="ghost" onClick={() => navigate(ADMIN_ROUTE)}>
                             Admin

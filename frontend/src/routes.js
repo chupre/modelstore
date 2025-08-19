@@ -6,15 +6,10 @@ import {
     LOGIN_ROUTE,
     PRODUCT_ROUTE,
     PROFILE_ROUTE,
-    REGISTRATION_ROUTE,
-    STORE_ROUTE
+    REGISTRATION_ROUTE, STORE_ROUTE
 } from "./utils/consts"
 import ProductPage from "@/pages/ProductPage.jsx";
 import ProfilePage from "@/pages/ProfilePage.jsx";
-
-export const authRoutes = [
-
-]
 
 export const publicRoutes = [
     {
@@ -40,5 +35,5 @@ export const publicRoutes = [
     {
         path: PROFILE_ROUTE + '/:id',
         Component: ProfilePage
-    }
+    },
 ]

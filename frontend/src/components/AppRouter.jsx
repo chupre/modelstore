@@ -1,21 +1,17 @@
 import {Routes, Route, Navigate} from 'react-router-dom'
-import {authRoutes, publicRoutes} from '../routes'
-import {ADMIN_ROUTE, HOME_ROUTE} from '../utils/consts';
+import {publicRoutes} from '../routes'
+import {ADMIN_ROUTE, HOME_ROUTE, SELLER_ROUTE} from '../utils/consts';
 import {useContext} from 'react';
 import {Context} from '../main';
 import AdminPage from "@/pages/Admin.jsx";
 import {observer} from "mobx-react-lite";
+import SellerPage from "@/pages/SellerPage.jsx";
 
 function AppRouter() {
     const {user} = useContext(Context);
 
     return (
         <Routes>
-            {user.isAuth &&
-                authRoutes.map(({path, Component}) => (
-                    <Route key={path} path={path} element={<Component/>}/>
-                ))}
-
             {publicRoutes.map(({path, Component}) => (
                 <Route key={path} path={path} element={<Component/>}/>
             ))}
@@ -24,6 +20,9 @@ function AppRouter() {
                 <Route path={ADMIN_ROUTE} element={<AdminPage/>}/>
             )}
 
+            {user.isAuth && user.user.verified && (
+                <Route path={SELLER_ROUTE} element={<SellerPage/>}/>
+            )}
             <Route path="*" element={<Navigate to={HOME_ROUTE} replace/>}/>
         </Routes>
     );
