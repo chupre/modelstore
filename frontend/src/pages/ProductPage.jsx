@@ -23,6 +23,7 @@ import {Context} from "@/main.jsx";
 import errorToast from "@/utils/errorToast.jsx";
 import {Textarea} from "@/components/ui/textarea.js";
 import CommentCard from "@/components/CommentCard.jsx";
+import Pages from "@/components/Pages.jsx";
 
 function ProductPage() {
     const {cart, user} = useContext(Context);
@@ -35,6 +36,8 @@ function ProductPage() {
     const [comments, setComments] = useState([])
     const [newComment, setNewComment] = useState("")
     const commentsRef = useRef(null);
+    const [totalPages, setTotalPages] = useState(0)
+    const [currentPage, setCurrentPage] = useState(0)
 
     useEffect(() => {
         const loadData = async () => {
@@ -45,9 +48,9 @@ function ProductPage() {
                     await fetchProduct(id);
 
                 const commentsPromise = user.isAuth ?
-                    await fetchCommentsWithUserLike(id)
+                    await fetchCommentsWithUserLike(id, currentPage, 4)
                     :
-                    await fetchComments(id);
+                    await fetchComments(id, currentPage, 4);
 
                 const [productRes, commentsRes] =
                     await Promise.all([
@@ -62,6 +65,7 @@ function ProductPage() {
                 }
 
                 setComments(commentsRes.data.content);
+                setTotalPages(commentsRes.data.totalPages)
             } catch (err) {
                 errorToast(err);
             } finally {
@@ -70,7 +74,7 @@ function ProductPage() {
         };
 
         loadData();
-    }, [id, user.isAuth, user.user?.sub, navigate]);
+    }, [id, user.isAuth, user.user?.sub, navigate, currentPage]);
 
     if (loading) {
         return <Loading/>
@@ -132,11 +136,14 @@ function ProductPage() {
         }
 
         try {
-            await comment(product.id, newComment).then(() => {
-                fetchComments(product.id).then((res) => {
-                    setComments(res.data.content)
-                    setNewComment("")
-                })
+            await comment(product.id, newComment).then(async () => {
+                const res = user.isAuth ?
+                    await fetchCommentsWithUserLike(id, currentPage, 4)
+                    :
+                    await fetchComments(id, currentPage, 4);
+                setTotalPages(res.data.totalPages);
+                setNewComment("")
+                setComments(res.data.content)
             })
         } catch (e) {
             errorToast(e)
@@ -303,12 +310,13 @@ function ProductPage() {
                             comment={comment}
                             setComments={setComments}
                             fetch={user.isAuth ?
-                                () => fetchCommentsWithUserLike(comment.productId)
+                                () => fetchCommentsWithUserLike(comment.productId, currentPage, 4)
                                 :
-                                () => fetchComments(comment.productId)
+                                () => fetchComments(comment.productId, currentPage, 4)
                             }
                         />
                     ))}
+                    <Pages totalPages={totalPages} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
                 </div>
             </div>
         </div>

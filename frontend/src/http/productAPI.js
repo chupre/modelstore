@@ -88,12 +88,20 @@ export const unlikeProduct = async (id) => {
     return await $authHost.delete(`/interactions/products/${id}/likes`)
 }
 
-export const fetchComments = async(id) => {
-    return await $host.get(`/interactions/products/${id}/comments?sort=createdAt,desc`)
+export const fetchComments = async(id, page, size, sort = "createdAt,desc") => {
+    return await $host.get(`/interactions/products/${id}/comments`, {params: {
+            page,
+            size,
+            sort
+        }})
 }
 
-export const fetchCommentsWithUserLike = async(id) => {
-    return await $authHost.get(`/interactions/products/${id}/comments?sort=createdAt,desc`)
+export const fetchCommentsWithUserLike = async(id, page, size, sort = "createdAt,desc") => {
+    return await $authHost.get(`/interactions/products/${id}/comments`, {params: {
+            page,
+            size,
+            sort
+        }})
 }
 
 export const comment = async (id, comment) => {
