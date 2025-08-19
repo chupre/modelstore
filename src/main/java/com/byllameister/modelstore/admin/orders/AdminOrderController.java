@@ -1,7 +1,7 @@
 package com.byllameister.modelstore.admin.orders;
 
 import com.byllameister.modelstore.common.ErrorDto;
-import com.byllameister.modelstore.orders.OrderDto;
+import com.byllameister.modelstore.orders.OrderResponse;
 import com.byllameister.modelstore.orders.OrderNotFoundException;
 import com.byllameister.modelstore.orders.OrderService;
 import lombok.AllArgsConstructor;
@@ -18,13 +18,13 @@ public class AdminOrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<Page<OrderDto>> findAll(Pageable pageable) {
+    public ResponseEntity<Page<OrderResponse>> findAll(Pageable pageable) {
         var orders = orderService.getAllOrders(pageable);
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> findById(@PathVariable Long id) {
+    public ResponseEntity<OrderResponse> findById(@PathVariable Long id) {
         var order = orderService.getOrder(id);
         return ResponseEntity.ok(order);
     }

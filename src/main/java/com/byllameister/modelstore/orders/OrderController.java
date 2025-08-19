@@ -18,7 +18,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("/my")
-    public ResponseEntity<Page<OrderDto>> getCurrentUserOrders(Pageable pageable) {
+    public ResponseEntity<Page<OrderResponse>> getCurrentUserOrders(Pageable pageable) {
         var orders = orderService.getCurrentUserOrders(pageable);
         return ResponseEntity.ok(orders);
     }

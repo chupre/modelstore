@@ -13,20 +13,19 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
-
-    public Page<OrderDto> getCurrentUserOrders(Pageable pageable) {
+    public Page<OrderResponse> getCurrentUserOrders(Pageable pageable) {
         PageableUtils.validate(pageable, PageableUtils.ORDER_SORT_FIELDS);
         var orders = orderRepository.findByCustomerId(User.getCurrentUserId(), pageable);
         return orders.map(orderMapper::toDto);
     }
 
-    public Page<OrderDto> getAllOrders(Pageable pageable) {
+    public Page<OrderResponse> getAllOrders(Pageable pageable) {
         PageableUtils.validate(pageable, PageableUtils.ORDER_SORT_FIELDS);
         var orders = orderRepository.findAll(pageable);
         return orders.map(orderMapper::toDto);
     }
 
-    public OrderDto getOrder(Long id) {
+    public OrderResponse getOrder(Long id) {
         var order =  orderRepository.findById(id).
                 orElseThrow(OrderNotFoundException::new);
 

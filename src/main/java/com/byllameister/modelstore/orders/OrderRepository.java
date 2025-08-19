@@ -14,6 +14,7 @@ import java.util.UUID;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findByPaymentId(UUID paymentId);
 
+    @EntityGraph(attributePaths = {"orderItems", "orderItems.product"})
     Page<Order> findByCustomerId(Long currentUserId, Pageable pageable);
 
     @Query("""
