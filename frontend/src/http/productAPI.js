@@ -139,3 +139,11 @@ export const editComment = async (id, comment) => {
 export const deleteComment = async (id) => {
     return $authHost.delete(`interactions/products/comments/${id}`)
 }
+
+export const fetchOrders = async(page, size, sort = "createdAt,desc") => {
+    return $authHost.get(`/orders/my`, {params: {
+            page,
+            size,
+            sort
+        }})
+}

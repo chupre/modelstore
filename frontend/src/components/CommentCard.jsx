@@ -94,12 +94,17 @@ function CommentCard({  comment,
         <div className="border rounded-lg p-4 bg-card group">
             <div className="flex gap-3">
                 <Avatar
-                    onClick={() => navigate(PROFILE_ROUTE + '/' + comment.user.id)}
+                    onClick={() => comment?.user && navigate(PROFILE_ROUTE + '/' + comment.user.id)}
                     className="hover:cursor-pointer"
                 >
-                    <AvatarImage src={`${import.meta.env.VITE_API_URL}${comment.user.avatarUrl}`} alt="User" />
+                    {comment?.user?.avatarUrl ? (
+                        <AvatarImage
+                            src={`${import.meta.env.VITE_API_URL}${comment.user.avatarUrl}`}
+                            alt="User"
+                        />
+                    ) : null}
                     <AvatarFallback>
-                        <User/>
+                        <User />
                     </AvatarFallback>
                 </Avatar>
 
@@ -110,7 +115,7 @@ function CommentCard({  comment,
                                 className="font-medium px-1 rounded hover:cursor-pointer hover:backdrop-brightness-125 transition"
                                 onClick={() => navigate(PROFILE_ROUTE + '/' + comment.user.id)}
                             >
-                              {comment.user.username}
+                              {comment.user?.username}
                             </span>
 
                             <span className="text-sm text-muted-foreground">

@@ -12,7 +12,12 @@ export default function errorToast(e) {
                 ))
             ),
         });
-    } else {
+    } else if (e.response.status === 403) {
+        toast.error(`Error`, {
+            description: "Access forbidden. Make sure your account is verified"
+        })
+    }
+    else {
         toast.error("Unexpected error", {
             description: "Something went wrong. Please try again.",
         });

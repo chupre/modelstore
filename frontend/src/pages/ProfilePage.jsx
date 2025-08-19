@@ -1,6 +1,7 @@
 import {useState, useRef, useEffect, useContext} from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,10 +14,11 @@ import {fetchProfile, updateProfile} from "@/http/userAPI.js";
 import Loading from "@/components/Loading.jsx";
 import {observer} from "mobx-react-lite";
 import errorToast from "@/utils/errorToast.jsx";
-import {fetchLikedComments, fetchLikedProducts, fetchUserComments} from "@/http/productAPI.js";
+import {fetchLikedComments, fetchLikedProducts, fetchOrders, fetchUserComments} from "@/http/productAPI.js";
 import ProductCard from "@/components/ProductCard.jsx";
 import Pages from "@/components/Pages.jsx";
 import CommentCard from "@/components/CommentCard.jsx";
+import OrderCard from "@/components/OrderCard.jsx";
 
 function ProfilePage() {
     const {user} = useContext(Context)
@@ -57,6 +59,23 @@ function ProfilePage() {
     const [postedCommentsTotalPages, setPostedCommentsTotalPages] = useState(0)
     const [postedCommentsCurrentPage, setPostedCommentsCurrentPage] = useState(0)
     const [postedCommentsTotalElements, setPostedCommentsTotalElements] = useState(0)
+
+    const [orders, setOrders] = useState(null)
+    const [ordersTotalPages, setOrdersTotalPages] = useState(0)
+    const [ordersCurrentPage, setOrdersCurrentPage] = useState(0)
+    const [ordersTotalElements, setOrdersTotalElements] = useState(0)
+
+    useEffect(() => {
+        if (user.isAuth && id === user.user.sub) {
+            fetchOrders(ordersCurrentPage, 2)
+                .then((res) => {
+                    setOrders(res.data.content);
+                    setOrdersTotalPages(res.data.totalPages);
+                    setOrdersTotalElements(res.data.totalElements)
+                })
+                .catch(errorToast);
+        }
+    }, [id, ordersCurrentPage, user.isAuth]);
 
     useEffect(() => {
         fetchLikedProducts(id, likedProductsCurrentPage, 3)
@@ -431,7 +450,11 @@ function ProfilePage() {
                                 <div className="flex-1 text-center md:text-left">
                                     {!isEditing ? (
                                         <div className="space-y-2">
-                                            <h1 className="text-3xl font-bold text-foreground">{profile.name}</h1>
+                                            <div className="flex items-center gap-2">
+                                                <h1 className="text-3xl font-bold text-foreground">{profile.name}</h1>
+                                                <Badge variant="secondary">{user.user.role}</Badge>
+                                            </div>
+
                                             <p className="text-muted-foreground leading-relaxed max-w-2xl">
                                                 {profile.bio || "No bio available."}
                                             </p>
@@ -489,13 +512,15 @@ function ProfilePage() {
                     <div className="w-64 flex-shrink-0">
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full bg-card/0" orientation="vertical">
                             <TabsList className="flex flex-col h-auto w-full p-1 border border-border bg-card/0 backdrop-blur-lg">
-                                <TabsTrigger
-                                    value="orders"
-                                    className="w-full justify-start gap-2 hover:bg-muted transition-colors"
-                                >
-                                    <ShoppingBag className="h-4 w-4" />
-                                    Orders
-                                </TabsTrigger>
+                                {user.isAuth && id === user.user.sub &&
+                                    <TabsTrigger
+                                        value="orders"
+                                        className="w-full justify-start gap-2 hover:bg-muted transition-colors"
+                                    >
+                                        <ShoppingBag className="h-4 w-4"/>
+                                        Orders
+                                    </TabsTrigger>
+                                }
                                 <TabsTrigger
                                     value="liked"
                                     className="w-full justify-start gap-2 hover:bg-muted transition-colors"
@@ -518,20 +543,32 @@ function ProfilePage() {
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                             <TabsContent value="orders" className="space-y-4 mt-0">
                                 <Card className="border-border bg-card/0 backdrop-blur-lg">
-                                    <CardContent className="p-8 text-center">
-                                        <ShoppingBag className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                                        <h3 className="text-lg font-semibold mb-2">Your Orders</h3>
-                                        <p className="text-muted-foreground">Order history will be displayed here</p>
+                                    <CardContent className="p-8 py-2 text-center">
+                                        {(user.isAuth && user.user.sub === id && orders?.length >= 1) ?
+                                            <div className="space-y-4 text-left">
+                                                <p className="text-left text-sm text-muted-foreground mt-1 py-2">{ordersTotalElements} orders found</p>
+                                                {orders.map((order) => (
+                                                    <OrderCard key={order.id} order={order}></OrderCard>
+                                                ))}
+                                                <Pages currentPage={ordersCurrentPage} setCurrentPage={setOrdersCurrentPage} totalPages={ordersTotalPages} />
+                                            </div>
+                                        :
+                                            <div>
+                                                <ShoppingBag className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                                                <h3 className="text-lg font-semibold mb-2">Your Orders</h3>
+                                                <p className="text-muted-foreground">Order history will be displayed here</p>
+                                            </div>
+                                        }
                                     </CardContent>
                                 </Card>
                             </TabsContent>
 
                             <TabsContent value="liked" className="space-y-4 mt-0">
                                 <Card className="border-border bg-card/0 backdrop-blur-lg">
-                                    <CardContent className="p-8 text-center">
+                                    <CardContent className="p-8 py-2 text-center">
                                         {favoriteProducts ?
                                             <div>
-                                                <p className="text-left text-sm text-muted-foreground mt-1 py-2">{likedProductsTotalPages} products found</p>
+                                                <p className="text-left text-sm text-muted-foreground mt-1 py-2">{likedProductsTotalElements} products found</p>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                                                     {favoriteProducts.map((product) => (
                                                         <ProductCard key={product.id} product={product} showLike={false}/>
@@ -552,7 +589,7 @@ function ProfilePage() {
 
                             <TabsContent value="comments" className="space-y-4 mt-0">
                                 <Card className="border-border bg-card/0 backdrop-blur-lg">
-                                    <CardContent className="p-8 text-center">
+                                    <CardContent className="p-8 py-2 text-center">
                                         <Tabs defaultValue="liked-comments">
                                             <TabsList className="bg-secondary/0"  >
                                                 <TabsTrigger value="liked-comments">Liked Comments</TabsTrigger>
