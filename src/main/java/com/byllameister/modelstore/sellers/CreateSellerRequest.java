@@ -1,5 +1,6 @@
 package com.byllameister.modelstore.sellers;
 
+import com.byllameister.modelstore.common.EnumValue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -10,7 +11,8 @@ public class CreateSellerRequest {
     private Long userId;
 
     @NotNull(message = "payoutMethod is required")
-    private PayoutMethod payoutMethod;
+    @EnumValue(enumClass = PayoutMethod.class, message = "Payout method must be one of: YOOMONEY_WALLET, BANK_CARD")
+    private String payoutMethod;
 
     @NotBlank(message = "payoutDestination is required and must be not blank")
     private String payoutDestination;
