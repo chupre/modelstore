@@ -13,14 +13,25 @@ public interface ProductCommentRepository extends JpaRepository<ProductComment, 
                 SELECT new com.byllameister.modelstore.products.interaction.ProductCommentDto(
                             c.id,
                             c.product.id,
-                            c.user.id,
+                            new com.byllameister.modelstore.products.interaction.CommentUserDto(
+                                c.user.id,
+                                c.user.username,
+                                c.user.profile.avatarUrl
+                            ),
                             c.comment,
                             COUNT(cl.id),
                             c.createdAt)
                 FROM ProductComment c
                 LEFT JOIN ProductCommentLike cl ON cl.comment.id = c.id
                 WHERE c.product.id = :productId
-                GROUP BY c.id
+                GROUP BY
+                    c.id,
+                    c.product.id,
+                    c.user.id,
+                    c.user.username,
+                    c.user.profile.avatarUrl,
+                    c.comment,
+                    c.createdAt
             """)
     Page<ProductCommentDto> findAll(@Param("productId") Long productId, Pageable pageable);
 
@@ -28,7 +39,11 @@ public interface ProductCommentRepository extends JpaRepository<ProductComment, 
                 SELECT new com.byllameister.modelstore.products.interaction.CommentWithUserLikeResponse(
                             c.id,
                             c.product.id,
-                            c.user.id,
+                            new com.byllameister.modelstore.products.interaction.CommentUserDto(
+                                c.user.id,
+                                c.user.username,
+                                c.user.profile.avatarUrl
+                            ),
                             c.comment,
                             COUNT(cl.id),
                             c.createdAt,
@@ -41,7 +56,14 @@ public interface ProductCommentRepository extends JpaRepository<ProductComment, 
                 FROM ProductComment c
                 LEFT JOIN ProductCommentLike cl ON cl.comment.id = c.id
                 WHERE c.product.id = :productId
-                GROUP BY c.id
+                GROUP BY
+                    c.id,
+                    c.product.id,
+                    c.user.id,
+                    c.user.username,
+                    c.user.profile.avatarUrl,
+                    c.comment,
+                    c.createdAt
             """)
     Page<CommentWithUserLikeResponse> findAllWithUserLike(
             @Param("productId") Long productId,
@@ -52,14 +74,25 @@ public interface ProductCommentRepository extends JpaRepository<ProductComment, 
                 SELECT new com.byllameister.modelstore.products.interaction.ProductCommentDto(
                             c.id,
                             c.product.id,
-                            c.user.id,
+                            new com.byllameister.modelstore.products.interaction.CommentUserDto(
+                                c.user.id,
+                                c.user.username,
+                                c.user.profile.avatarUrl
+                            ),
                             c.comment,
                             COUNT(cl.id),
                             c.createdAt)
                 FROM ProductComment c
                 JOIN ProductCommentLike pcl ON pcl.comment.id = c.id AND pcl.user.id = :userId
                 LEFT JOIN ProductCommentLike cl ON cl.comment.id = c.id
-                GROUP BY c.id
+                GROUP BY
+                    c.id,
+                    c.product.id,
+                    c.user.id,
+                    c.user.username,
+                    c.user.profile.avatarUrl,
+                    c.comment,
+                    c.createdAt
             """)
     Page<ProductCommentDto> findLikedByUserId(Long userId, Pageable pageable);
 
@@ -67,7 +100,11 @@ public interface ProductCommentRepository extends JpaRepository<ProductComment, 
                 SELECT new com.byllameister.modelstore.products.interaction.CommentWithUserLikeResponse(
                             c.id,
                             c.product.id,
-                            c.user.id,
+                            new com.byllameister.modelstore.products.interaction.CommentUserDto(
+                                c.user.id,
+                                c.user.username,
+                                c.user.profile.avatarUrl
+                            ),
                             c.comment,
                             COUNT(cl.id),
                             c.createdAt,
@@ -80,7 +117,14 @@ public interface ProductCommentRepository extends JpaRepository<ProductComment, 
                 FROM ProductComment c
                 LEFT JOIN ProductCommentLike cl ON cl.comment.id = c.id
                 WHERE c.id = :commentId
-                GROUP BY c.id
+                GROUP BY
+                    c.id,
+                    c.product.id,
+                    c.user.id,
+                    c.user.username,
+                    c.user.profile.avatarUrl,
+                    c.comment,
+                    c.createdAt
     """)
     Optional<CommentWithUserLikeResponse> findWithUserLike(
             @Param("commentId") Long commentId,
@@ -88,17 +132,28 @@ public interface ProductCommentRepository extends JpaRepository<ProductComment, 
 
 
     @Query(value = """
-                                SELECT new com.byllameister.modelstore.products.interaction.ProductCommentDto(
-                                    c.id,
-                                    c.product.id,
-                                    c.user.id,
-                                    c.comment,
-                                    COUNT(cl.id),
-                                    c.createdAt)
-                        FROM ProductComment c
-                        LEFT JOIN ProductCommentLike cl ON cl.comment.id = c.id
-                        WHERE c.user.id = :userId
-                        GROUP BY c.id
+                        SELECT new com.byllameister.modelstore.products.interaction.ProductCommentDto(
+                            c.id,
+                            c.product.id,
+                            new com.byllameister.modelstore.products.interaction.CommentUserDto(
+                                c.user.id,
+                                c.user.username,
+                                c.user.profile.avatarUrl
+                            ),
+                            c.comment,
+                            COUNT(cl.id),
+                            c.createdAt)
+                FROM ProductComment c
+                LEFT JOIN ProductCommentLike cl ON cl.comment.id = c.id
+                WHERE c.user.id = :userId
+                GROUP BY
+                    c.id,
+                    c.product.id,
+                    c.user.id,
+                    c.user.username,
+                    c.user.profile.avatarUrl,
+                    c.comment,
+                    c.createdAt
             """)
     Page<ProductCommentDto> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 }

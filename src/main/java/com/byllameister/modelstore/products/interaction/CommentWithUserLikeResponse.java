@@ -13,13 +13,13 @@ public class CommentWithUserLikeResponse extends ProductCommentDto{
     public CommentWithUserLikeResponse(
             Long id,
             Long productId,
-            Long userId,
+            CommentUserDto user,
             String comment,
             Long likes,
             Instant createdAt,
             Boolean isLiked
     ) {
-        super(id, productId, userId, comment, likes, createdAt);
+        super(id, productId, user, comment, likes, createdAt);
         this.isLiked = isLiked;
     }
 }

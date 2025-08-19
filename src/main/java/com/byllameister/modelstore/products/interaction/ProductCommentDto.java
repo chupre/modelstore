@@ -12,7 +12,7 @@ import java.time.Instant;
 public class ProductCommentDto {
     private Long id;
     private Long productId;
-    private Long userId;
+    private CommentUserDto user;
     private String comment;
     private Long likes;
     private Instant createdAt;
