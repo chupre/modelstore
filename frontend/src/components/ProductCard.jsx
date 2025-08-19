@@ -3,7 +3,7 @@ import {Button} from "@/components/ui/button";
 import {Heart, ShoppingCart, User} from "lucide-react"
 import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
-import {LOGIN_ROUTE, PRODUCT_ROUTE} from "@/utils/consts.js";
+import {LOGIN_ROUTE, PRODUCT_ROUTE, PROFILE_ROUTE} from "@/utils/consts.js";
 import useAddToCart from "@/hooks/useAddToCart.js";
 import {useContext, useEffect, useState} from "react";
 import {Context} from "@/main.jsx";
@@ -77,7 +77,10 @@ function ProductCard({product, showLike= true}) {
                 </h3>
 
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
+                    <div
+                        className="flex items-center gap-1 hover:cursor-pointer hover:brightness-125 transition"
+                        onClick={() => navigate(PROFILE_ROUTE + '/' + product.owner.id)}
+                    >
                         <User className="w-4 h-4" />
                         <span>{product.owner.username}</span>
                     </div>

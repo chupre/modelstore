@@ -1,5 +1,5 @@
 import {useContext, useState} from "react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar.js";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.js";
 import { Button } from "@/components/ui/button.js";
 import { Textarea } from "@/components/ui/textarea.js";
 import {
@@ -21,6 +21,8 @@ import {
 } from "@/http/productAPI.js";
 import errorToast from "@/utils/errorToast.jsx";
 import {Context} from "@/main.jsx";
+import {PROFILE_ROUTE} from "@/utils/consts.js";
+import {useNavigate} from "react-router-dom";
 
 function CommentCard({  comment,
                         setComments,
@@ -30,6 +32,8 @@ function CommentCard({  comment,
     const {user} = useContext(Context)
     const [isEditing, setIsEditing] = useState(false);
     const [editingText, setEditingText] = useState(comment.comment);
+
+    const navigate = useNavigate();
 
     const formatDate = (dateString) =>
         new Date(dateString).toLocaleDateString("en-US", {
@@ -86,16 +90,26 @@ function CommentCard({  comment,
     return (
         <div className="border rounded-lg p-4 bg-card group">
             <div className="flex gap-3">
-                <Avatar className="w-10 h-10 flex-shrink-0">
+                <Avatar
+                    onClick={() => navigate(PROFILE_ROUTE + '/' + comment.user.id)}
+                    className="hover:cursor-pointer"
+                >
+                    <AvatarImage src={`${import.meta.env.VITE_API_URL}${comment.user.avatarUrl}`} alt="User" />
                     <AvatarFallback>
-                        <User className="w-5 h-5" />
+                        <User/>
                     </AvatarFallback>
                 </Avatar>
 
                 <div className="flex-1 space-y-2">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <span className="font-medium">@user{comment.userId}</span>
+                            <span
+                                className="font-medium px-1 rounded hover:cursor-pointer hover:backdrop-brightness-125 transition"
+                                onClick={() => navigate(PROFILE_ROUTE + '/' + comment.user.id)}
+                            >
+                              {comment.user.username}
+                            </span>
+
                             <span className="text-sm text-muted-foreground">
                 {formatDate(comment.createdAt)}
               </span>
