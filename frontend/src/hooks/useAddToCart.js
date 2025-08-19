@@ -3,6 +3,8 @@ import {Context} from "@/main.jsx";
 import {useNavigate} from "react-router-dom";
 import {LOGIN_ROUTE} from "@/utils/consts.js";
 import {addCartItem} from "@/http/cartAPI.js";
+import errorToast from "@/utils/errorToast.jsx";
+import {toast} from "sonner";
 
 function useAddToCart() {
     const { user, cart } = useContext(Context);
@@ -14,7 +16,9 @@ function useAddToCart() {
         } else {
             addCartItem(cart.cart.id, productId).then((res) => {
                 cart.addCartItem(res.data);
+                toast.success("Added item to card")
             })
+            .catch(errorToast)
         }
     }
 }

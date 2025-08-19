@@ -60,6 +60,7 @@ public class Cart {
     private LocalDate createdAt;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,  orphanRemoval = true)
+    @OrderBy("id DESC")
     private Set<CartItem> cartItems = new LinkedHashSet<>();
 
     public CartItem addItem(Product product) {

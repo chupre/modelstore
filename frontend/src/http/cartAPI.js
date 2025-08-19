@@ -26,3 +26,18 @@ export const deleteCartItem = async (cartId, productId) => {
     await $authHost.delete(`/carts/${cartId}/items/${productId}`)
 }
 
+export const toggleSelectItem = async (cartId, productId) => {
+    await $authHost.post(`/carts/${cartId}/items/${productId}/toggleSelect`)
+}
+
+export const selectAllItems = async (cartId) => {
+    await $authHost.post(`/carts/${cartId}/items/selectAll`)
+}
+
+export const unselectAllItems = async (cartId) => {
+    await $authHost.post(`/carts/${cartId}/items/unselectAll`)
+}
+
+export const checkout = async (cartId, currency, redirectUrl) => {
+    return await $authHost.post(`/checkout`, {cartId, currency, redirectUrl})
+}

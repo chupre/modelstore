@@ -46,20 +46,24 @@ function ProfilePage() {
     const [favoriteProducts, setFavoriteProducts] = useState(null)
     const [likedProductsTotalPages, setLikedProductsTotalPages] = useState(0)
     const [likedProductsCurrentPage, setLikedProductsCurrentPage] = useState(0)
+    const [likedProductsTotalElements, setLikedProductsTotalElements] = useState(0)
 
     const [likedComments, setLikedComments] = useState(null)
     const [likedCommentsTotalPages, setLikedCommentsTotalPages] = useState(0)
     const [likedCommentsCurrentPage, setLikedCommentsCurrentPage] = useState(0)
+    const [likedCommentsTotalElements, setLikedCommentsTotalElements] = useState(0)
 
     const [postedComments, setPostedComments] = useState(null)
     const [postedCommentsTotalPages, setPostedCommentsTotalPages] = useState(0)
     const [postedCommentsCurrentPage, setPostedCommentsCurrentPage] = useState(0)
+    const [postedCommentsTotalElements, setPostedCommentsTotalElements] = useState(0)
 
     useEffect(() => {
         fetchLikedProducts(id, likedProductsCurrentPage, 3)
             .then((res) => {
                 setFavoriteProducts(res.data.content);
                 setLikedProductsTotalPages(res.data.totalPages);
+                setLikedProductsTotalElements(res.data.totalElements)
             })
             .catch(errorToast);
     }, [id, likedProductsCurrentPage]);
@@ -69,6 +73,7 @@ function ProfilePage() {
             .then((res) => {
                 setLikedComments(res.data.content);
                 setLikedCommentsTotalPages(res.data.totalPages);
+                setLikedCommentsTotalElements(res.data.totalElements)
             })
             .catch(errorToast);
     }, [id, likedCommentsCurrentPage]);
@@ -78,6 +83,7 @@ function ProfilePage() {
             .then((res) => {
                 setPostedComments(res.data.content);
                 setPostedCommentsTotalPages(res.data.totalPages);
+                setPostedCommentsTotalElements(res.data.totalElements)
             })
             .catch(errorToast);
     }, [id, postedCommentsCurrentPage]);
@@ -373,7 +379,7 @@ function ProfilePage() {
                     <Card className="border-border bg-card/0 backdrop-blur-lg">
                         <CardHeader className="relative pb-6">
                             <div className="absolute right-6 top-6">
-                                {user.user.sub === id && (
+                                {user.user?.sub === id && (
                                     !isEditing ? (
                                         <Button variant="outline" size="sm" onClick={handleEdit} className="gap-2 bg-transparent">
                                             <Edit2 className="h-4 w-4" />
@@ -525,6 +531,7 @@ function ProfilePage() {
                                     <CardContent className="p-8 text-center">
                                         {favoriteProducts ?
                                             <div>
+                                                <p className="text-left text-sm text-muted-foreground mt-1 py-2">{likedProductsTotalPages} products found</p>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                                                     {favoriteProducts.map((product) => (
                                                         <ProductCard key={product.id} product={product} showLike={false}/>
@@ -554,6 +561,7 @@ function ProfilePage() {
                                             <TabsContent value="liked-comments">
                                                 {likedComments ?
                                                     <div className="text-left space-y-4">
+                                                        <p className="text-left text-sm text-muted-foreground mt-1 py-2">{likedCommentsTotalElements} comments found</p>
                                                         {likedComments.map((comment) => (
                                                             <CommentCard
                                                                 key={comment.id}
@@ -578,6 +586,7 @@ function ProfilePage() {
                                             <TabsContent value="posted-comments">
                                                 {postedComments ?
                                                         <div className="text-left space-y-4">
+                                                            <p className="text-left text-sm text-muted-foreground mt-1 py-2">{postedCommentsTotalElements} comments found</p>
                                                             {postedComments.map((comment) => (
                                                                 <CommentCard
                                                                     key={comment.id}

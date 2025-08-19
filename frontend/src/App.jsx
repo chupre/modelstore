@@ -12,7 +12,7 @@ import Loading from "@/components/Loading.jsx";
 import EmailVerificationPopup from "@/components/EmailVerificationPopup.jsx";
 
 function App() {
-    const {user} = useContext(Context);
+    const {user, cart} = useContext(Context);
     const [loading, setLoading] = useState(true);
     const [showEmailVerification, setShowEmailVerification] = useState(false)
     const [searchParams] = useSearchParams();
@@ -36,6 +36,13 @@ function App() {
         }).finally(() => {setLoading(false)});
     }, [])
 
+    useEffect(() => {
+        if (!user.isAuth) {
+            user.setUser(null);
+            cart.setCart(null);
+        }
+    }, [user.isAuth]);
+
     if (loading) {
         return <Loading/>
     }
@@ -48,7 +55,8 @@ function App() {
                 <Toaster position="top-center" theme={"dark"} toastOptions={{
                     classNames: {
                         toast: "items-start text-left"
-                }
+                    },
+                    duration: 1000
                 }}/>
         </ThemeProvider>
     )

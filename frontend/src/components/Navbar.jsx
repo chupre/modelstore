@@ -51,7 +51,7 @@ const Navbar = observer(() => {
                 <div className="flex items-center">
                     <Button variant="ghost" onClick={() => navigate(HOME_ROUTE)}>Home</Button>
                     <NavbarCatalogButton categories={product.categories} />
-                    {user.user.role === "ADMIN" &&
+                    {user.user?.role === "ADMIN" &&
                         <Button variant="ghost" onClick={() => navigate(ADMIN_ROUTE)}>
                             Admin
                         </Button>

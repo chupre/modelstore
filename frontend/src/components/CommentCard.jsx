@@ -21,7 +21,7 @@ import {
 } from "@/http/productAPI.js";
 import errorToast from "@/utils/errorToast.jsx";
 import {Context} from "@/main.jsx";
-import {PROFILE_ROUTE} from "@/utils/consts.js";
+import {LOGIN_ROUTE, PROFILE_ROUTE} from "@/utils/consts.js";
 import {useNavigate} from "react-router-dom";
 
 function CommentCard({  comment,
@@ -43,7 +43,10 @@ function CommentCard({  comment,
         });
 
     const handleCommentLike = async () => {
-        if (!user.isAuth) return;
+        if (!user.isAuth) {
+            navigate(LOGIN_ROUTE)
+            return
+        }
 
         const isLiked = comment.isLiked;
         const updated = {
