@@ -1,5 +1,6 @@
 package com.byllameister.modelstore.sellers;
 
+import com.byllameister.modelstore.payments.PayoutMethod;
 import lombok.Data;
 
 @Data

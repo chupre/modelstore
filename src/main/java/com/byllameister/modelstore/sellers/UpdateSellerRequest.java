@@ -1,5 +1,6 @@
 package com.byllameister.modelstore.sellers;
 
+import com.byllameister.modelstore.payments.PayoutMethod;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

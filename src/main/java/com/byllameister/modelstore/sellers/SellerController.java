@@ -19,7 +19,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/sellers")
 @AllArgsConstructor
-public class SellersController {
+public class SellerController {
     private final SellerService sellerService;
     private final ProductService productService;
 

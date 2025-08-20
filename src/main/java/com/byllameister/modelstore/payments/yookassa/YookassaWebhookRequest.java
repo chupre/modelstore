@@ -2,8 +2,6 @@ package com.byllameister.modelstore.payments.yookassa;
 
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 public class YookassaWebhookRequest {
     private String type;
@@ -12,7 +10,7 @@ public class YookassaWebhookRequest {
 
     @Data
     public static class PaymentObject {
-        private UUID id;
+        private String id;
         private String status;
         private Amount amount;
 

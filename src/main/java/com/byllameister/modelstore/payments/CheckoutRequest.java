@@ -11,9 +11,6 @@ public class CheckoutRequest {
     @NotNull(message = "cartId is required")
     private UUID cartId;
 
-    @NotNull(message = "currency is required. Supported: RUB, EUR, USD")
-    private Currency currency;
-
-    @NotBlank
+    @NotBlank(message = "redirectUrl must be not blank")
     private String redirectUrl;
 }

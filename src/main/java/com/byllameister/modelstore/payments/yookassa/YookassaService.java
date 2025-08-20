@@ -1,9 +1,7 @@
 package com.byllameister.modelstore.payments.yookassa;
 
-import com.byllameister.modelstore.payments.Currency;
-import com.byllameister.modelstore.payments.PaymentGatewayService;
-import com.byllameister.modelstore.payments.PaymentResponse;
-import com.byllameister.modelstore.payments.PaymentResponseParseFailed;
+import com.byllameister.modelstore.payments.*;
+import com.byllameister.modelstore.sellers.Seller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -12,17 +10,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class YookassaService implements PaymentGatewayService {
+public class YookassaService implements PaymentService {
     private final YookassaConfig config;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public PaymentResponse createPayment(BigDecimal amount, Currency currency, String redirectUrl) throws PaymentResponseParseFailed {
+    public PaymentResponse createPayment(BigDecimal amount, String redirectUrl) throws PaymentResponseParseFailed {
         String idempotenceKey = UUID.randomUUID().toString();
 
         HttpHeaders headers = new HttpHeaders();
@@ -31,20 +30,79 @@ public class YookassaService implements PaymentGatewayService {
         headers.set("Idempotence-Key", idempotenceKey);
 
         YookassaPaymentRequest request = YookassaPaymentRequest.builder()
-                .amount(new YookassaPaymentRequest.Amount(amount.toString(), currency))
+                .amount(new YookassaAmount(amount.setScale(2, RoundingMode.HALF_UP).toString()))
                 .confirmation(new YookassaPaymentRequest.Confirmation("redirect", redirectUrl))
                 .capture(true)
                 .build();
 
         HttpEntity<YookassaPaymentRequest> requestEntity = new HttpEntity<>(request, headers);
         ResponseEntity<String> response = restTemplate.exchange(
-                config.getApiUrl(),
+                config.getApiUrl() + "/payments",
                 HttpMethod.POST,
                 requestEntity,
                 String.class
         );
 
         return extractPaymentResponse(response.getBody());
+    }
+
+    @Override
+    public PayoutResponse createPayout(BigDecimal amount, PayoutDestination payoutDestination) {
+        String idempotenceKey = UUID.randomUUID().toString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBasicAuth(config.getPayoutGatewayId(), config.getPayoutGatewaySecretKey());
+        headers.set("Idempotence-Key", idempotenceKey);
+
+        YookassaPayoutRequest request = YookassaPayoutRequest.builder()
+                .amount(new YookassaAmount(amount.setScale(2, RoundingMode.HALF_UP).toString()))
+                .payout_destination_data(payoutDestination)
+                .build();
+
+        System.out.println(request.toString());
+
+        HttpEntity<YookassaPayoutRequest> requestEntity = new HttpEntity<>(request, headers);
+        System.out.println(requestEntity);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                config.getApiUrl() + "/payouts",
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+
+        System.out.println(response.getBody());
+
+        return extractPayoutResponse(response.getBody());
+    }
+
+    @Override
+    public PayoutDestination buildPayoutDestination(Seller seller) {
+        var method = seller.getPayoutMethod();
+        var destination = seller.getPayoutDestination();
+
+        switch (method) {
+            case BANK_CARD -> {
+                return new YookassaBankCard(new YookassaBankCard.BankCard(destination));
+            }
+            case YOOMONEY_WALLET -> {
+                return new YookassaWallet(destination);
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
+
+    private PayoutResponse extractPayoutResponse(String body) throws PaymentResponseParseFailed {
+        try {
+            JsonNode root = objectMapper.readTree(body);
+            String paymentId = root.path("id").asText();
+            return new PayoutResponse(paymentId);
+        } catch (Exception e) {
+            throw new PaymentResponseParseFailed("Failed to parse YooKassa response", e);
+        }
     }
 
     private PaymentResponse extractPaymentResponse(String body) throws PaymentResponseParseFailed {

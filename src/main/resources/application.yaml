@@ -45,4 +45,7 @@ user:
 yookassa:
   shop-id: ${YOOKASSA_SHOP_ID}
   secret-key: ${YOOKASSA_SECRET_KEY}
-
+  payout-gateway-id: ${YOOKASSA_PAYOUT_GATEWAY_ID}
+  payout-gateway-secret-key: ${YOOKASSA_PAYOUT_GATEWAY_SECRET_KEY}
+payout:
+  commission: 0.05

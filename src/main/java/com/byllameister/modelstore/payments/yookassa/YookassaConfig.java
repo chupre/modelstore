@@ -13,5 +13,11 @@ public class YookassaConfig {
     @Value("${yookassa.secret-key}")
     private String secretKey;
 
-    private final String apiUrl = "https://api.yookassa.ru/v3/payments";
+    @Value("${yookassa.payout-gateway-id}")
+    private String payoutGatewayId;
+
+    @Value("${yookassa.payout-gateway-secret-key}")
+    private String payoutGatewaySecretKey;
+
+    private final String apiUrl = "https://api.yookassa.ru/v3";
 }
