@@ -1,10 +1,12 @@
 package com.byllameister.modelstore.sellers;
 
 import com.byllameister.modelstore.payments.PayoutMethod;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class SellerDto {
+@AllArgsConstructor
+public class SellerResponse {
     private Long id;
     private Long userId;
     private PayoutMethod payoutMethod;

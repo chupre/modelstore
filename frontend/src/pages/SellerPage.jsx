@@ -1,11 +1,15 @@
 import {observer} from "mobx-react-lite"
-import {useContext} from "react";
+import {useContext, useEffect} from "react";
 import {Context} from "@/main.jsx";
 import BecomeSeller from "@/components/BecomeSeller.jsx";
 
 function SellerPage() {
     const {user} = useContext(Context)
     const role = user.user.role
+
+    useEffect(() => {
+
+    }, []);
 
     return (
         (role === "SELLER" || role === "ADMIN") ? (

@@ -24,7 +24,7 @@ public class SellerController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<SellerDto> becomeSeller(
+    public ResponseEntity<SellerResponse> becomeSeller(
             @Valid @RequestBody CreateSellerRequest request,
             UriComponentsBuilder uriComponentsBuilder
     ) {
@@ -34,13 +34,13 @@ public class SellerController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<SellerDto> getCurrentSeller() {
+    public ResponseEntity<SellerWithStatsResponse> getCurrentSeller() {
         var seller = sellerService.getCurrentSeller();
         return ResponseEntity.ok(seller);
     }
 
     @PutMapping("/me")
-    public ResponseEntity<SellerDto> updateSeller(
+    public ResponseEntity<SellerResponse> updateSeller(
             @Valid @RequestBody UpdateSellerRequest request
     ) {
         var id = sellerService.getCurrentSeller().getId();
@@ -72,7 +72,6 @@ public class SellerController {
         var uri = uriComponentsBuilder.path("/sellers/{productId}").buildAndExpand(id).toUri();
         return ResponseEntity.created(uri).body(product);
     }
-
 
     @PutMapping("/me/products/{id}")
     @PreAuthorize("@sellerPermissionEvaluator.hasAccessToProduct(#id)")

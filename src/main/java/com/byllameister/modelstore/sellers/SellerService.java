@@ -18,18 +18,22 @@ public class SellerService {
     private final SellerMapper sellerMapper;
     private final SellerRepository sellerRepository;
 
-    public SellerDto becomeSeller(CreateSellerRequest request) {
+    public SellerResponse becomeSeller(CreateSellerRequest request) {
         var seller = createSeller(request);
 
         var user = userRepository.findById(request.getUserId()).
                 orElseThrow(UserNotFoundException::new);
-        user.setRole(Role.SELLER);
+
+        if (!user.getRole().equals(Role.ADMIN)) {
+            user.setRole(Role.SELLER);
+        }
+
         userRepository.save(user);
 
         return seller;
     }
 
-    public SellerDto createSeller(CreateSellerRequest request) {
+    public SellerResponse createSeller(CreateSellerRequest request) {
         if (sellerRepository.existsByUserId(request.getUserId())) {
             throw new SellerAlreadyExistsException();
         }
@@ -39,12 +43,21 @@ public class SellerService {
         return sellerMapper.toDto(seller);
     }
 
-    public SellerDto getCurrentSeller() {
-        var seller = sellerRepository.findByUserId(User.getCurrentUserId());
-        return sellerMapper.toDto(seller);
+    public SellerWithStatsResponse getCurrentSeller() {
+        return sellerRepository.findSellerWithStats(User.getCurrentUserId())
+                .orElseThrow(SellerNotFoundException::new);
     }
 
-    public SellerDto updateSeller(Long id, @Valid UpdateSellerRequest request) {
+    public Page<SellerWithStatsResponse> getAllSellers(Pageable pageable) {
+        PageableUtils.validate(pageable, PageableUtils.SELLER_SORT_FIELDS);
+        return sellerRepository.findSellersWithStats(pageable);
+    }
+
+    public SellerWithStatsResponse getSeller(Long id) {
+        return sellerRepository.findSellerWithStats(id).orElseThrow(SellerNotFoundException::new);
+    }
+
+    public SellerResponse updateSeller(Long id, @Valid UpdateSellerRequest request) {
         var seller = sellerRepository.findById(id).orElseThrow(SellerNotFoundException::new);
         sellerMapper.update(request, seller);
         sellerRepository.save(seller);
@@ -57,16 +70,5 @@ public class SellerService {
         sellerRepository.delete(seller);
         user.setRole(Role.BUYER);
         userRepository.save(user);
-    }
-
-    public Page<SellerDto> getAllSellers(Pageable pageable) {
-        PageableUtils.validate(pageable, PageableUtils.SELLER_SORT_FIELDS);
-        var sellers = sellerRepository.findAll(pageable);
-        return sellers.map(sellerMapper::toDto);
-    }
-
-    public SellerDto getSeller(Long id) {
-        var seller = sellerRepository.findById(id).orElseThrow(SellerNotFoundException::new);
-        return sellerMapper.toDto(seller);
     }
 }

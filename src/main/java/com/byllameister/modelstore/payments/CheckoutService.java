@@ -8,6 +8,7 @@ import com.byllameister.modelstore.orders.Order;
 import com.byllameister.modelstore.orders.OrderItem;
 import com.byllameister.modelstore.orders.OrderRepository;
 import com.byllameister.modelstore.sellers.Seller;
+import com.byllameister.modelstore.sellers.SellerNotFoundException;
 import com.byllameister.modelstore.sellers.SellerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,8 +62,11 @@ public class CheckoutService {
     public void payout(Order order) {
         Map<Seller, BigDecimal> amounts = new HashMap<>();
         for (OrderItem item : order.getOrderItems()) {
-            Seller seller = sellerRepository.findByUserId(item.getProduct().getOwner().getId());
-            BigDecimal amount = item.getPrice().multiply(BigDecimal.valueOf(1.0 - Double.parseDouble(commission)));
+            Seller seller = sellerRepository.findByUserId(item.getProduct().getOwner().getId())
+                    .orElseThrow(SellerNotFoundException::new);
+            BigDecimal amount = item.getPrice()
+                    .multiply(BigDecimal.ONE.subtract(new BigDecimal(commission)))
+                    .setScale(2, RoundingMode.HALF_UP);
             amounts.merge(seller, amount, BigDecimal::add);
         }
 

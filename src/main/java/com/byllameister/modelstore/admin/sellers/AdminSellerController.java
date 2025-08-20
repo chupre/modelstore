@@ -19,19 +19,19 @@ public class AdminSellerController {
     private SellerService sellerService;
 
     @GetMapping
-    public ResponseEntity<Page<SellerDto>> getAllSellers(Pageable pageable) {
+    public ResponseEntity<Page<SellerWithStatsResponse>> getAllSellers(Pageable pageable) {
         var sellers = sellerService.getAllSellers(pageable);
         return ResponseEntity.ok(sellers);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SellerDto> getSeller(@PathVariable Long id) {
+    public ResponseEntity<SellerWithStatsResponse> getSeller(@PathVariable Long id) {
         var seller = sellerService.getSeller(id);
         return ResponseEntity.ok(seller);
     }
 
     @PostMapping
-    public ResponseEntity<SellerDto> createSeller(
+    public ResponseEntity<SellerResponse> createSeller(
             @Valid @RequestBody CreateSellerRequest request,
             UriComponentsBuilder uriComponentsBuilder
     ) {
@@ -41,7 +41,7 @@ public class AdminSellerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SellerDto> updateSeller(
+    public ResponseEntity<SellerResponse> updateSeller(
             @PathVariable Long id,
             @Valid @RequestBody UpdateSellerRequest request) {
         var seller = sellerService.updateSeller(id, request);
@@ -49,7 +49,7 @@ public class AdminSellerController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<SellerDto> deleteSeller(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSeller(@PathVariable Long id) {
         sellerService.deleteSeller(id);
         return ResponseEntity.noContent().build();
     }

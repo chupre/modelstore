@@ -10,7 +10,7 @@ public interface SellerMapper {
     Seller toEntity(CreateSellerRequest request);
 
     @Mapping(source = "user.id", target = "userId")
-    SellerDto toDto(Seller seller);
+    SellerResponse toDto(Seller seller);
 
     void update(UpdateSellerRequest request, @MappingTarget Seller seller);
 }

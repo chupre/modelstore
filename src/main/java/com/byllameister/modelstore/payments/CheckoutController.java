@@ -17,21 +17,12 @@ import org.springframework.web.client.HttpClientErrorException;
 @RequiredArgsConstructor
 public class CheckoutController {
     private final CheckoutService checkoutService;
-    private final OrderRepository orderRepository;
 
     @PreAuthorize("@cartPermissionEvaluator.hasAccess(#request.cartId)")
     @PostMapping
     public ResponseEntity<CheckoutResponse> checkout(@Valid @RequestBody CheckoutRequest request) throws PaymentResponseParseFailed {
         var checkout = checkoutService.checkout(request);
         return ResponseEntity.ok(checkout);
-    }
-
-    @PostMapping("/a")
-    public ResponseEntity<Void> payout(@RequestParam(name = "id") Long id)
-    {
-        var order = orderRepository.getOrderById(id);
-        checkoutService.payout(order);
-        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(PaymentResponseParseFailed.class)
