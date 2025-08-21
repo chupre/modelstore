@@ -60,19 +60,13 @@ public class YookassaService implements PaymentService {
                 .payout_destination_data(payoutDestination)
                 .build();
 
-        System.out.println(request.toString());
-
         HttpEntity<YookassaPayoutRequest> requestEntity = new HttpEntity<>(request, headers);
-        System.out.println(requestEntity);
-
         ResponseEntity<String> response = restTemplate.exchange(
                 config.getApiUrl() + "/payouts",
                 HttpMethod.POST,
                 requestEntity,
                 String.class
         );
-
-        System.out.println(response.getBody());
 
         return extractPayoutResponse(response.getBody());
     }

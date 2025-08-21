@@ -55,9 +55,8 @@ public class SellerController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/me/products")
-    public Page<ProductWithLikesResponse> getSellerProducts(Pageable pageable) {
-        var id = sellerService.getCurrentSeller().getId();
+    @GetMapping("/{id}/products")
+    public Page<ProductWithLikesResponse> getSellerProducts(Pageable pageable, @PathVariable Long id) {
         return productService.getProductsBySellerId(id, pageable);
     }
 
