@@ -3,6 +3,7 @@ package com.byllameister.modelstore.sellers;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.products.*;
 import com.byllameister.modelstore.products.ProductWithLikesResponse;
+import com.byllameister.modelstore.users.User;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -55,9 +56,13 @@ public class SellerController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/products")
-    public Page<ProductWithLikesResponse> getSellerProducts(Pageable pageable, @PathVariable Long id) {
-        return productService.getProductsBySellerId(id, pageable);
+    @GetMapping("/{userId}/products")
+    public Page<? extends ProductWithLikesResponse> getSellerProducts(Pageable pageable, @PathVariable Long userId) {
+        if (userId.equals(User.getCurrentUserId())) {
+            return productService.getSellerProductsWithStats(userId, pageable);
+        } else {
+            return productService.getSellerProductsByUserId(userId, pageable);
+        }
     }
 
     @PostMapping("/me/products")

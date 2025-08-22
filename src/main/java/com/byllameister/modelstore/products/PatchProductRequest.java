@@ -30,7 +30,7 @@ public class PatchProductRequest {
             },
             message = "Image type is not supported"
     )
-    @FileSize(maxBytes = 5 * 1024 * 1024)
+    @FileSize(maxBytes = 5 * 1024 * 1024, message = "Image is too big. Max size is 5MB.")
     private MultipartFile previewImage;
 
     @FileType(

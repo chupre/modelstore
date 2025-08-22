@@ -29,6 +29,16 @@ public interface ProductMapper {
     @Mapping(target = "category", expression = "java(mapCategory(productFlatDto))")
     ProductWithUserLikeResponse toDtoFromFlatDto(ProductWithUserLikeFlatDto productFlatDto);
 
+    @Mapping(target = "owner", expression = "java(mapUser(productFlatDto))")
+    @Mapping(target = "category", expression = "java(mapCategory(productFlatDto))")
+    @Mapping(target = "revenue", expression = "java(formatRevenue(productFlatDto.getRevenue()))")
+    ProductWithSellerStatsResponse toDtoFromFlatDto(ProductWithSellerStatsFlatDto productFlatDto);
+
+    default Double formatRevenue(Double revenue) {
+        if (revenue == null) return 0.0;
+        return Math.round(revenue * 100.0) / 100.0; // keeps 2 decimals
+    }
+
     default UserDto mapUser(ProductFlatDto productFlatDto) {
         return new UserDto(
                 productFlatDto.getOwnerId(),

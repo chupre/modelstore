@@ -14,7 +14,8 @@ import com.byllameister.modelstore.users.UserNotFoundException;
 import com.byllameister.modelstore.categories.CategoryRepository;
 import com.byllameister.modelstore.users.UserRepository;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -27,7 +28,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
@@ -37,6 +38,9 @@ public class ProductService {
     private final UploadService uploadService;
 
     private final SellerRepository sellerRepository;
+
+    @Value("${payout.commission}")
+    private String commission;
 
     public Page<ProductWithLikesResponse> getProducts(
             String search,
@@ -193,10 +197,21 @@ public class ProductService {
         return product.getOwner().getId();
     }
 
-    public Page<ProductWithLikesResponse> getProductsBySellerId(Long id, Pageable pageable) {
+    public Page<ProductWithLikesResponse> getSellerProductsByUserId(Long userId, Pageable pageable) {
         PageableUtils.validate(pageable, PageableUtils.PRODUCT_SORT_FIELDS);
-        var seller = sellerRepository.findById(id).orElseThrow(SellerNotFoundException::new);
+        var seller = sellerRepository.findByUserId(userId).orElseThrow(SellerNotFoundException::new);
         var products = productRepository.findAllByOwnerIdWithLikes(seller.getUser().getId(), pageable);
+        return products.map(productMapper::toDtoFromFlatDto);
+    }
+
+    public Page<ProductWithSellerStatsResponse> getSellerProductsWithStats(Long userId, Pageable pageable) {
+        PageableUtils.validate(pageable, PageableUtils.SELLER_PRODUCT_SORT_FIELDS);
+        var seller = sellerRepository.findByUserId(userId).orElseThrow(SellerNotFoundException::new);
+        var products = productRepository.findAllByOwnerIdWithSellerStats(
+                seller.getUser().getId(),
+                Double.valueOf(commission),
+                pageable);
+
         return products.map(productMapper::toDtoFromFlatDto);
     }
 }

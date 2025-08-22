@@ -32,7 +32,7 @@ public class CreateProductRequest implements CreateProductDto {
             },
             message = "Image type is not supported"
     )
-    @FileSize(maxBytes = 5 * 1024 * 1024)
+    @FileSize(maxBytes = 5 * 1024 * 1024, message = "Image is too big. Max size is 5MB.")
     private MultipartFile previewImage;
 
     @FileNotEmpty(message = "Model file is required and must be not empty")
@@ -45,7 +45,7 @@ public class CreateProductRequest implements CreateProductDto {
             },  allowedExtensions = {"stl"},
             message = "Unsupported file type"
     )
-    @FileSize(maxBytes = 200 * 1024 * 1024, message = "File is too big")
+    @FileSize(maxBytes = 200 * 1024 * 1024, message = "File is too big. Max size is 200 MB")
     private MultipartFile file;
 
     @NotNull(message = "Category is required")

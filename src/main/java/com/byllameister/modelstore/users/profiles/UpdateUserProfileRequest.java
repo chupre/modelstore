@@ -24,7 +24,7 @@ public class UpdateUserProfileRequest {
             },
             message = "Image type is not supported"
     )
-    @FileSize(maxBytes = 5 * 1024 * 1024)
+    @FileSize(maxBytes = 5 * 1024 * 1024, message = "Image is too big. Max size is 5MB.")
     private MultipartFile avatarImage;
 
     @Size(max = 500, message = "Bio can't be bigger than 500 characters")

@@ -35,7 +35,7 @@ public class UpdateProductRequest {
             },
             message = "Image type is not supported"
     )
-    @FileSize(maxBytes = 5 * 1024 * 1024)
+    @FileSize(maxBytes = 5 * 1024 * 1024, message = "Image is too big. Max size is 5MB.")
     private MultipartFile previewImage;
 
     @FileNotEmpty(message = "Model file is required and must be not empty")
