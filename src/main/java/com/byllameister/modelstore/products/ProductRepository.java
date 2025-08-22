@@ -268,31 +268,30 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<ProductFlatDto> findLikedByUserId(Long userId, Pageable pageable);
 
     @Query(value = """
-        SELECT * FROM (
-            SELECT p.id as id,
-                   p.title as title,
-                   p.description as description,
-                   p.price as price,
-                   p.previewimage as previewImage,
-                   p.file as file,
-                   p.createdat as createdAt,
-                   u.id as ownerId,
-                   u.username as ownerUsername,
-                   c.id as categoryId,
-                   c.name as categoryName,
-                   COUNT(DISTINCT l.id) as likesCount,
-                   COALESCE(COUNT(DISTINCT oi.id), 0) as sales,
-                   COALESCE(SUM(oi.price), 0) * (1.0 - :commission) as revenue
-            FROM products p
-            JOIN users u ON p.owner_id = u.id
-            JOIN categories c ON p.category_id = c.id
-            LEFT JOIN product_likes l ON l.product_id = p.id
-            LEFT JOIN order_items oi ON oi.product_id = p.id
-            LEFT JOIN orders o ON oi.order_id = o.id
-            WHERE p.owner_id = :userId
-              AND o.status = 'PAID'
-            GROUP BY p.id, u.id, c.id
-        ) sub
+            SELECT * FROM (
+                 SELECT p.id as id,
+                        p.title as title,
+                        p.description as description,
+                        p.price as price,
+                        p.previewimage as previewImage,
+                        p.file as file,
+                        p.createdat as createdAt,
+                        u.id as ownerId,
+                        u.username as ownerUsername,
+                        c.id as categoryId,
+                        c.name as categoryName,
+                        COUNT(DISTINCT l.id) as likesCount,
+                        COALESCE(COUNT(DISTINCT oi.id), 0) as sales,
+                        COALESCE(SUM(oi.price), 0) * (1.0 - :commission) as revenue
+                 FROM products p
+                 JOIN users u ON p.owner_id = u.id
+                 JOIN categories c ON p.category_id = c.id
+                 LEFT JOIN product_likes l ON l.product_id = p.id
+                 LEFT JOIN order_items oi ON oi.product_id = p.id
+                 LEFT JOIN orders o ON oi.order_id = o.id AND o.status = 'PAID'
+                 WHERE p.owner_id = :userId
+                 GROUP BY p.id, u.id, c.id
+             ) sub
         """,
             countQuery = """
                     SELECT COUNT(*)
