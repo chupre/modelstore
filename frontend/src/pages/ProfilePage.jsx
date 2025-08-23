@@ -455,7 +455,7 @@ function ProfilePage() {
                                         <div className="space-y-2">
                                             <div className="flex items-center gap-2">
                                                 <h1 className="text-3xl font-bold text-foreground">{profile.name}</h1>
-                                                <Badge variant="secondary">{user.user.role}</Badge>
+                                                <Badge variant="secondary">{profile.role}</Badge>
                                             </div>
 
                                             <p className="text-muted-foreground leading-relaxed max-w-2xl">
