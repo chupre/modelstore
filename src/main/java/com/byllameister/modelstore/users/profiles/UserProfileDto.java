@@ -7,6 +7,7 @@ public class UserProfileDto {
     private Long id;
     private Long userId;
     private String name;
+    private String role;
     private String avatarUrl;
     private String bio;
 }

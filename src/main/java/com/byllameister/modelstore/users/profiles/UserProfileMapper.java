@@ -6,5 +6,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserProfileMapper {
     @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "role", source = "user.role")
     UserProfileDto toDto(UserProfile user);
 }
