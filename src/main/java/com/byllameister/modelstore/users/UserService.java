@@ -23,10 +23,10 @@ public class UserService {
     private final UserProfileRepository userProfileRepository;
     private PasswordEncoder passwordEncoder;
 
-    public Page<UserDto> getAllUsers(Pageable pageable) {
+    public Page<UserResponse> getAllUsers(Pageable pageable) {
         PageableUtils.validate(pageable, PageableUtils.USER_SORT_FIELDS);
         var users = userRepository.findAll(pageable);
-        return users.map(userMapper::toDto);
+        return users.map(userMapper::toResponse);
     }
 
     public Page<UserExposedResponse> getAllUsersExposed(Pageable pageable) {
@@ -40,12 +40,12 @@ public class UserService {
         return userMapper.toExposedResponse(user);
     }
 
-    public UserDto getUserById(Long id) {
+    public UserResponse getUserById(Long id) {
         var user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-        return userMapper.toDto(user);
+        return userMapper.toResponse(user);
     }
 
-    public UserDto createUser(@Valid RegisterUserRequest request) {
+    public UserResponse createUser(@Valid RegisterUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new DuplicateEmailException();
         }
@@ -65,7 +65,7 @@ public class UserService {
         userProfile.setName(user.getUsername());
         userProfileRepository.save(userProfile);
 
-        return userMapper.toDto(user);
+        return userMapper.toResponse(user);
     }
 
     public UserExposedResponse updateUser(Long id, @Valid UpdateUserRequest request) {
@@ -100,8 +100,8 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public UserDto getCurrentUser() {
+    public UserResponse getCurrentUser() {
         var user = userRepository.findById(User.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
-        return userMapper.toDto(user);
+        return userMapper.toResponse(user);
     }
 }

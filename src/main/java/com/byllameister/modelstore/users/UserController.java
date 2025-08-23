@@ -23,17 +23,17 @@ public class UserController {
     private final ProductInteractionService productInteractionService;
 
     @GetMapping
-    public Page<UserDto> getAllUsers(Pageable pageable) {
+    public Page<UserResponse> getAllUsers(Pageable pageable) {
         return userService.getAllUsers(pageable);
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable Long id) {
+    public UserResponse getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(
+    public ResponseEntity<UserResponse> createUser(
             @RequestBody @Valid RegisterUserRequest request,
             UriComponentsBuilder uriComponentsBuilder
     ) {
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserDto> me() {
+    public ResponseEntity<UserResponse> me() {
         var user = userService.getCurrentUser();
         return ResponseEntity.ok().body(user);
     }
