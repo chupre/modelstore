@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class PaymentResponse {
+public class PaymentGatewayResponse {
     private final String id;
     private final String confirmationUrl;
 }

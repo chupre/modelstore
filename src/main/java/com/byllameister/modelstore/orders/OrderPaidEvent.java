@@ -1,6 +1,5 @@
-package com.byllameister.modelstore.payments;
+package com.byllameister.modelstore.orders;
 
-import com.byllameister.modelstore.orders.Order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

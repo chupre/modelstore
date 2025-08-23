@@ -3,7 +3,7 @@ package com.byllameister.modelstore.payments.yookassa;
 import com.byllameister.modelstore.orders.OrderNotFoundException;
 import com.byllameister.modelstore.orders.OrderStatus;
 import com.byllameister.modelstore.orders.OrderRepository;
-import com.byllameister.modelstore.payments.OrderPaidEvent;
+import com.byllameister.modelstore.orders.OrderPaidEvent;
 import com.byllameister.modelstore.payments.PayoutNotFoundException;
 import com.byllameister.modelstore.payments.PayoutRepository;
 import com.byllameister.modelstore.payments.PayoutStatus;

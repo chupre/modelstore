@@ -15,13 +15,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class YookassaService implements PaymentService {
+public class YookassaService implements PaymentGatewayService {
     private final YookassaConfig config;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public PaymentResponse createPayment(BigDecimal amount, String redirectUrl) throws PaymentResponseParseFailed {
+    public PaymentGatewayResponse createPayment(BigDecimal amount, String redirectUrl) throws PaymentResponseParseFailed {
         String idempotenceKey = UUID.randomUUID().toString();
 
         HttpHeaders headers = new HttpHeaders();
@@ -47,7 +47,7 @@ public class YookassaService implements PaymentService {
     }
 
     @Override
-    public PayoutResponse createPayout(BigDecimal amount, PayoutDestination payoutDestination) {
+    public PayoutGatewayResponse createPayout(BigDecimal amount, PayoutDestination payoutDestination) {
         String idempotenceKey = UUID.randomUUID().toString();
 
         HttpHeaders headers = new HttpHeaders();
@@ -89,22 +89,22 @@ public class YookassaService implements PaymentService {
         }
     }
 
-    private PayoutResponse extractPayoutResponse(String body) throws PaymentResponseParseFailed {
+    private PayoutGatewayResponse extractPayoutResponse(String body) throws PaymentResponseParseFailed {
         try {
             JsonNode root = objectMapper.readTree(body);
             String paymentId = root.path("id").asText();
-            return new PayoutResponse(paymentId);
+            return new PayoutGatewayResponse(paymentId);
         } catch (Exception e) {
             throw new PaymentResponseParseFailed("Failed to parse YooKassa response", e);
         }
     }
 
-    private PaymentResponse extractPaymentResponse(String body) throws PaymentResponseParseFailed {
+    private PaymentGatewayResponse extractPaymentResponse(String body) throws PaymentResponseParseFailed {
         try {
             JsonNode root = objectMapper.readTree(body);
             String paymentId = root.path("id").asText();
             String confirmationUrl = root.path("confirmation").path("confirmation_url").asText();
-            return new PaymentResponse(paymentId, confirmationUrl);
+            return new PaymentGatewayResponse(paymentId, confirmationUrl);
         } catch (Exception e) {
             throw new PaymentResponseParseFailed("Failed to parse YooKassa response", e);
         }

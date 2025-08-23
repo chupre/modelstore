@@ -1,6 +1,8 @@
 package com.byllameister.modelstore.sellers;
 
 import com.byllameister.modelstore.common.ErrorDto;
+import com.byllameister.modelstore.payments.PayoutDto;
+import com.byllameister.modelstore.payments.PayoutService;
 import com.byllameister.modelstore.products.*;
 import com.byllameister.modelstore.products.ProductWithLikesResponse;
 import com.byllameister.modelstore.users.User;
@@ -23,6 +25,7 @@ import java.io.IOException;
 public class SellerController {
     private final SellerService sellerService;
     private final ProductService productService;
+    private final PayoutService payoutService;
 
     @PostMapping
     public ResponseEntity<SellerResponse> becomeSeller(
@@ -63,6 +66,11 @@ public class SellerController {
         } else {
             return productService.getSellerProductsByUserId(userId, pageable);
         }
+    }
+
+    @GetMapping("/me/payouts")
+    public Page<PayoutDto> getSellerPayouts(Pageable pageable) {
+        return payoutService.getSellerPayouts(User.getCurrentUserId(), pageable);
     }
 
     @PostMapping("/me/products")

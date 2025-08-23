@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class PayoutResponse {
+public class PayoutGatewayResponse {
     private String id;
 }

@@ -11,11 +11,12 @@ public class PageableUtils {
     public static final Set<String> CART_SORT_FIELDS = Set.of("createdAt");
     public static final Set<String> CATEGORY_SORT_FIELDS = Set.of("id", "name");
     public static final Set<String> ORDER_SORT_FIELDS = Set.of("id", "totalPrice", "createdAt");
-    public static final Set<String> PRODUCT_SORT_FIELDS = Set.of("id", "title", "price", "categoryId", "createdAt", "likesCount");
-    public static final Set<String> SELLER_PRODUCT_SORT_FIELDS = Set.of("id", "title", "price", "categoryId", "createdAt", "likesCount", "sales", "revenue");
+    public static final Set<String> PRODUCT_SORT_FIELDS = Set.of("id", "title", "price", "categoryName", "createdAt", "likesCount");
+    public static final Set<String> SELLER_PRODUCT_SORT_FIELDS = Set.of("id", "title", "price", "categoryName", "createdAt", "likesCount", "sales", "revenue");
     public static final Set<String> SELLER_SORT_FIELDS = Set.of();
     public static final Set<String> USER_SORT_FIELDS = Set.of("id", "username", "email");
     public static final Set<String> COMMENT_SORT_FIELDS = Set.of("id", "comment", "createdAt");
+    public static final Set<String> PAYOUT_SORT_FIELDS = Set.of("id", "amount", "status", "createdAt");
 
     public static void validate(Pageable pageable, Set<String> validSortFields) {
         for (Sort.Order order : pageable.getSort()) {

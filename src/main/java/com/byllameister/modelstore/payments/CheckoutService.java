@@ -27,7 +27,7 @@ import java.util.UUID;
 public class CheckoutService {
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
-    private final PaymentService paymentService;
+    private final PaymentGatewayService paymentService;
     private final CartService cartService;
     private final SellerRepository sellerRepository;
     private final PayoutRepository payoutRepository;
