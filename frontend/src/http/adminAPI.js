@@ -7,6 +7,7 @@ export const createProduct = async (productFormData) => {
         }
     })
 }
+
 export const patchProduct = async (id, productFormData) => {
     return await $authHost.patch(`admin/products/${id}`, productFormData, {
         headers: {

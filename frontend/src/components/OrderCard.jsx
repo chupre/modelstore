@@ -5,23 +5,23 @@ import errorToast from "@/utils/errorToast.jsx";
 import {useNavigate} from "react-router-dom";
 import {PRODUCT_ROUTE} from "@/utils/consts.js";
 
+export const getStatusColor = (status) => {
+    switch (status) {
+        case "PAID":
+            return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
+        case "PENDING":
+            return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
+        case "CANCELLED":
+            return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+        case "FAILED":
+            return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
+        default:
+            return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+    }
+};
+
 function OrderCard({order}) {
     const navigate = useNavigate();
-
-    const getStatusColor = (status) => {
-        switch (status) {
-            case "PAID":
-                return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
-            case "PENDING":
-                return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
-            case "CANCELLED":
-                return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
-            case "FAILED":
-                return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
-            default:
-                return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
-        }
-    };
 
     function handleDownload(id, title) {
         try {

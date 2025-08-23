@@ -19,7 +19,7 @@ function Pages({totalPages, currentPage, setCurrentPage}) {
     }, [currentPage]);
 
     return (
-        <Pagination className="pt-6 bg-0 backdrop-blur-lg">
+        <Pagination className="pt-6 bg-0">
             <PaginationContent>
                 <PaginationItem>
                     <PaginationPrevious

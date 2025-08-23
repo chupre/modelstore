@@ -6,10 +6,12 @@ import {Label} from "@radix-ui/react-label";
 import {Input} from "@/components/ui/input.js";
 import {Button} from "@/components/ui/button.js";
 import {CreditCard} from "lucide-react";
-import {becomeSeller} from "@/http/sellerAPI.js";
+import {becomeSeller, updateSeller} from "@/http/sellerAPI.js";
 import {Context} from "@/main.jsx";
 import {observer} from "mobx-react-lite";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
+import {useNavigate} from "react-router-dom";
+import {HOME_ROUTE} from "@/utils/consts.js";
 
 const YooKassaIcon = () => (
     <img
@@ -21,34 +23,42 @@ const YooKassaIcon = () => (
     />
 )
 
-function BecomeSeller () {
+function BecomeSeller({ mode = "create", initialMethod, initialDestination, onSuccess }) {
     const {user} = useContext(Context)
 
-    const [payoutMethod, setPayoutMethod] = useState("YOOMONEY_WALLET")
-    const [payoutDestination, setPayoutDestination] = useState("")
+    const [payoutMethod, setPayoutMethod] = useState(initialMethod || "YOOMONEY_WALLET")
+    const [payoutDestination, setPayoutDestination] = useState(initialDestination || "")
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
 
         if (!payoutDestination.trim()) {
-            toast.error("Error", {
-                description: "Please enter your payout destination",
-            })
+            toast.error("Error", { description: "Please enter your payout destination" })
             return
         }
 
         setIsSubmitting(true)
 
         try {
-            await becomeSeller(parseInt(user.user.sub), payoutMethod, payoutDestination)
-            user.user.role = "SELLER"
-            toast.success("Congratulations!", {
-            description: "You have access to seller functionality now.",
-            })
+            if (mode === "create") {
+                await becomeSeller(parseInt(user.user.sub), payoutMethod, payoutDestination)
+                user.user.role = "SELLER"
+                toast.success("Congratulations!", {
+                    description: "You have access to seller functionality now.",
+                })
+                navigate(HOME_ROUTE)
+                return
+            } else {
+                await updateSeller(payoutMethod, payoutDestination)
+                toast.success("Updated!", {
+                    description: "Your payout info has been updated.",
+                })
+            }
 
-            setPayoutDestination("")
-            setPayoutMethod("YOOMONEY_WALLET")
+            onSuccess?.()
         } catch (e) {
             errorToast(e)
         } finally {
@@ -65,11 +75,28 @@ function BecomeSeller () {
     }
 
     return (
-        <div className="min-h-screen bg-background/0 flex items-center justify-center p-4 text-left">
-            <Card className="w-full max-w-md">
+        <div className={
+            mode === "create"
+                ? "min-h-screen flex items-center justify-center p-4 text-left"
+                : "w-full"
+        }
+        >
+            <Card
+                className={
+                    mode === "create"
+                        ? "w-full max-w-md"
+                        : "w-full"
+                }
+            >
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-bold">Become a Seller</CardTitle>
-                    <CardDescription>Join our marketplace and start selling your products</CardDescription>
+                    <CardTitle className="text-2xl font-bold">
+                        {mode === "create" ? "Become a Seller" : "Update Payout Settings"}
+                    </CardTitle>
+                    <CardDescription>
+                        {mode === "create"
+                            ? "Join our marketplace and start selling your products"
+                            : "Manage your payout preferences"}
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -119,7 +146,11 @@ function BecomeSeller () {
                         </div>
 
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? "Submitting..." : "Submit"}
+                            {isSubmitting
+                                ? "Submitting..."
+                                : mode === "create"
+                                    ? "Submit"
+                                    : "Update"}
                         </Button>
                     </form>
                 </CardContent>

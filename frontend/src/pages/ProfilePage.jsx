@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Edit2, Save, X, User, ShoppingBag, Heart, MessageSquare, Upload, Crop } from "lucide-react"
 import {Context} from "@/main.jsx";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {fetchProfile, updateProfile} from "@/http/userAPI.js";
 import Loading from "@/components/Loading.jsx";
 import {observer} from "mobx-react-lite";
@@ -19,6 +19,7 @@ import ProductCard from "@/components/ProductCard.jsx";
 import Pages from "@/components/Pages.jsx";
 import CommentCard from "@/components/CommentCard.jsx";
 import OrderCard from "@/components/OrderCard.jsx";
+import {PRODUCT_ROUTE} from "@/utils/consts.js";
 
 function ProfilePage() {
     const {user} = useContext(Context)
@@ -64,6 +65,8 @@ function ProfilePage() {
     const [ordersTotalPages, setOrdersTotalPages] = useState(0)
     const [ordersCurrentPage, setOrdersCurrentPage] = useState(0)
     const [ordersTotalElements, setOrdersTotalElements] = useState(0)
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (user.isAuth && id === user.user.sub) {
@@ -605,6 +608,7 @@ function ProfilePage() {
                                                                 setComments={setLikedComments}
                                                                 comment={comment}
                                                                 showLiked={false}
+                                                                onClick={() => navigate(`${PRODUCT_ROUTE}/${comment.productId}`)}
                                                                 fetch={() => fetchLikedComments(id, likedCommentsCurrentPage, 3)}
                                                                 currentPage={likedCommentsCurrentPage}
                                                             />

@@ -24,23 +24,24 @@ import {Context} from "@/main.jsx";
 import {LOGIN_ROUTE, PROFILE_ROUTE} from "@/utils/consts.js";
 import {useNavigate} from "react-router-dom";
 
+export const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+
 function CommentCard({  comment,
                         setComments,
                         showLiked = true,
-                        fetch
+                        fetch,
+                        onClick
                      }) {
     const {user} = useContext(Context)
     const [isEditing, setIsEditing] = useState(false);
     const [editingText, setEditingText] = useState(comment.comment);
 
     const navigate = useNavigate();
-
-    const formatDate = (dateString) =>
-        new Date(dateString).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        });
 
     const handleCommentLike = async () => {
         if (!user.isAuth) {
@@ -123,7 +124,7 @@ function CommentCard({  comment,
               </span>
                         </div>
 
-                        {user.user && parseInt(user.user.sub) === comment.userId && !isEditing && (
+                        {user.user && (parseInt(user.user.sub) === parseInt(comment.user.id)) && !isEditing && (
                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <Button
                                     variant="ghost"
@@ -185,7 +186,9 @@ function CommentCard({  comment,
                             </div>
                         </div>
                     ) : (
-                        <p className="text-sm leading-relaxed">{comment.comment}</p>
+                        <p onClick={onClick} className={`text-sm leading-relaxed ${onClick ? "hover:cursor-pointer" : ""}`}>
+                            {comment.comment}
+                        </p>
                     )}
 
                     {showLiked &&
