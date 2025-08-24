@@ -1,0 +1,38 @@
+services:
+  app:
+    build: .
+    container_name: modelstore-spring
+    depends_on:
+      - db
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      YOOKASSA_SHOP_ID: ${YOOKASSA_SHOP_ID}
+      YOOKASSA_SECRET_KEY: ${YOOKASSA_SECRET_KEY}
+      YOOKASSA_PAYOUT_GATEWAY_ID: ${YOOKASSA_PAYOUT_GATEWAY_ID}
+      YOOKASSA_PAYOUT_GATEWAY_SECRET_KEY: ${YOOKASSA_PAYOUT_GATEWAY_SECRET_KEY}
+    ports:
+      - "8080:8080"
+
+  db:
+    image: postgres:16
+    container_name: modelstore-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
