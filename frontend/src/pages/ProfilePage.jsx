@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Edit2, Save, X, User, ShoppingBag, Heart, MessageSquare, Upload, Crop } from "lucide-react"
+import {Edit2, Save, X, User, ShoppingBag, Heart, MessageSquare, Upload, Crop, Package} from "lucide-react"
 import {Context} from "@/main.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 import {fetchProfile, updateProfile} from "@/http/userAPI.js";
@@ -20,17 +20,14 @@ import Pages from "@/components/Pages.jsx";
 import CommentCard from "@/components/CommentCard.jsx";
 import OrderCard from "@/components/OrderCard.jsx";
 import {PRODUCT_ROUTE} from "@/utils/consts.js";
+import {fetchCurrentSeller, fetchSellerProducts} from "@/http/sellerAPI.js";
 
 function ProfilePage() {
     const {user} = useContext(Context)
     const {id} = useParams();
     const [loading, setLoading] = useState(true)
 
-    const [profile, setProfile] = useState({
-        name: "John Doe",
-        avatarUrl: "/professional-headshot.png",
-        bio: "Full-stack developer passionate about creating amazing user experiences. Love working with React, TypeScript, and modern web technologies.",
-    })
+    const [profile, setProfile] = useState()
 
     const [isEditing, setIsEditing] = useState(false)
     const [editedProfile, setEditedProfile] = useState(profile)
@@ -46,7 +43,7 @@ function ProfilePage() {
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
     const cropperRef = useRef(null)
 
-    const [favoriteProducts, setFavoriteProducts] = useState(null)
+    const [likedProducts, setLikedProducts] = useState(null)
     const [likedProductsTotalPages, setLikedProductsTotalPages] = useState(0)
     const [likedProductsCurrentPage, setLikedProductsCurrentPage] = useState(0)
     const [likedProductsTotalElements, setLikedProductsTotalElements] = useState(0)
@@ -66,6 +63,13 @@ function ProfilePage() {
     const [ordersCurrentPage, setOrdersCurrentPage] = useState(0)
     const [ordersTotalElements, setOrdersTotalElements] = useState(0)
 
+    const [ownedProducts, setOwnedProducts] = useState(null)
+    const [ownedProductsTotalPages, setOwnedProductsTotalPages] = useState(0)
+    const [ownedProductsCurrentPage, setOwnedProductsCurrentPage] = useState(0)
+    const [ownedProductsTotalElements, setOwnedProductsTotalElements] = useState(0)
+
+    const [isAdminWithSeller, setIsAdminWithSeller] = useState(false)
+
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -83,7 +87,7 @@ function ProfilePage() {
     useEffect(() => {
         fetchLikedProducts(id, likedProductsCurrentPage, 3)
             .then((res) => {
-                setFavoriteProducts(res.data.content);
+                setLikedProducts(res.data.content);
                 setLikedProductsTotalPages(res.data.totalPages);
                 setLikedProductsTotalElements(res.data.totalElements)
             })
@@ -122,7 +126,29 @@ function ProfilePage() {
                 })
                 .catch(errorToast);
         }
+
+        if (user.profile.role === "ADMIN") {
+            setLoading(true)
+            fetchCurrentSeller().then((res) => {
+                if (res) {
+                    setIsAdminWithSeller(true)
+                    setLoading(false)
+                }
+            })
+        }
     }, [id, user.isAuth, user.user?.sub, user.profile]);
+
+    useEffect(() => {
+        if (profile?.role === "SELLER" || isAdminWithSeller) {
+            setLoading(true)
+            fetchSellerProducts(profile.userId, ownedProductsCurrentPage, 3).then((res) => {
+                setOwnedProducts(res.data.content)
+                setOwnedProductsTotalElements(res.data.totalElements)
+                setOwnedProductsTotalPages(res.data.totalPages)
+                setLoading(false)
+            }).catch(errorToast)
+        }
+    }, [profile, ownedProductsCurrentPage]);
 
     if (loading) {
         return <Loading/>
@@ -524,6 +550,15 @@ function ProfilePage() {
                                         Orders
                                     </TabsTrigger>
                                 }
+                                {(profile.role === "SELLER" || isAdminWithSeller) &&
+                                    <TabsTrigger
+                                        value="owned"
+                                        className="w-full justify-start gap-2 hover:bg-muted transition-colors"
+                                    >
+                                        <Package className="h-4 w-4"/>
+                                        Owned Products
+                                    </TabsTrigger>
+                                }
                                 <TabsTrigger
                                     value="liked"
                                     className="w-full justify-start gap-2 hover:bg-muted transition-colors"
@@ -566,14 +601,38 @@ function ProfilePage() {
                                 </Card>
                             </TabsContent>
 
+                            <TabsContent value="owned" className="space-y-4 mt-0">
+                                <Card className="border-border bg-card/0 backdrop-blur-lg">
+                                    <CardContent className="p-8 py-2 text-center">
+                                        {ownedProducts ?
+                                            <div>
+                                                <p className="text-left text-sm text-muted-foreground mt-1 py-2">{ownedProductsTotalElements} products found</p>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                                                    {ownedProducts.map((product) => (
+                                                        <ProductCard key={product.id} product={product} showLike={false}/>
+                                                    ))}
+                                                </div>
+                                                <Pages currentPage={ownedProductsCurrentPage} setCurrentPage={setOwnedProductsCurrentPage} totalPages={ownedProductsTotalPages}/>
+                                            </div>
+                                            :
+                                            <div>
+                                                <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                                                <h3 className="text-lg font-semibold mb-2">Owned Products</h3>
+                                                <p className="text-muted-foreground">Owned products will appear here</p>
+                                            </div>
+                                        }
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+
                             <TabsContent value="liked" className="space-y-4 mt-0">
                                 <Card className="border-border bg-card/0 backdrop-blur-lg">
                                     <CardContent className="p-8 py-2 text-center">
-                                        {favoriteProducts ?
+                                        {likedProducts ?
                                             <div>
                                                 <p className="text-left text-sm text-muted-foreground mt-1 py-2">{likedProductsTotalElements} products found</p>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                                                    {favoriteProducts.map((product) => (
+                                                    {likedProducts.map((product) => (
                                                         <ProductCard key={product.id} product={product} showLike={false}/>
                                                     ))}
                                                 </div>

@@ -97,7 +97,7 @@ function SellerDashboard() {
             setPayoutsTotalPages(res.data.totalPages)
         }).catch(errorToast)
           .finally(() => setPayoutsLoading(false))
-    }, []);
+    }, [payoutsCurrentPage]);
 
     if (isLoading || payoutsLoading) {
         return <Loading/>
