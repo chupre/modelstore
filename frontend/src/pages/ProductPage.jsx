@@ -38,6 +38,7 @@ function ProductPage() {
     const commentsRef = useRef(null);
     const [totalPages, setTotalPages] = useState(0)
     const [currentPage, setCurrentPage] = useState(0)
+    const [totalElements, setTotalElements] = useState(0)
 
     useEffect(() => {
         const loadData = async () => {
@@ -66,6 +67,7 @@ function ProductPage() {
 
                 setComments(commentsRes.data.content);
                 setTotalPages(commentsRes.data.totalPages)
+                setTotalElements(commentsRes.data.totalElements)
             } catch (err) {
                 errorToast(err);
             } finally {
@@ -228,7 +230,7 @@ function ProductPage() {
                             className="flex items-center gap-1 h-8 px-2 text-muted-foreground"
                         >
                             <MessageCircle className="w-5 h-5"/>
-                            <span className="font-medium text-sm min-w-[0.5rem] text-center">{comments.length} comments</span>
+                            <span className="font-medium text-sm min-w-[0.5rem] text-center">{totalElements} comments</span>
                         </Button>
                     </div>
 
@@ -274,7 +276,7 @@ function ProductPage() {
             <div className="mx-auto p-6 space-y-6">
                 <div className="flex items-center gap-2 mb-6">
                     <h2 className="text-2xl font-semibold">Comments</h2>
-                    <span className="px-2 py-1 bg-muted text-muted-foreground rounded-md text-sm">{comments.length}</span>
+                    <span className="px-2 py-1 bg-muted text-muted-foreground rounded-md text-sm">{totalElements}</span>
                 </div>
 
                 {/* Add Comment Form */}
