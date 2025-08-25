@@ -3,6 +3,7 @@ package com.byllameister.modelstore.auth;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.UserNotFoundException;
 import com.byllameister.modelstore.users.UserRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Auth")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;

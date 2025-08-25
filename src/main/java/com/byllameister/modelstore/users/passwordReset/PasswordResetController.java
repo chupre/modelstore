@@ -2,6 +2,7 @@ package com.byllameister.modelstore.users.passwordReset;
 
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.UserNotFoundException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/users/passwordReset")
 @AllArgsConstructor
+@Tag(name = "Password Reset", description = "Methods for password reset via email")
 public class PasswordResetController {
     private final PasswordResetService passwordResetService;
 

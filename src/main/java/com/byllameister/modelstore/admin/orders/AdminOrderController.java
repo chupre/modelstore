@@ -4,6 +4,7 @@ import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.orders.OrderResponse;
 import com.byllameister.modelstore.orders.OrderNotFoundException;
 import com.byllameister.modelstore.orders.OrderService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/orders")
 @AllArgsConstructor
+@Tag(name = "Admin Orders", description = "Admin methods related to orders")
 public class AdminOrderController {
     private final OrderService orderService;
 

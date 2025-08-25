@@ -5,6 +5,7 @@ import com.byllameister.modelstore.categories.CategoryNotFoundInBodyException;
 import com.byllameister.modelstore.categories.CategoryNotFoundInQueryException;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.UserNotFoundException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import java.net.MalformedURLException;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/products")
+@Tag(name = "Product")
 public class ProductController {
     private final ProductService productService;
 

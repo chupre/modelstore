@@ -1,6 +1,7 @@
 package com.byllameister.modelstore.admin.categories;
 
 import com.byllameister.modelstore.categories.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/admin/categories")
 @AllArgsConstructor
+@Tag(name = "Admin Categories", description = "Admin methods related to categories")
 public class AdminCategoryController {
     private final CategoryService categoryService;
 

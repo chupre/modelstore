@@ -2,6 +2,7 @@ package com.byllameister.modelstore.users.emailVerification;
 
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.UserNotFoundException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/users/verification")
 @AllArgsConstructor
+@Tag(name = "User Verification", description = "Methods for user verification via email")
 public class UserVerificationController {
     private final UserVerificationService userVerificationService;
 

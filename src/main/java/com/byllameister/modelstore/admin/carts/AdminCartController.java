@@ -3,6 +3,7 @@ package com.byllameister.modelstore.admin.carts;
 import com.byllameister.modelstore.carts.*;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.products.ProductNotFoundException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/admin/carts")
+@Tag(name = "Admin Cart", description = "Admin methods related to carts.")
 @AllArgsConstructor
 public class AdminCartController {
     private CartService cartService;

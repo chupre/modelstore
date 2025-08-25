@@ -3,6 +3,7 @@ package com.byllameister.modelstore.admin.sellers;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.sellers.*;
 import com.byllameister.modelstore.users.UserNotFoundException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/admin/sellers")
 @AllArgsConstructor
+@Tag(name = "Admin Seller", description = "Admin methods related to sellers")
 public class AdminSellerController {
     private SellerService sellerService;
 

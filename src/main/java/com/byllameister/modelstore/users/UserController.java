@@ -6,6 +6,7 @@ import com.byllameister.modelstore.products.ProductWithLikesResponse;
 import com.byllameister.modelstore.products.interaction.ProductCommentDto;
 import com.byllameister.modelstore.products.interaction.ProductInteractionService;
 import com.byllameister.modelstore.users.profiles.UserProfileNotFoundException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @AllArgsConstructor
 @RestController
+@Tag(name = "User")
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;

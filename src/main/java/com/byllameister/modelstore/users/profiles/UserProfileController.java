@@ -3,6 +3,7 @@ package com.byllameister.modelstore.users.profiles;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.DuplicateUsernameException;
 import com.byllameister.modelstore.users.UserNotFoundException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/users/{id}/profile")
 @AllArgsConstructor
+@Tag(name = "User Profile")
 public class UserProfileController {
     private UserProfileService userProfileService;
 

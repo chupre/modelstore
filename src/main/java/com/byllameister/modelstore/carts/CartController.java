@@ -5,6 +5,7 @@ import com.byllameister.modelstore.admin.carts.CreateCartRequest;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.users.UserNotFoundException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/carts")
+@Tag(name = "Cart")
 @AllArgsConstructor
 public class CartController {
     private final CartService cartService;

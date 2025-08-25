@@ -2,6 +2,7 @@ package com.byllameister.modelstore.admin.users;
 
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.users.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/users")
 @AllArgsConstructor
+@Tag(name = "Admin User", description = "Admin methods related to users")
 public class AdminUserController {
     UserService userService;
 

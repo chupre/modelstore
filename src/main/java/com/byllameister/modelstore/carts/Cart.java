@@ -20,10 +20,16 @@ import java.util.UUID;
 @NamedEntityGraph(
         name = "Cart.withAll",
         attributeNodes = {
-                @NamedAttributeNode("user"),
+                @NamedAttributeNode(value = "user", subgraph = "user.details"),
                 @NamedAttributeNode(value = "cartItems", subgraph = "cartItems.product")
         },
         subgraphs = {
+                @NamedSubgraph(
+                        name = "user.details",
+                        attributeNodes = {
+                                @NamedAttributeNode("profile")
+                        }
+                ),
                 @NamedSubgraph(
                         name = "cartItems.product",
                         attributeNodes = {

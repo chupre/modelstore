@@ -4,6 +4,7 @@ import com.byllameister.modelstore.auth.CustomUserPrincipal;
 import com.byllameister.modelstore.common.ErrorDto;
 import com.byllameister.modelstore.products.ProductNotFoundException;
 import com.byllameister.modelstore.users.UserNotFoundException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/interactions/products")
+@Tag(name = "Product Interaction", description = "Methods related to product comments and likes")
 @AllArgsConstructor
 public class ProductInteractionController {
     private final ProductInteractionService productInteractionService;

@@ -3,7 +3,7 @@ package com.byllameister.modelstore.payments;
 import com.byllameister.modelstore.carts.CartEmptyException;
 import com.byllameister.modelstore.carts.CartNotFoundException;
 import com.byllameister.modelstore.common.ErrorDto;
-import com.byllameister.modelstore.orders.OrderRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 @RestController
 @RequestMapping("/checkout")
+@Tag(name = "Payments")
 @RequiredArgsConstructor
 public class CheckoutController {
     private final CheckoutService checkoutService;

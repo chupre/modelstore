@@ -7,6 +7,7 @@ import com.byllameister.modelstore.products.*;
 import com.byllameister.modelstore.products.ProductWithLikesResponse;
 import com.byllameister.modelstore.users.User;
 import com.byllameister.modelstore.users.UserNotFoundException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/sellers")
 @AllArgsConstructor
+@Tag(name = "Seller")
 public class SellerController {
     private final SellerService sellerService;
     private final ProductService productService;

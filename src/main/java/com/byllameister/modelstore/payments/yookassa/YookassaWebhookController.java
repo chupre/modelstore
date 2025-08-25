@@ -7,6 +7,7 @@ import com.byllameister.modelstore.orders.OrderPaidEvent;
 import com.byllameister.modelstore.payments.PayoutNotFoundException;
 import com.byllameister.modelstore.payments.PayoutRepository;
 import com.byllameister.modelstore.payments.PayoutStatus;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
+@Tag(name = "Yookassa Webhooks")
 @RequestMapping("/webhook/yookassa")
 @AllArgsConstructor
 public class YookassaWebhookController {
@@ -33,7 +35,7 @@ public class YookassaWebhookController {
                 order.setStatus(OrderStatus.PAID);
                 applicationEventPublisher.publishEvent(new OrderPaidEvent(order));
             }
-            case "canceled"  -> order.setStatus(OrderStatus.CANCELED);
+            case "canceled"  -> order.setStatus(OrderStatus.CANCELLED);
             default          -> order.setStatus(OrderStatus.PENDING);
         }
         orderRepository.save(order);

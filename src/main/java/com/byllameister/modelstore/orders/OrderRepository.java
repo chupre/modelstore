@@ -12,9 +12,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
+    @EntityGraph(attributePaths = {"orderItems", "orderItems.product.owner.profile"})
     Optional<Order> findByPaymentId(UUID paymentId);
 
-    @EntityGraph(attributePaths = {"orderItems", "orderItems.product"})
+    @EntityGraph(attributePaths = {"orderItems", "orderItems.product.owner.profile"})
     Page<Order> findByCustomerId(Long currentUserId, Pageable pageable);
 
     @Query("""
@@ -23,6 +24,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     boolean hasUserBoughtProduct(@Param("customerId") Long customerId, @Param("productId") Long productId);
 
     @NonNull
-    @EntityGraph(attributePaths = "orderItems")
+    @EntityGraph(attributePaths = {"orderItems", "orderItems.product.owner.profile"})
     Page<Order> findAll(@NonNull Pageable pageable);
 }
