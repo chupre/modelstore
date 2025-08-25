@@ -1,6 +1,7 @@
 package com.byllameister.modelstore.auth;
 
 import com.byllameister.modelstore.common.ErrorDto;
+import com.byllameister.modelstore.users.UserNotFoundException;
 import com.byllameister.modelstore.users.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -73,10 +74,15 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        var user =  userRepository.findById(jwt.getUserId()).orElseThrow();
+        var user = userRepository.findById(jwt.getUserId()).orElseThrow(UserNotFoundException::new);
         var accessToken = jwtService.generateAccessToken(user);
 
         return  ResponseEntity.ok(new JwtResponse(accessToken.toString()));
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleUserNotFoundException() {
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(BadCredentialsException.class)
