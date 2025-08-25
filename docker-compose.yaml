@@ -21,6 +21,8 @@ services:
       YOOKASSA_PAYOUT_GATEWAY_SECRET_KEY: ${YOOKASSA_PAYOUT_GATEWAY_SECRET_KEY}
     ports:
       - "8080:8080"
+    volumes:
+      - ./uploads:/app/uploads
 
   db:
     image: postgres:16
