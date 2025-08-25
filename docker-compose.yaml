@@ -35,5 +35,18 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: modelstore-frontend
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "5173:5173"
+    depends_on:
+      - app
+    command: [ "npm", "run", "dev", "--", "--host", "0.0.0.0" ]
+
 volumes:
   db_data:
