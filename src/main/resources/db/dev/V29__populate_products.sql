@@ -1,7 +1,7 @@
 DO $$
     DECLARE
-        img_placeholder TEXT := 'placeholder.png';
-        file_placeholder TEXT := 'placeholder.obj';
+        img_placeholder TEXT := '/images/placeholder.png';
+        file_placeholder TEXT := '/models/placeholder.obj';
     BEGIN
         INSERT INTO products (title, description, price, previewimage, file, owner_id, category_id, createdat) VALUES
                                                                                                                    ('Sci-Fi Spaceship', 'A detailed 3D model of a futuristic spaceship.', 19.99, img_placeholder, file_placeholder,
