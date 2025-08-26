@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +14,12 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 public class UploadService {
+    private final String baseDir;
+
+    public UploadService() {
+        this("uploads");
+    }
+
     public String uploadImage(MultipartFile file) throws IOException {
         return uploadFile(file, "/images/");
     }
@@ -25,7 +30,7 @@ public class UploadService {
 
     private String uploadFile(MultipartFile file, String directory) throws IOException {
         String fileName = UUID.randomUUID().toString();
-        Path uploadPath = Paths.get("uploads" + directory);
+        Path uploadPath = Paths.get(baseDir + directory);
 
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
@@ -38,6 +43,7 @@ public class UploadService {
     }
 
     public void deleteFile(String filePath) throws IOException {
-        Files.deleteIfExists(Paths.get("uploads" + filePath));
+        Files.deleteIfExists(Paths.get(baseDir + filePath));
     }
 }
+

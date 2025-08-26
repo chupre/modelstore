@@ -25,6 +25,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Nonnull
     @EntityGraph(attributePaths = "profile")
     Optional<User> findById(@NonNull Long id);
-
-    Long id(Long id);
 }
