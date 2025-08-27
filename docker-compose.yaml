@@ -45,10 +45,9 @@ services:
     env_file:
       - ./frontend/.env
     ports:
-      - "5173:5173"
+      - "3000:80"
     depends_on:
       - app
-    command: [ "npm", "run", "dev", "--", "--host", "0.0.0.0" ]
 
 volumes:
   db_data:
