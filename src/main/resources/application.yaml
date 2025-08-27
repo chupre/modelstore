@@ -31,10 +31,13 @@ spring:
       mail:
         smtp:
           auth: true
+          starttls:
+            enable: true
           ssl:
             enable: true
-            trust:
-              ${MAIL_HOST}
+            trust: ${MAIL_HOST}
+          timeout: 10000
+          connectiontimeout: 10000
 
 user:
   verificationToken:
