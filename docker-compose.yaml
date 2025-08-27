@@ -41,9 +41,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_URL: ${VITE_URL}
     container_name: modelstore-frontend
-    env_file:
-      - ./frontend/.env
     ports:
       - "3000:80"
     depends_on:
