@@ -122,7 +122,7 @@ Replace `SERVER_PORT` with your backend port.
 
 ```
 root/
-├─ backend/               # Spring Boot backend
+├─ src/               # Spring Boot backend
 ├─ frontend/              # React frontend
 ├─ docker-compose.yml     # Docker compose setup
 ├─ .env.example           # Backend environment variables example
