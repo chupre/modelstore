@@ -45,7 +45,7 @@ public class UserService {
         return userMapper.toResponse(user);
     }
 
-    public UserResponse createUser(@Valid RegisterUserRequest request) {
+    public UserResponse createUser(RegisterUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new DuplicateEmailException();
         }
