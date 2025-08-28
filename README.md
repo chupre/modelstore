@@ -56,11 +56,10 @@ A full-stack 3D model store web application where users can browse, purchase, an
 
 ### Environment Setup
 
-1. Copy the example `.env` files in both `root` and `frontend` directories:
+1. Copy the example `.env` file in root directory:
 
 ```bash
 cp .env.example .env
-cp frontend/.env.example frontend/.env
 ```
 
 2. Update the `.env` files with your environment-specific variables (database credentials, JWT secret, etc.).
