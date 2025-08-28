@@ -22,11 +22,11 @@ spring:
       max-file-size: 200MB
       max-request-size: 200MB
   mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
+    host: smtp.yandex.ru
+    port: 587
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
-    protocol: smtps
+    protocol: smtp
     properties:
       mail:
         smtp:
@@ -34,10 +34,8 @@ spring:
           starttls:
             enable: true
           ssl:
-            enable: true
-            trust: ${MAIL_HOST}
-          timeout: 10000
-          connectiontimeout: 10000
+            enable: false
+          trust: smtp.yandex.ru
 
 user:
   verificationToken:
