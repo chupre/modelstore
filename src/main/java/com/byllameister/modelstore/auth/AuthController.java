@@ -9,7 +9,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -53,12 +55,15 @@ public class AuthController {
             var accessToken = jwtService.generateAccessToken(user);
             var refreshToken = jwtService.generateRefreshToken(user);
 
-            var cookie = new Cookie("refreshToken", refreshToken.toString());
-            cookie.setHttpOnly(true);
-            cookie.setPath("/auth/refresh");
-            cookie.setMaxAge(jwtConfig.getRefreshTokenExpiration());
-            cookie.setSecure(true);
-            httpServletResponse.addCookie(cookie);
+            ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken.toString())
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    .path("/auth/refresh")
+                    .maxAge(jwtConfig.getRefreshTokenExpiration())
+                    .build();
+
+            httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
         } catch (BadCredentialsException e) {
