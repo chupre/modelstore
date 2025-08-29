@@ -29,13 +29,15 @@ spring:
     protocol: smtp
     properties:
       mail:
+        transport:
+          protocol: smtp
         smtp:
           auth: true
           starttls:
             enable: true
-          ssl:
-            enable: false
-          trust: smtp.yandex.ru
+#          ssl:
+#            enable: false
+#          trust: smtp.yandex.ru
 
 user:
   verificationToken:
